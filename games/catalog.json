@@ -1,0 +1,137 @@
+[
+ {
+  "t": "魚我所欲也",
+  "s": "中文",
+  "lv": "中學 DSE 範文",
+  "m": "RPG 冒險",
+  "d": "陪寒門士子赴京，在市集、茶亭、饑荒村口和豪宅之間，一次次在生與義之間抉擇。",
+  "path": "games/fish/",
+  "u": "https://claude.ai/artifact/8EqJ2yJ4ZLvMCt3QC3MECe"
+ },
+ {
+  "t": "論語：杏壇搬運戰",
+  "s": "中文",
+  "lv": "中學 DSE 範文",
+  "m": "限時搬運",
+  "d": "在杏壇上限時搬運竹簡，分類語錄、配對字詞、排列次序，小人還會丟下誘餌。",
+  "path": "games/lunyu/",
+  "u": "https://claude.ai/artifact/VwoxPc6wCbmrXLnSZM13T3"
+ },
+ {
+  "t": "逍遙遊：大瓠與大樹",
+  "s": "中文",
+  "lv": "中學 DSE 範文",
+  "m": "RPG 冒險",
+  "d": "親眼看莊子的寓言上演：大瓠盛水爆裂、吳越冬天水戰、乘大樽浮遊江湖、狸狌落網，再代莊子回應惠子。",
+  "path": "games/xiaoyao/",
+  "u": "https://claude.ai/artifact/WLeZcexXWVpc67mAYZ5QzH"
+ },
+ {
+  "t": "始得西山宴遊記",
+  "s": "中文",
+  "lv": "中學 DSE 範文",
+  "m": "探索漫遊",
+  "d": "陪柳宗元從永州城外出發，渡湘江、斬草開路、攀上西山，在山頂待到天黑。",
+  "path": "games/xishan/",
+  "u": "https://claude.ai/artifact/SMt19a9hr4VJQv4Hixy6Cm"
+ },
+ {
+  "t": "賣油翁",
+  "s": "中文",
+  "lv": "初中中文科",
+  "m": "配對（射箭、酌油）",
+  "d": "在陳府家圃配對字詞、人物態度和射與油的對應：選對意思，箭就正中紅心；配對正確，油就穿過錢孔。最後親手練習酌油，體會熟能生巧。",
+  "path": "games/maiyou/",
+  "u": "https://claude.ai/artifact/G8fkKhDWR5iWsswh4tQUD5"
+ },
+ {
+  "t": "山居秋暝",
+  "s": "中文",
+  "lv": "中學 DSE 範文",
+  "m": "節奏表演",
+  "d": "跟著古琴節拍朗誦王維名作：守住二三停頓、選對韻腳、配對對仗，每唸好一句，山中的雨、月、泉、竹、蓮就活過來。",
+  "path": "games/shanju/",
+  "u": "https://claude.ai/artifact/Uo6sA78rYmDurWdLnNnEsd"
+ },
+ {
+  "t": "HK Buddy",
+  "s": "英文",
+  "lv": "初中英國語文",
+  "m": "對話闖關",
+  "d": "帶交換生 Sam 遊香港：在茶餐廳點餐、在港鐵站指路、在天星小輪介紹維港、在街市講價。",
+  "path": "games/hkbuddy/",
+  "u": "https://claude.ai/artifact/EHnFTqQ5q1GKhhRdvMsQZo"
+ },
+ {
+  "t": "地盤三視圖",
+  "s": "數學",
+  "lv": "初中數學",
+  "m": "建造工坊",
+  "d": "在香港地盤操控塔式起重機，按工程師的三視圖藍圖砌出結構，再計算體積和要髹油的面積。",
+  "path": "games/site/",
+  "u": "https://claude.ai/artifact/7rdt6TJXuqG3Dt6UNnM5yp"
+ },
+ {
+  "t": "翠溪考察",
+  "s": "地理",
+  "lv": "初中地理",
+  "m": "探索漫遊",
+  "d": "沿一條香港河流由山走到海：辨認瀑布、壺穴、曲流和泥灘，親手量度河寬、水深、流速和石塊，再用自己的數據分析河流的變化。",
+  "path": "games/river/",
+  "u": "https://claude.ai/artifact/6woNyytYTWe5ZN5rgzn2hk"
+ },
+ {
+  "t": "送貨機械人",
+  "s": "資訊科技",
+  "lv": "初中資訊及通訊科技",
+  "m": "建造工坊（編程）",
+  "d": "用積木編寫程式，指揮機械人在香港街道上送貨：繞過街檔和工地、在紅綠燈前等候、修正同學寫錯的程式。",
+  "path": "games/coding/",
+  "u": "https://claude.ai/artifact/7p48W1KYJVskKdfb9WcxYU"
+ },
+ {
+  "t": "謠言查證",
+  "s": "公社",
+  "lv": "中學 公民與社會發展／資訊素養",
+  "m": "偵探查案",
+  "d": "家庭群組瘋傳「芒果被注射色素」：找出訊息的警號，以圖搜圖、追查來源、到街市實地查證，再有禮地更正謠言。",
+  "path": "games/factcheck/",
+  "u": "https://claude.ai/artifact/GNUfPugvj1Yg7ZXikECZ9c"
+ },
+ {
+  "t": "實驗室安全",
+  "s": "科學",
+  "lv": "初中科學",
+  "m": "RPG 冒險",
+  "d": "溶液濺眼、加熱試管、打破燒杯、火警鐘響，四場實驗室意外由你判斷怎樣處理。",
+  "path": "games/labsafety/",
+  "u": "https://claude.ai/artifact/VwTgXXGLpMcrrS3HGk9wkc"
+ },
+ {
+  "t": "浮與沉",
+  "s": "科學",
+  "lv": "小學科學科",
+  "m": "模擬實驗室",
+  "d": "把東西放進水缸、捏泥膠船、一匙匙加鹽，先預測再動手，看看結果是否如你所想。",
+  "path": "games/floatsink/",
+  "u": "https://claude.ai/artifact/GSKz852J5R8TWQv2LTjpsB"
+ },
+ {
+  "t": "赤壁疑案",
+  "s": "中史",
+  "lv": "初中中國歷史",
+  "m": "偵探查案",
+  "d": "草船借箭是真的嗎？走訪茶館、藏書閣和赤壁江邊，用史料在公堂上拆穿說書人。",
+  "path": "games/chibi/",
+  "u": "https://claude.ai/artifact/NjvcuqAdGQZuZG4imMwG2X"
+ },
+ {
+  "t": "檸檬茶小店",
+  "s": "經濟",
+  "lv": "初中經濟、小學人文科",
+  "m": "經營決策",
+  "d": "經營一間小店八天：入貨、定價、應付天氣與隔壁的新店，從帳簿中找出規律。",
+  "path": "games/shop/",
+  "u": "https://claude.ai/artifact/BXTgtDm8L6RD6oNTgQXadN"
+ }
+]
