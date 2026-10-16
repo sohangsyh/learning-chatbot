@@ -1,0 +1,15 @@
+{
+  "inputs": {
+    "subject": "中國語文（指定範文）",
+    "text_type": "近體詩",
+    "has_rhythm": true,
+    "has_imagery": true,
+    "has_pairs": true
+  },
+  "recommendation": {
+    "primary": "rhythm",
+    "reason": "律詩的核心在節奏、押韻和對仗，用節奏表演讓學生親身唸出二三停頓、聽見韻腳，並把每句的意象「唸活」。",
+    "note": "平仄涉及中古音，粵語與普通話讀法不同，本遊戲不作要求。"
+  },
+  "teacher_confirmed": "rhythm"
+}

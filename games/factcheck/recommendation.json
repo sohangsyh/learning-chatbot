@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "subject": "公民與社會發展／資訊素養",
+    "has_sources": true,
+    "has_evidence": true,
+    "has_dilemma": true
+  },
+  "recommendation": {
+    "primary": "detective",
+    "reason": "查證謠言的核心是比對來源、蒐集證據、再用證據回應說法，正是偵探查案的流程；最後加入有禮更正的抉擇，連繫公民責任。"
+  },
+  "teacher_confirmed": "detective"
+}

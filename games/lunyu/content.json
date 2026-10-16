@@ -1,0 +1,416 @@
+{
+  "meta": {
+    "topic": "論仁、論孝、論君子",
+    "author": "論語",
+    "language": "zh-Hant",
+    "audience": "DSE 中文科",
+    "central_thesis": "仁是內在修養，孝重在敬，君子求諸己、成人之美，與小人相反。"
+  },
+  "npc_slots": {
+    "mentor": {
+      "character_id": "G",
+      "display_name": "孔子",
+      "persona": "循循善誘",
+      "costume": [
+        "ru_hat"
+      ]
+    },
+    "companion": {
+      "character_id": "O",
+      "display_name": "顏淵",
+      "persona": "好學、安貧樂道",
+      "costume": []
+    },
+    "rival": {
+      "character_id": "A",
+      "display_name": "小人",
+      "persona": "處處與君子相反，愛搗亂",
+      "costume": []
+    },
+    "gatekeeper": {
+      "character_id": "I",
+      "display_name": "禮官",
+      "persona": "一絲不苟，負責驗收",
+      "costume": [
+        "lantern"
+      ]
+    }
+  },
+  "player": {
+    "display_name": "你",
+    "color": "#E8577E"
+  },
+  "units": [
+    {
+      "unit_id": "u1",
+      "title": "三大主題",
+      "concept": "十六則語錄分屬論仁、論孝、論君子三組。提到「君子」的句子不一定屬於論君子。",
+      "misconceptions": [
+        "句中有「君子」二字，就一定屬於論君子"
+      ],
+      "tags": {
+        "has_categories": true,
+        "has_pairs": false,
+        "has_sequence": false,
+        "has_dilemma": false,
+        "short_labels_ok": true,
+        "bloom": "remember"
+      },
+      "round_type": "sort",
+      "lines": {
+        "intro": "把每片竹簡搬到它所屬的主題：論仁、論孝、論君子。小心，有些句子會騙人。",
+        "rival_taunt": "嘻嘻，有「君子」二字，當然是論君子啦！",
+        "rival_interfere": "這片竹簡，我替你挪一挪！"
+      },
+      "zones": [
+        {
+          "id": "ren",
+          "label": "論仁"
+        },
+        {
+          "id": "xiao",
+          "label": "論孝"
+        },
+        {
+          "id": "junzi",
+          "label": "論君子"
+        }
+      ],
+      "items": [
+        {
+          "label": "克己復禮為仁",
+          "answer": "ren",
+          "explain": "顏淵問仁，孔子答「克己復禮為仁」。"
+        },
+        {
+          "label": "殺身以成仁",
+          "answer": "ren",
+          "explain": "「志士仁人，無求生以害仁，有殺身以成仁。」"
+        },
+        {
+          "label": "君子無終食之間違仁",
+          "answer": "ren",
+          "explain": "雖有「君子」二字，談的是君子片刻不離仁，屬論仁。"
+        },
+        {
+          "label": "生事之以禮",
+          "answer": "xiao",
+          "explain": "孟懿子問孝，孔子以「無違」作答，即生、死、祭皆以禮。"
+        },
+        {
+          "label": "不敬，何以別乎",
+          "answer": "xiao",
+          "explain": "子游問孝：只能供養而不敬，與養犬馬無別。"
+        },
+        {
+          "label": "父母之年，不可不知",
+          "answer": "xiao",
+          "explain": "記住父母年歲，一則以喜，一則以懼。"
+        },
+        {
+          "label": "君子坦蕩蕩",
+          "answer": "junzi",
+          "explain": "「君子坦蕩蕩，小人長戚戚。」"
+        },
+        {
+          "label": "過則勿憚改",
+          "answer": "junzi",
+          "explain": "君子有過錯，不怕改正。"
+        },
+        {
+          "label": "君子求諸己",
+          "answer": "junzi",
+          "explain": "「君子求諸己，小人求諸人。」"
+        }
+      ],
+      "decoys": [],
+      "hints": [
+        "三個區域分別是仁、孝、君子，先看句子談的是甚麼，而不是有甚麼字。",
+        "有一句提到「君子」，但講的是君子片刻不離仁。",
+        "「君子無終食之間違仁」屬於論仁。"
+      ]
+    },
+    {
+      "unit_id": "u2",
+      "title": "君子與小人",
+      "concept": "論語多以君子與小人對舉：君子坦蕩、求諸己、成人之美；小人相反。",
+      "misconceptions": [
+        "成人之美與成人之惡分不清"
+      ],
+      "tags": {
+        "has_categories": true,
+        "has_pairs": true,
+        "has_sequence": false,
+        "has_dilemma": false,
+        "short_labels_ok": true,
+        "bloom": "understand"
+      },
+      "round_type": "sort",
+      "lines": {
+        "intro": "君子和小人，總是相反的。把每種表現搬到君子或小人那一邊。",
+        "rival_taunt": "嘿，這個明明是我的特長！",
+        "rival_interfere": "我把它踢遠一點，看你還找不找得到！"
+      },
+      "zones": [
+        {
+          "id": "jz",
+          "label": "君子"
+        },
+        {
+          "id": "xr",
+          "label": "小人"
+        }
+      ],
+      "items": [
+        {
+          "label": "坦蕩蕩",
+          "answer": "jz",
+          "explain": "君子心胸寬廣、光明磊落。"
+        },
+        {
+          "label": "長戚戚",
+          "answer": "xr",
+          "explain": "小人經常憂愁不安。"
+        },
+        {
+          "label": "求諸己",
+          "answer": "jz",
+          "explain": "君子凡事反求自己。"
+        },
+        {
+          "label": "求諸人",
+          "answer": "xr",
+          "explain": "小人凡事要求別人。"
+        },
+        {
+          "label": "成人之美",
+          "answer": "jz",
+          "explain": "君子成全別人的好事。"
+        },
+        {
+          "label": "成人之惡",
+          "answer": "xr",
+          "explain": "「小人反是」：小人成全別人的壞事。"
+        }
+      ],
+      "decoys": [],
+      "hints": [
+        "君子凡事看自己，小人凡事看別人。",
+        "「戚戚」是憂愁的樣子，誰會常常憂愁？",
+        "坦蕩蕩、求諸己、成人之美屬君子；其餘屬小人。"
+      ]
+    },
+    {
+      "unit_id": "u3",
+      "title": "字詞解釋",
+      "concept": "文言字詞與現代用法不同：約解作窮困，造次解作倉促之間，幾諫是委婉地勸諫，戚戚是憂愁的樣子。",
+      "misconceptions": [
+        "「約」解作約束",
+        "「造次」解作魯莽冒失（現代義）",
+        "「幾諫」解作多次勸諫"
+      ],
+      "tags": {
+        "has_categories": false,
+        "has_pairs": true,
+        "has_sequence": false,
+        "has_dilemma": false,
+        "short_labels_ok": true,
+        "bloom": "remember"
+      },
+      "round_type": "pair",
+      "lines": {
+        "intro": "每個底座上刻著一個字詞，把正確的解釋搬過去配對。小人會丟下似是而非的解釋。",
+        "rival_taunt": "照現代的意思解，準沒錯！",
+        "rival_interfere": "送你幾個好答案，不用謝！"
+      },
+      "zones": [
+        {
+          "id": "yue",
+          "label": "久處約"
+        },
+        {
+          "id": "zaoci",
+          "label": "造次"
+        },
+        {
+          "id": "jijian",
+          "label": "幾諫"
+        },
+        {
+          "id": "qiqi",
+          "label": "長戚戚"
+        }
+      ],
+      "items": [
+        {
+          "label": "窮困",
+          "answer": "yue",
+          "explain": "「不可以久處約」：約，窮困。"
+        },
+        {
+          "label": "倉促之間",
+          "answer": "zaoci",
+          "explain": "「造次必於是」：造次，倉促、匆忙之間。"
+        },
+        {
+          "label": "委婉地勸諫",
+          "answer": "jijian",
+          "explain": "「事父母幾諫」：幾，輕微、委婉。"
+        },
+        {
+          "label": "經常憂愁",
+          "answer": "qiqi",
+          "explain": "「小人長戚戚」：戚戚，憂愁的樣子。"
+        }
+      ],
+      "decoys": [
+        {
+          "label": "約束",
+          "explain": "「約」在這裡解作窮困，不是約束。"
+        },
+        {
+          "label": "魯莽冒失",
+          "explain": "這是「造次」的現代義，文中解作倉促之間。"
+        },
+        {
+          "label": "多次勸諫",
+          "explain": "「幾」讀 ji1，解作輕微、委婉，不是幾次。"
+        }
+      ],
+      "hints": [
+        "文言字詞常常和現代意思不同，別用現代用法去猜。",
+        "「幾諫」的「幾」不是「幾次」；「造次」不是魯莽。",
+        "約：窮困。造次：倉促之間。幾諫：委婉地勸諫。戚戚：憂愁。"
+      ]
+    },
+    {
+      "unit_id": "u4",
+      "title": "君子之道",
+      "concept": "「君子義以為質，禮以行之，孫以出之，信以成之」：以義為本質，以禮實行，以謙遜表達，以誠信完成。",
+      "misconceptions": [
+        "君子以利為先"
+      ],
+      "tags": {
+        "has_categories": false,
+        "has_pairs": false,
+        "has_sequence": true,
+        "has_dilemma": false,
+        "short_labels_ok": true,
+        "bloom": "understand"
+      },
+      "round_type": "sequence",
+      "lines": {
+        "intro": "君子行事有先後：從本質到完成。把四片竹簡按次序放進一至四號格。",
+        "rival_taunt": "做人嘛，當然利字當頭！",
+        "rival_interfere": "這片才是第一步，快放進去！"
+      },
+      "zones": [
+        {
+          "id": "s1",
+          "label": "第一"
+        },
+        {
+          "id": "s2",
+          "label": "第二"
+        },
+        {
+          "id": "s3",
+          "label": "第三"
+        },
+        {
+          "id": "s4",
+          "label": "第四"
+        }
+      ],
+      "items": [
+        {
+          "label": "義以為質",
+          "answer": "s1",
+          "explain": "以義作為根本、本質。"
+        },
+        {
+          "label": "禮以行之",
+          "answer": "s2",
+          "explain": "以禮去實行。"
+        },
+        {
+          "label": "孫以出之",
+          "answer": "s3",
+          "explain": "孫，同「遜」，以謙遜的態度表達。"
+        },
+        {
+          "label": "信以成之",
+          "answer": "s4",
+          "explain": "以誠信去完成。"
+        }
+      ],
+      "decoys": [
+        {
+          "label": "利以為先",
+          "explain": "君子以義為質，不以利為先。這是小人的想法。"
+        }
+      ],
+      "hints": [
+        "先有本質，再去實行，再表達出來，最後完成。",
+        "第一步是「質」，最後一步是「成」。",
+        "義以為質、禮以行之、孫以出之、信以成之。"
+      ]
+    },
+    {
+      "unit_id": "u5",
+      "title": "孝與敬",
+      "concept": "子游問孝：今人以為能供養便是孝，但連犬馬都能得到飼養，不敬的話，兩者有何分別？",
+      "misconceptions": [
+        "孝就是供養父母",
+        "孝就是讓父母得到物質享受"
+      ],
+      "tags": {
+        "has_categories": false,
+        "has_pairs": false,
+        "has_sequence": false,
+        "has_dilemma": false,
+        "short_labels_ok": true,
+        "bloom": "understand"
+      },
+      "round_type": "single",
+      "lines": {
+        "intro": "孔子說，今天所謂的孝，只是「能養」。這樣有甚麼不足？把正確答案搬到祭台上。",
+        "rival_taunt": "供養得好就是孝順，還要怎樣？",
+        "rival_interfere": "再給你幾個選擇，慢慢挑吧！"
+      },
+      "zones": [
+        {
+          "id": "altar",
+          "label": "祭台"
+        }
+      ],
+      "items": [
+        {
+          "label": "只養而不敬",
+          "answer": "altar",
+          "explain": "「至於犬馬，皆能有養；不敬，何以別乎！」孝的關鍵在敬。"
+        }
+      ],
+      "decoys": [
+        {
+          "label": "供養不夠豐厚",
+          "explain": "孔子批評的不是供養多少，而是缺乏敬意。"
+        },
+        {
+          "label": "沒有光宗耀祖",
+          "explain": "文中沒有談及光宗耀祖，重點是敬。"
+        },
+        {
+          "label": "沒有聽從父母",
+          "explain": "「無違」是孟懿子問孝的答案，這裡的重點是敬。"
+        }
+      ],
+      "hints": [
+        "孔子拿犬馬做比較：犬馬也能得到飼養。",
+        "人與犬馬的分別，在於態度。",
+        "答案是「只養而不敬」。"
+      ]
+    }
+  ],
+  "debrief": "仁在克己，孝在敬，君子求諸己。分清楚君子與小人，就分清楚了這十六則語錄。"
+}

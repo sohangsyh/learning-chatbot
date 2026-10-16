@@ -1,0 +1,40 @@
+{
+  "inputs": {
+    "subject": "經濟／人文科（理財與經濟）",
+    "has_tradeoffs": true,
+    "has_variables": true,
+    "has_dilemma": true
+  },
+  "subject_candidates": [
+    "management",
+    "simulation_lab",
+    "rpg"
+  ],
+  "feasibility": {
+    "management": {
+      "pass": true,
+      "why": "多回合的資源分配（入貨、定價）與長短期取捨，結果可量化"
+    },
+    "simulation_lab": {
+      "pass": true,
+      "why": "有可操控變數，但缺少經營的連續後果"
+    },
+    "rpg": {
+      "pass": false,
+      "why": "選擇是連續數值，不是三選一"
+    }
+  },
+  "scores": {
+    "management": 0.91,
+    "simulation_lab": 0.7
+  },
+  "recommendation": {
+    "primary": "management",
+    "reason": "需求定律和需求改變因素，最適合讓學生親自定價、入貨，再從八天的數據中自己發現規律。",
+    "learning_path": [
+      "management",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "management"
+}

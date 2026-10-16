@@ -1,0 +1,39 @@
+{
+  "mode": "dialogue",
+  "tts": {
+    "lang": "en-GB",
+    "rate": 0.92,
+    "enabled_default": true
+  },
+  "speaking": {
+    "enabled_default": false,
+    "url_param": "speak",
+    "lang": "en-GB",
+    "pass_ratio": 0.7,
+    "max_seconds": 8,
+    "choose_min": 0.6,
+    "choose_margin": 0.1
+  },
+  "scoring": {
+    "choice_first_try": 10,
+    "choice_wrong_penalty": 4,
+    "speak_pass": 5,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_score": 150
+    },
+    {
+      "id": "normal",
+      "min_score": 90
+    },
+    {
+      "id": "fail",
+      "min_score": 0
+    }
+  ]
+}

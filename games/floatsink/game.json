@@ -1,0 +1,57 @@
+{
+  "mode": "simulation_lab",
+  "cycle": [
+    "predict",
+    "observe",
+    "explain"
+  ],
+  "scoring": {
+    "prediction_hit": 5,
+    "station_complete": 10,
+    "gate_first_try": 10,
+    "gate_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "physics": {
+    "model": "buoyancy",
+    "gravity": 9.8,
+    "water_drag": 4.0,
+    "air_drag": 0.4,
+    "settle_sec": 0.7
+  },
+  "stations": [
+    {
+      "unit_id": "u1",
+      "station": "float_sort"
+    },
+    {
+      "unit_id": "u2",
+      "station": "fair_test"
+    },
+    {
+      "unit_id": "u3",
+      "station": "shape"
+    },
+    {
+      "unit_id": "u4",
+      "station": "salt"
+    }
+  ],
+  "camera": {
+    "user_orbit_deg": 38
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_accuracy": 0.75
+    },
+    {
+      "id": "normal",
+      "min_accuracy": 0.45
+    },
+    {
+      "id": "fail",
+      "min_accuracy": 0
+    }
+  ]
+}

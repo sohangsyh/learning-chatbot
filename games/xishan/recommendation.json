@@ -1,0 +1,37 @@
+{
+  "inputs": {
+    "subject": "中國語文（指定範文）",
+    "text_type": "遊記（寫景抒情）",
+    "has_imagery": true,
+    "has_sequence": true,
+    "has_dilemma": false,
+    "has_evidence": false
+  },
+  "feasibility": {
+    "exploration": {
+      "pass": true,
+      "why": "遊蹤清晰、景物豐富、心境隨行程變化，適合在 3D 山水中親身走一遍"
+    },
+    "rpg": {
+      "pass": false,
+      "why": "沒有需要讀者取捨的兩難"
+    },
+    "escape": {
+      "pass": false,
+      "why": "沒有證據推理結構"
+    },
+    "carry": {
+      "pass": true,
+      "why": "遊蹤、景物、感受可以分類，作為溫習"
+    }
+  },
+  "recommendation": {
+    "primary": "exploration",
+    "reason": "文章以遊蹤串連景物與感受，學生跟著作者走一遍，最能體會「景」與「情」如何一起變化；結尾再以分類活動鞏固遊記三要素。",
+    "learning_path": [
+      "exploration",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "exploration"
+}

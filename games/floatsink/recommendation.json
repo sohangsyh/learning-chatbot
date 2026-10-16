@@ -1,0 +1,43 @@
+{
+  "inputs": {
+    "subject": "小學科學科",
+    "units": 4,
+    "has_variables": 4,
+    "has_construction": 1,
+    "teacher_context": "小五科學課、約 20 分鐘（測試假設）"
+  },
+  "subject_candidates": [
+    "simulation_lab",
+    "escape",
+    "carry",
+    "exploration"
+  ],
+  "feasibility": {
+    "simulation_lab": {
+      "pass": true,
+      "why": "四個單元都有可操控的變數（物件、大小、形狀、液體）與可觀察的結果"
+    },
+    "rpg": {
+      "pass": false,
+      "why": "科學科以探究為主，且沒有兩難抉擇"
+    },
+    "carry": {
+      "pass": true,
+      "why": "浮沉分類可做溫習回合"
+    }
+  },
+  "scores": {
+    "simulation_lab": 0.93,
+    "carry": 0.55,
+    "escape": 0.38
+  },
+  "recommendation": {
+    "primary": "simulation_lab",
+    "reason": "課題的核心是「改變一個因素、觀察浮沉變化」，正是模擬實驗室的預測、觀察、解釋循環；溫習時可改用限時搬運做浮沉分類。",
+    "learning_path": [
+      "simulation_lab",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "simulation_lab"
+}

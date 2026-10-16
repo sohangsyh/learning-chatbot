@@ -1,0 +1,39 @@
+{
+  "inputs": {
+    "units": 5,
+    "has_categories": 2,
+    "has_pairs": 2,
+    "has_sequence": 1,
+    "has_dilemma": 0,
+    "teacher_context": "考前複習、約 6 分鐘（測試假設）"
+  },
+  "feasibility": {
+    "rpg": {
+      "pass": false,
+      "why": "沒有單元含兩難抉擇"
+    },
+    "escape": {
+      "pass": false,
+      "why": "沒有單元具備證據推理結構"
+    },
+    "carry": {
+      "pass": true,
+      "why": "全部單元具分類、配對或排序結構，且標籤均在 12 字以內"
+    }
+  },
+  "recommendation": {
+    "primary": "carry",
+    "reason": "16 則語錄天然分成三個主題，並有大量君子與小人對舉、字詞與解釋配對；用途為考前複習",
+    "excluded": [
+      {
+        "mode": "rpg",
+        "why": "沒有兩難抉擇"
+      },
+      {
+        "mode": "escape",
+        "why": "沒有證據推理結構"
+      }
+    ]
+  },
+  "teacher_confirmed": "carry"
+}

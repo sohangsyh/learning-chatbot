@@ -1,0 +1,121 @@
+{
+  "mode": "carry",
+  "verification": "instant",
+  "scoring": {
+    "correct": 10,
+    "combo_bonus": 2,
+    "wrong": -5,
+    "time_bonus_per_sec": 1
+  },
+  "rounds": [
+    {
+      "unit_id": "u1",
+      "round_type": "sort",
+      "duration_sec": 75,
+      "zones": [
+        "ren",
+        "xiao",
+        "junzi"
+      ],
+      "decoys": {
+        "source": "misconceptions",
+        "initial": 0,
+        "rival_drop_interval_sec": 9
+      },
+      "rival_kick_interval_sec": 12,
+      "hint_time_cost_sec": 5,
+      "companion_assist": {
+        "uses": 1
+      },
+      "carry_capacity": 1
+    },
+    {
+      "unit_id": "u2",
+      "round_type": "sort",
+      "duration_sec": 45,
+      "zones": [
+        "jz",
+        "xr"
+      ],
+      "decoys": {
+        "source": "misconceptions",
+        "initial": 0,
+        "rival_drop_interval_sec": 9
+      },
+      "rival_kick_interval_sec": 12,
+      "hint_time_cost_sec": 5,
+      "companion_assist": {
+        "uses": 1
+      },
+      "carry_capacity": 1
+    },
+    {
+      "unit_id": "u3",
+      "round_type": "pair",
+      "duration_sec": 60,
+      "zones": [
+        "yue",
+        "zaoci",
+        "jijian",
+        "qiqi"
+      ],
+      "decoys": {
+        "source": "misconceptions",
+        "initial": 1,
+        "rival_drop_interval_sec": 9
+      },
+      "rival_kick_interval_sec": 0,
+      "hint_time_cost_sec": 5,
+      "companion_assist": {
+        "uses": 1
+      },
+      "carry_capacity": 1
+    },
+    {
+      "unit_id": "u4",
+      "round_type": "sequence",
+      "duration_sec": 40,
+      "zones": [
+        "s1",
+        "s2",
+        "s3",
+        "s4"
+      ],
+      "decoys": {
+        "source": "misconceptions",
+        "initial": 1,
+        "rival_drop_interval_sec": 9
+      },
+      "rival_kick_interval_sec": 0,
+      "hint_time_cost_sec": 5,
+      "companion_assist": {
+        "uses": 1
+      },
+      "carry_capacity": 1
+    },
+    {
+      "unit_id": "u5",
+      "round_type": "single",
+      "duration_sec": 30,
+      "zones": [
+        "altar"
+      ],
+      "decoys": {
+        "source": "misconceptions",
+        "initial": 1,
+        "rival_drop_interval_sec": 9
+      },
+      "rival_kick_interval_sec": 0,
+      "hint_time_cost_sec": 5,
+      "companion_assist": {
+        "uses": 1
+      },
+      "carry_capacity": 1
+    }
+  ],
+  "stars": {
+    "3": "全部正確且無錯放",
+    "2": "全部完成",
+    "1": "完成一半以上"
+  }
+}

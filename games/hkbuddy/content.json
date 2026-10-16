@@ -1,0 +1,438 @@
+{
+  "meta": {
+    "topic": "English in daily situations",
+    "short_title": "Hong Kong Buddy",
+    "author": "初中英國語文",
+    "language": "en-GB",
+    "ui_language": "zh-Hant",
+    "audience": "初中學生",
+    "central_thesis": "Choose responses that are both grammatically correct and polite for the situation.",
+    "title_lines": [
+      "帶交換生 Sam 遊香港一天。",
+      "用英文點餐、指路、介紹、講價；開啟語音後，可以直接讀出答案。"
+    ]
+  },
+  "npc_slots": {
+    "mentor": {
+      "character_id": "G",
+      "display_name": "Miss Lee",
+      "persona": "你的英文老師，會用中文解釋錯在哪裡",
+      "costume": [
+        "tie"
+      ]
+    },
+    "companion": {
+      "character_id": "O",
+      "display_name": "Sam",
+      "persona": "剛從英國來港的交換生，對甚麼都好奇",
+      "costume": [
+        "cap"
+      ]
+    },
+    "rival": {
+      "character_id": "A",
+      "display_name": "Kenny",
+      "persona": "你的同學，說英文總是太隨便，常常犯錯",
+      "costume": []
+    },
+    "gatekeeper": {
+      "character_id": "I",
+      "display_name": "Coach Ho",
+      "persona": "每個場景結束時考你一題",
+      "costume": [
+        "beacon"
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "cafe",
+      "title": "茶餐廳",
+      "en_title": "At a cha chaan teng",
+      "env": "indoor_warm",
+      "intro_zh": "第一站帶 Sam 吃早餐。侍應很忙，要說得清楚又有禮貌。",
+      "stranger": {
+        "name": "Waiter",
+        "zh": "侍應"
+      },
+      "turns": [
+        {
+          "speaker": "stranger",
+          "line": "Hi, what can I get you?",
+          "zh": "你好，想要甚麼？",
+          "options": [
+            {
+              "text": "Could we have two cups of iced lemon tea and a pineapple bun, please?",
+              "correct": true
+            },
+            {
+              "text": "Give me two iced lemon tea and pineapple bun.",
+              "why": "「Give me」對侍應太直接；飲品要說 two cups of iced lemon tea；pineapple bun 前面也漏了 a。"
+            },
+            {
+              "text": "I want to eat two cups of iced lemon tea.",
+              "why": "飲品不能用 eat，要用 have 或 drink；而且 I want 不及 Could we have…, please? 有禮貌。"
+            },
+            {
+              "text": "Two cup iced lemon tea, one pineapple bun.",
+              "why": "cup 是可數名詞，兩杯要說 two cups of；整句只有名詞，沒有 please，語氣生硬。"
+            }
+          ],
+          "kenny": "Give me two lemon tea lah!"
+        },
+        {
+          "speaker": "companion",
+          "line": "What's a pineapple bun? Is there pineapple in it?",
+          "zh": "菠蘿包是甚麼？裡面有菠蘿嗎？",
+          "options": [
+            {
+              "text": "No, there isn't. It's called that because the top looks like a pineapple.",
+              "correct": true
+            },
+            {
+              "text": "No, it don't have pineapple.",
+              "why": "主語 it 是第三身單數，要用 doesn't，不是 don't。"
+            },
+            {
+              "text": "Pineapple bun is pineapple.",
+              "why": "這句意思錯誤，也沒有回答 Sam 的問題。要解釋名字的由來。"
+            },
+            {
+              "text": "No, it isn't have pineapple.",
+              "why": "is 和 have 不能一起用，應說 It doesn't have any pineapple。"
+            }
+          ]
+        },
+        {
+          "speaker": "stranger",
+          "line": "That'll be forty-six dollars.",
+          "zh": "一共四十六元。",
+          "options": [
+            {
+              "text": "Here you are. Can I pay by Octopus?",
+              "correct": true
+            },
+            {
+              "text": "Forty-six? So expensive!",
+              "why": "對侍應抱怨價錢並不禮貌，而且沒有回應付款。"
+            },
+            {
+              "text": "I pay by Octopus card, OK?",
+              "why": "詢問可否做某事，用 Can I...? 比較自然有禮；句末加 OK 聽起來像命令。"
+            },
+            {
+              "text": "Here is it. Can I pay by Octopus?",
+              "why": "次序錯了，應說 Here it is 或 Here you are。"
+            }
+          ]
+        }
+      ],
+      "check": {
+        "question": "在餐廳點餐，哪一個說法最有禮貌？",
+        "options": [
+          "Could I have a cup of milk tea, please?",
+          "Give me a milk tea.",
+          "I want milk tea.",
+          "Milk tea, quick."
+        ],
+        "answer": 0,
+        "explain": "Could I have…, please? 是點餐最常用、最有禮貌的句式。"
+      }
+    },
+    {
+      "id": "mtr",
+      "title": "港鐵站",
+      "en_title": "At Central MTR station",
+      "env": "indoor_cool",
+      "intro_zh": "你們在中環站，一位遊客走過來問路。可以點擊牆上的路線圖查看。",
+      "stranger": {
+        "name": "Tourist",
+        "zh": "遊客"
+      },
+      "map": true,
+      "turns": [
+        {
+          "speaker": "stranger",
+          "line": "Excuse me, how do I get to Tsim Sha Tsui?",
+          "zh": "請問怎樣去尖沙咀？",
+          "options": [
+            {
+              "text": "Take the Tsuen Wan Line towards Tsuen Wan. It's two stops from here.",
+              "correct": true
+            },
+            {
+              "text": "You go red line, two stop.",
+              "why": "句子不完整：要用 Take the... Line，而且 two 之後要用複數 stops。"
+            },
+            {
+              "text": "Take the Island Line to Tsim Sha Tsui.",
+              "why": "看看路線圖：港島綫只在香港島行駛，不經過尖沙咀。"
+            },
+            {
+              "text": "Take the Tsuen Wan Line towards Central.",
+              "why": "你們已經在中環。方向要看列車的終點站，去尖沙咀應乘往荃灣方向的列車。"
+            }
+          ],
+          "kenny": "Island Line lah, all the same!"
+        },
+        {
+          "speaker": "stranger",
+          "line": "Do I need to change trains?",
+          "zh": "需要轉車嗎？",
+          "options": [
+            {
+              "text": "No, you don't. It's a direct train.",
+              "correct": true
+            },
+            {
+              "text": "No, you don't need change.",
+              "why": "need 之後要加 to 再接動詞：need to change。"
+            },
+            {
+              "text": "Yes, you must change at Kowloon Tong.",
+              "why": "從中環乘荃灣綫，可以直達尖沙咀，不用轉車。"
+            },
+            {
+              "text": "No, you don't need to changing.",
+              "why": "need to 之後要用動詞原形：need to change。"
+            }
+          ]
+        },
+        {
+          "speaker": "stranger",
+          "line": "Thank you so much!",
+          "zh": "非常感謝！",
+          "options": [
+            {
+              "text": "You're welcome. Enjoy your trip!",
+              "correct": true
+            },
+            {
+              "text": "Welcome.",
+              "why": "單獨說 Welcome 是「歡迎光臨」的意思，回應道謝要說 You're welcome。"
+            },
+            {
+              "text": "OK.",
+              "why": "只說 OK 太簡短冷淡，回應別人道謝應該更友善。"
+            },
+            {
+              "text": "Never mind.",
+              "why": "Never mind 用於回應道歉或表示「算了」，不是用來回應道謝。"
+            }
+          ],
+          "kenny": "Welcome! Welcome!"
+        }
+      ],
+      "check": {
+        "question": "別人對你說 Thank you，最恰當的回應是？",
+        "options": [
+          "You're welcome.",
+          "Welcome.",
+          "Thank you too.",
+          "Yes."
+        ],
+        "answer": 0,
+        "explain": "You're welcome 才是「不客氣」；Welcome 單獨使用是「歡迎」。"
+      }
+    },
+    {
+      "id": "ferry",
+      "title": "天星小輪",
+      "en_title": "On the Star Ferry",
+      "env": "ferry_day",
+      "intro_zh": "你們乘天星小輪過海，Sam 對維港的一切都很好奇。",
+      "turns": [
+        {
+          "speaker": "companion",
+          "line": "Wow, what's that tall building over there?",
+          "zh": "嘩，那邊那幢很高的大廈是甚麼？",
+          "options": [
+            {
+              "text": "That's the ICC. It's the tallest building in Hong Kong.",
+              "correct": true
+            },
+            {
+              "text": "That is ICC, it is most tall building in Hong Kong.",
+              "why": "形容詞 tall 的最高級是 the tallest，不是 most tall；ICC 前面也要加 the。"
+            },
+            {
+              "text": "I don't know, who cares?",
+              "why": "對客人這樣回答很不禮貌。"
+            },
+            {
+              "text": "That's the ICC. It's the most tallest building in Hong Kong.",
+              "why": "最高級不能同時用 most 和 -est，應說 the tallest。"
+            }
+          ]
+        },
+        {
+          "speaker": "companion",
+          "line": "How long has the Star Ferry been running?",
+          "zh": "天星小輪營運了多久？",
+          "options": [
+            {
+              "text": "It has been running for over a hundred years.",
+              "correct": true
+            },
+            {
+              "text": "It runs since 1888.",
+              "why": "since 表示由過去持續到現在，要用現在完成式：has been running since 1888。"
+            },
+            {
+              "text": "It has been running since a hundred years.",
+              "why": "since 之後接時間點（例如 1888），一段時間要用 for：for a hundred years。"
+            },
+            {
+              "text": "It has been run for over a hundred years.",
+              "why": "持續到現在的動作用 has been running；has been run 是被動語態，意思不對。"
+            }
+          ],
+          "kenny": "It runs since long long ago!"
+        },
+        {
+          "speaker": "companion",
+          "line": "Shall we take a photo together?",
+          "zh": "我們一起拍張照好嗎？",
+          "options": [
+            {
+              "text": "Sure, that's a great idea!",
+              "correct": true
+            },
+            {
+              "text": "Yes, I am agree.",
+              "why": "agree 本身是動詞，不用加 am：I agree。"
+            },
+            {
+              "text": "Photo? No need lah.",
+              "why": "對客人的邀請這樣回應太隨便，句末的 lah 是廣東話語氣詞，不是英文。"
+            },
+            {
+              "text": "Sure, let's take photo.",
+              "why": "photo 是可數名詞，前面要加冠詞：take a photo。"
+            }
+          ]
+        }
+      ],
+      "check": {
+        "question": "以下哪一句是正確的？",
+        "options": [
+          "It has been running for over a hundred years.",
+          "It is running since 1888.",
+          "It has been running since a hundred years.",
+          "It run for a hundred years."
+        ],
+        "answer": 0,
+        "explain": "持續到現在的事用現在完成進行式；一段時間用 for，時間點用 since。"
+      }
+    },
+    {
+      "id": "market",
+      "title": "街市",
+      "en_title": "At the wet market",
+      "env": "morning",
+      "intro_zh": "最後一站，Sam 想買芒果。檔主會說一點英文，試試幫 Sam 講價。",
+      "stranger": {
+        "name": "Stall owner",
+        "zh": "檔主"
+      },
+      "turns": [
+        {
+          "speaker": "stranger",
+          "line": "Mangoes, twenty dollars each! Very sweet!",
+          "zh": "芒果，每個二十元！很甜的！",
+          "options": [
+            {
+              "text": "Excuse me, could you give us a discount if we buy three?",
+              "correct": true
+            },
+            {
+              "text": "Cheaper! Cheaper!",
+              "why": "只喊「平啲」既不禮貌，也沒有說清楚條件。"
+            },
+            {
+              "text": "Could you give us a discount if we will buy three?",
+              "why": "if 條件句說將來的事，if 子句用現在式：if we buy，不用 will。"
+            },
+            {
+              "text": "Can you give discount?",
+              "why": "discount 前面要加 a 或 us；而且 Could you…? 比 Can you…? 更有禮貌。"
+            }
+          ],
+          "kenny": "Cheaper la! Cheaper!"
+        },
+        {
+          "speaker": "stranger",
+          "line": "OK, three for fifty-five dollars.",
+          "zh": "好，三個五十五元。",
+          "options": [
+            {
+              "text": "Great, that saves us five dollars. We'll take them.",
+              "correct": true
+            },
+            {
+              "text": "Great, that saves us fifteen dollars.",
+              "why": "算一算：三個原價 60 元，現在 55 元，只省了 5 元。"
+            },
+            {
+              "text": "Great, it are cheap.",
+              "why": "it 要配 is：it is cheap。"
+            },
+            {
+              "text": "Great, that save us five dollars.",
+              "why": "that 是單數主語，動詞要加 s：that saves us。"
+            }
+          ]
+        },
+        {
+          "speaker": "stranger",
+          "line": "Do you need a plastic bag?",
+          "zh": "要膠袋嗎？",
+          "options": [
+            {
+              "text": "No, thank you. We've brought our own bag.",
+              "correct": true
+            },
+            {
+              "text": "No, thanks. We have brought our own bag yesterday.",
+              "why": "現在完成式不能和 yesterday 這類過去時間連用。"
+            },
+            {
+              "text": "No need.",
+              "why": "只說 No need 太簡短生硬，加上 thank you 會有禮貌得多。"
+            },
+            {
+              "text": "No, thank you. We bring our own bag.",
+              "why": "表示已經帶備了，要用現在完成式 We've brought；We bring 表示習慣。"
+            }
+          ]
+        }
+      ],
+      "check": {
+        "question": "「Could you give us a discount if we buy three?」為甚麼用 buy 而不是 will buy？",
+        "options": [
+          "if 條件句說將來的事時，if 子句用現在式",
+          "因為 buy 是不規則動詞",
+          "因為句子是問句",
+          "兩種都可以，沒有分別"
+        ],
+        "answer": 0,
+        "explain": "第一類條件句：if + 現在式，主句才用 will 或 can、could。"
+      }
+    }
+  ],
+  "endings": {
+    "best": {
+      "title": "Excellent Buddy!",
+      "text": "Sam 這一天玩得很開心，你的英文既正確又得體。"
+    },
+    "normal": {
+      "title": "Good Buddy",
+      "text": "你帶 Sam 走完了一天，有幾句還可以說得更好。"
+    },
+    "fail": {
+      "title": "Keep Practising",
+      "text": "有不少句子說錯了。看看短語簿，下次再試！"
+    }
+  },
+  "debrief": "好的英文不只是文法對，還要看場合：對陌生人用 Could I...? 和 please，回應道謝說 You're welcome，時態和單複數也要小心。"
+}

@@ -1,0 +1,32 @@
+{
+  "mode": "exploration",
+  "scoring": {
+    "spot_first_try": 10,
+    "sort_each": 3,
+    "gate_first_try": 10,
+    "gate_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "camera": {
+    "follow_dist": 9,
+    "follow_height": 5.5,
+    "follow_dist_portrait": 15,
+    "follow_height_portrait": 9.5,
+    "follow_yaw_limit_deg": 70
+  },
+  "rival_shrinks_with": "mood",
+  "endings": [
+    {
+      "id": "best",
+      "min_score": 60
+    },
+    {
+      "id": "normal",
+      "min_score": 35
+    },
+    {
+      "id": "fail",
+      "min_score": 0
+    }
+  ]
+}

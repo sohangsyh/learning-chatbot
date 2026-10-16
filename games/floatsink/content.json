@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "topic": "浮與沉",
+    "short_title": "浮與沉",
+    "author": "小學科學科",
+    "language": "zh-Hant",
+    "audience": "小學高年級",
+    "central_thesis": "物件會浮還是沉，不是看它輕或重、大或小，而是與它的物料有關；改變形狀或液體，也能改變浮沉。",
+    "title_lines": ["重的一定沉？", "親手試一試就知道。"]
+  },
+  "npc_slots": {
+    "mentor": { "character_id": "G", "display_name": "陳老師", "persona": "科學科老師，鼓勵大家先預測再動手", "costume": ["goggles"] },
+    "companion": { "character_id": "O", "display_name": "小悅", "persona": "同組同學，甚麼都想試", "costume": ["goggles"] },
+    "rival": { "character_id": "A", "display_name": "想當然", "persona": "總是憑感覺下結論，提出各種錯誤假設", "costume": ["cap"] },
+    "gatekeeper": { "character_id": "I", "display_name": "實驗評審", "persona": "檢查每一站的結論，頭上的燈代表實驗進度", "costume": ["beacon"] }
+  },
+  "objects": {
+    "bigwood": { "name": "大木塊", "rho": 0.6 },
+    "smallwood": { "name": "小木塊", "rho": 0.6 },
+    "clip": { "name": "萬字夾", "rho": 7.8 },
+    "pingpong": { "name": "乒乓球", "rho": 0.1 },
+    "coin": { "name": "硬幣", "rho": 7.0 },
+    "apple": { "name": "蘋果", "rho": 0.8 },
+    "pebble": { "name": "石子", "rho": 2.6 },
+    "candle": { "name": "蠟燭", "rho": 0.9 },
+    "marble": { "name": "玻璃彈珠", "rho": 2.5 },
+    "ironblock": { "name": "鐵塊", "rho": 7.8 },
+    "bigstone": { "name": "大石頭", "rho": 2.6 },
+    "egg": { "name": "雞蛋", "rho": 1.07 }
+  },
+  "units": [
+    {
+      "unit_id": "u1",
+      "title": "誰會浮？",
+      "station": "float_sort",
+      "concept": "物件會浮還是沉，不是由輕重決定。大木塊比萬字夾重得多，卻能浮起；萬字夾很輕，卻會沉下。",
+      "key_quote": "重的一定沉，輕的一定浮？",
+      "misconceptions": ["重的東西一定沉，輕的東西一定浮"],
+      "tags": { "has_variables": true, "has_categories": true, "bloom": "understand" },
+      "objects": ["bigwood", "clip", "pingpong", "coin", "apple", "pebble", "candle", "marble"],
+      "lines": {
+        "enter": "哇，這裡有一大缸水，還有一盤東西！我們可以逐樣放進去試試嗎？",
+        "hypothesis": "這還用試？重的東西一定沉，輕的一定浮！大木塊這麼重，肯定沉下去！",
+        "predict": "動手之前，先預測：每件東西放進水裡，會浮還是會沉？點擊物件切換你的預測。",
+        "test": "現在逐樣放進水缸，看看結果。",
+        "explain": "大木塊明明比萬字夾重得多，卻浮了起來；萬字夾這麼輕，卻沉到缸底。所以浮或沉，不是看輕重，而是和物件的物料有關。"
+      },
+      "surprise": { "bigwood": "咦？這麼重的大木塊竟然浮起來了！", "clip": "萬字夾這麼輕，怎麼會沉？" },
+      "gate": {
+        "question": "根據剛才的實驗，以下哪個說法正確？",
+        "options": ["物件會浮或沉，與它的物料有關", "重的東西一定會沉", "細小的東西一定會浮", "圓形的東西一定會浮"],
+        "answer": 0,
+        "explain": "大木塊重卻浮，萬字夾輕卻沉，可見輕重不是關鍵，物料才是。"
+      },
+      "hints": ["比較大木塊和萬字夾：哪個比較重？哪個浮起來？", "輕重和浮沉的關係，實驗結果支持嗎？", "答案和「物料」有關。"]
+    },
+    {
+      "unit_id": "u2",
+      "title": "公平測試",
+      "station": "fair_test",
+      "concept": "要知道某個因素有沒有影響，每次只可以改變那一個因素，其他保持不變，這叫公平測試。大小不同的木塊都會浮；同樣大小的木塊和鐵塊，一浮一沉。",
+      "key_quote": "每次只改變一個因素。",
+      "misconceptions": ["大的東西會沉，小的會浮", "可以同時改變幾個因素來比較"],
+      "tags": { "has_variables": true, "has_dilemma": false, "bloom": "apply" },
+      "lines": {
+        "enter": "{address}，剛才有人說大的東西才會沉。我們可以怎樣證明呢？",
+        "hypothesis": "大的東西才會沉，小的一定浮！大石頭和小木塊一比就知道了！",
+        "predict": "",
+        "test": "",
+        "explain": "大木塊和小木塊都浮起來，大小沒有改變結果；同樣大小的木塊和鐵塊，一浮一沉。這證明了，影響浮沉的是物料，不是大小。"
+      },
+      "fair_test": {
+        "question": "要測試「大小會不會影響浮沉」，應該用哪一組物件？",
+        "options": [
+          { "text": "大木塊和小木塊", "correct": true },
+          { "text": "大石頭和小木塊", "why": "大小和物料同時不同，就算結果不一樣，也不知道是哪個因素造成的。這不是公平測試。" },
+          { "text": "大木塊和鐵塊", "why": "這兩件大小相同、物料不同，測試的是物料，不是大小。" }
+        ],
+        "size_pair": ["bigwood", "smallwood"],
+        "size_predict": { "question": "大木塊和小木塊放進水裡，會怎樣？", "options": ["兩塊都浮", "兩塊都沉", "大的沉，小的浮"], "answer": 0 },
+        "material_pair": ["bigwood", "ironblock"],
+        "material_predict": { "question": "同樣大小的木塊和鐵塊放進水裡，會怎樣？", "options": ["兩塊都浮", "兩塊都沉", "木塊浮，鐵塊沉"], "answer": 2 }
+      },
+      "gate": {
+        "question": "「公平測試」是指甚麼？",
+        "options": ["每次只改變一個因素，其他因素保持不變", "所有因素一起改變，看看結果", "每次用不同的水和容器", "只做一次實驗就下結論"],
+        "answer": 0,
+        "explain": "只改變一個因素，結果有不同時，才能確定是那個因素造成的。"
+      },
+      "hints": ["要測試「大小」，兩件物件甚麼要不同？甚麼要相同？", "物料要相同，只有大小不同。", "選大木塊和小木塊。"]
+    },
+    {
+      "unit_id": "u3",
+      "title": "泥膠變變變",
+      "station": "shape",
+      "concept": "同一團泥膠，搓成球會沉，捏成船形卻會浮。重量沒有改變，但船形佔的空間大了，能推開更多水，水就把它托起來。",
+      "key_quote": "形狀也能改變浮沉。",
+      "misconceptions": ["泥膠是會沉的物料，怎樣捏都會沉", "泥膠捏成船形後變輕了"],
+      "tags": { "has_variables": true, "has_construction": true, "bloom": "apply" },
+      "lines": {
+        "enter": "{address}，這團泥膠圓圓的，放進水裡會怎樣？",
+        "hypothesis": "泥膠就是會沉的物料，不管怎樣捏，都一定會沉！",
+        "predict": "先預測：這團球形泥膠放進水裡，會浮還是會沉？",
+        "test": "拉動滑桿，把泥膠捏成不同形狀，再放進水裡測試。",
+        "explain": "泥膠的重量一點都沒有變，但捏成船形後，它佔的空間大了，能推開更多的水，水就把它托起來。所以形狀也能改變浮沉。"
+      },
+      "shape": {
+        "ball_predict": { "question": "球形泥膠放進水裡，會怎樣？", "options": ["會浮", "會沉"], "answer": 1 },
+        "load_predict": { "question": "泥膠船最多可以載幾粒波子而不沉？", "options": ["2 粒", "6 粒", "12 粒"], "answer": 1 },
+        "rho_ball": 1.6,
+        "rho_boat": 0.35,
+        "marble_add": 0.1
+      },
+      "gate": {
+        "question": "為甚麼捏成船形的泥膠會浮起來？",
+        "options": ["船形佔的空間大了，能推開更多水，被水托起", "泥膠捏成船形後變輕了", "泥膠的物料改變了", "水缸裡的水變多了"],
+        "answer": 0,
+        "explain": "泥膠的重量和物料都沒變，改變的是形狀：佔的空間大了，推開的水多了。"
+      },
+      "hints": ["泥膠捏成船形後，有沒有變輕？", "船形和球形，哪一個佔的空間比較大？", "船形推開更多水，被水托起。"]
+    },
+    {
+      "unit_id": "u4",
+      "title": "鹽水救雞蛋",
+      "station": "salt",
+      "concept": "雞蛋在清水中會沉。不斷加鹽溶解後，鹽水比清水更能把物件托起，雞蛋就浮起來了。",
+      "key_quote": "液體也能改變浮沉。",
+      "misconceptions": ["加鹽只會令水變鹹，不會影響浮沉", "雞蛋浮起是因為雞蛋變輕了"],
+      "tags": { "has_variables": true, "bloom": "apply" },
+      "lines": {
+        "enter": "{address}，雞蛋沉在杯底了。有甚麼方法可以令它浮起來，又不用碰它？",
+        "hypothesis": "加鹽？鹽只會令水變鹹，雞蛋還是會沉的！",
+        "predict": "",
+        "test": "按「加一匙鹽」，每次加一匙並攪拌，看看雞蛋有甚麼變化。",
+        "explain": "雞蛋本身沒有改變，改變的是液體。鹽溶解在水中，鹽水比清水更能把物件托起，所以雞蛋浮起來了。"
+      },
+      "salt": {
+        "predict": { "question": "不斷加鹽並攪拌，雞蛋會怎樣？", "options": ["慢慢浮起來", "仍然沉在杯底", "雞蛋會溶化"], "answer": 0 },
+        "spoon_add": 0.02,
+        "max_spoons": 10
+      },
+      "gate": {
+        "question": "雞蛋在濃鹽水中浮起來，是因為甚麼？",
+        "options": ["鹽水比清水更能把物件托起", "雞蛋變輕了", "鹽令雞蛋變小了", "水的溫度升高了"],
+        "answer": 0,
+        "explain": "雞蛋沒有變，改變的是液體。鹽水托起物件的能力比清水強。"
+      },
+      "hints": ["雞蛋本身有沒有改變過？", "加鹽之後，改變了的是甚麼？", "鹽水比清水更能托起物件。"]
+    }
+  ],
+  "player": { "address": "同學" },
+  "endings": {
+    "best": { "title": "小科學家", "text": "你的預測越來越準，每一站的結論都說得對。" },
+    "normal": { "title": "實驗達人", "text": "有些結果出乎你意料，但這正是做實驗的意義。" },
+    "fail": { "title": "繼續探究", "text": "很多結果和你的預測不同。記住：科學不是憑感覺，是靠實驗證明。" }
+  },
+  "debrief": "重的不一定沉，大的不一定沉。物料、形狀、液體，都會影響浮沉。最重要的是：先預測，再動手，讓實驗結果告訴你答案。"
+}

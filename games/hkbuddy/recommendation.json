@@ -1,0 +1,41 @@
+{
+  "inputs": {
+    "subject": "英國語文",
+    "has_dialogue": true,
+    "has_evidence": false,
+    "has_dilemma": false
+  },
+  "subject_candidates": [
+    "dialogue",
+    "carry",
+    "rpg"
+  ],
+  "feasibility": {
+    "dialogue": {
+      "pass": true,
+      "why": "學習目標是在真實情境中聆聽並作出正確、得體的回應"
+    },
+    "rpg": {
+      "pass": true,
+      "why": "有情境，但語言運用才是重點"
+    },
+    "carry": {
+      "pass": true,
+      "why": "可做詞彙分類溫習"
+    }
+  },
+  "scores": {
+    "dialogue": 0.93,
+    "rpg": 0.6,
+    "carry": 0.45
+  },
+  "recommendation": {
+    "primary": "dialogue",
+    "reason": "課題是日常情境的英語應對，需要聆聽、選擇得體的回應，並可選擇開口練習。",
+    "learning_path": [
+      "dialogue",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "dialogue"
+}

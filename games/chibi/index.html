@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>赤壁疑案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#121A24; --panel:rgba(18,26,37,.92); --panel-line:rgba(224,176,75,.38);
+  --paper:#F4EBD6; --ink:#16202A; --muted:#B8AD94; --gold:#E0B04B; --gold-deep:#B9862A;
+  --jade:#5FB49C; --cinnabar:#D2553F;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0E141C; --panel:rgba(14,20,29,.94); } }
+:root[data-theme="dark"]{ --bg:#0E141C; --panel:rgba(14,20,29,.94); }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{height:100%;margin:0;background:var(--bg);color:var(--paper);font-family:var(--sans);-webkit-tap-highlight-color:transparent;overflow:hidden}
+#app{position:relative;height:100%;width:100%;overflow:hidden}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* HUD */
+#hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.chap{background:var(--panel);border:1px solid var(--panel-line);border-radius:12px;padding:8px 14px;display:flex;align-items:baseline;gap:10px;min-width:0}
+.chap span{font-size:12px;color:var(--muted);white-space:nowrap}
+.chap strong{font-family:var(--serif);font-weight:700;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meters{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.lamp{background:var(--panel);border:1px solid var(--panel-line);border-radius:12px;padding:6px 12px 6px 8px;display:flex;align-items:center;gap:8px}
+.lamp svg{width:26px;height:34px;flex:none}
+.lamp .lab{display:flex;flex-direction:column;gap:4px;min-width:92px}
+.lamp .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.lamp .row b{color:var(--paper);font-weight:600;font-variant-numeric:tabular-nums}
+.bar{height:5px;border-radius:3px;background:rgba(244,235,214,.14);overflow:hidden}
+.bar i{display:block;height:100%;width:50%;background:var(--gold);transition:width .6s ease,background .6s}
+#assist{pointer-events:auto;display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--gold);border-radius:999px;padding:6px 12px 6px 8px;font-size:13px}
+#assist svg{width:18px;height:18px}
+#assist:disabled{opacity:.4;cursor:default;border-color:var(--panel-line)}
+#assist.ready{box-shadow:0 0 0 0 rgba(224,176,75,.6)}
+@media (prefers-reduced-motion: no-preference){ #assist.ready{animation:ping 1.8s ease-out infinite} @keyframes ping{0%{box-shadow:0 0 0 0 rgba(224,176,75,.55)}80%,100%{box-shadow:0 0 0 10px rgba(224,176,75,0)}} }
+#assistBubble{position:absolute;right:12px;top:118px;width:min(320px,calc(100% - 24px));background:var(--paper);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.6;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#assistBubble .t{font-size:12px;color:#7A6A45;margin-bottom:4px;display:flex;justify-content:space-between;gap:8px}
+#assistBubble button{background:none;border:0;color:#7A6A45;font-size:12px;padding:0}
+
+/* dialog */
+#dialog{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(760px,calc(100% - 20px));max-height:52%;overflow:auto;background:var(--panel);border:1px solid var(--panel-line);border-radius:14px;padding:14px 18px 16px}
+.who{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--gold);margin-bottom:6px}
+.who .dot{width:12px;height:12px;border-radius:50%;flex:none}
+#line{margin:0;font-size:17px;line-height:1.75;min-height:1.75em}
+#line.quote{font-family:var(--serif);font-weight:500}
+#actions{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+#actions .next{align-self:flex-end;background:var(--gold);color:var(--ink);border:0;border-radius:10px;padding:9px 20px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:rgba(244,235,214,.05);border:1px solid rgba(244,235,214,.22);border-radius:10px;padding:11px 14px;font-size:16px;line-height:1.55}
+.opt:hover:not(:disabled){border-color:var(--gold);background:rgba(224,176,75,.1)}
+.opt .k{font-family:var(--serif);color:var(--gold);flex:none}
+.opt:disabled{opacity:.45;border-color:rgba(210,85,63,.6);text-decoration:line-through;cursor:default}
+.status{font-size:14px;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){ .shake{animation:shake .35s} @keyframes shake{25%{transform:translateX(calc(-50% - 6px))}75%{transform:translateX(calc(-50% + 6px))}} }
+
+/* 3D-anchored labels */
+#spots,#bubbles{position:absolute;inset:0;pointer-events:none}
+.spot{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;background:var(--panel);border:1px solid var(--gold);color:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;white-space:nowrap}
+.spot.done{border-color:var(--jade);color:var(--jade)}
+.bub{position:absolute;transform:translate(-50%,-100%);background:var(--paper);color:var(--ink);border-radius:12px;padding:7px 12px;font-size:14px;max-width:220px;line-height:1.45;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.bub::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--paper)}
+
+/* overlays */
+#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#overlay.dim{background:rgba(10,15,22,.7)}
+#overlay:empty{display:none}
+.card{background:var(--paper);color:var(--ink);border-radius:16px;padding:26px 24px;width:min(560px,100%);max-height:100%;overflow:auto}
+.card h2{font-family:var(--serif);font-weight:900;font-size:26px;margin:0 0 6px;letter-spacing:.04em}
+.card p{line-height:1.75;margin:0 0 12px}
+.card .sub{color:#6F6450;font-size:14px}
+.primary{background:var(--ink);color:var(--paper);border:0;border-radius:10px;padding:11px 24px;font-weight:600;font-size:16px}
+.title{display:flex;align-items:center;gap:28px;color:var(--paper)}
+.title .v{writing-mode:vertical-rl;font-family:var(--serif);font-weight:900;font-size:clamp(52px,11vh,96px);letter-spacing:.12em;line-height:1;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.title .v.a{font-size:clamp(18px,2.6vh,24px);font-weight:500;letter-spacing:.4em;color:var(--gold);align-self:flex-start;margin-left:-14px}
+.title .side{display:flex;flex-direction:column;gap:18px;max-width:260px}
+.title .side p{font-family:var(--serif);font-size:18px;line-height:1.8;margin:0;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.title .side .primary{background:var(--gold);color:var(--ink);align-self:flex-start}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 4px}
+.role{text-align:left;background:#fff;border:1.5px solid #D9CCAE;border-radius:12px;padding:14px;color:var(--ink)}
+.role:hover{border-color:var(--gold-deep)}
+.role b{font-family:var(--serif);font-size:19px;display:block;margin-bottom:6px}
+.role span{font-size:14px;line-height:1.6;display:block;color:#4C4434}
+.role em{font-style:normal;font-size:12px;color:#8A7A55;display:block;margin-top:8px}
+.cast{display:flex;flex-direction:column;gap:10px;margin:14px 0 18px}
+.cast div{display:flex;align-items:center;gap:12px}
+.cast svg{width:34px;height:34px;flex:none}
+.cast b{font-family:var(--serif)}
+.cast span{font-size:14px;color:#4C4434}
+.chapcard{text-align:center;color:var(--paper)}
+.chapcard small{font-size:14px;color:var(--gold);letter-spacing:.3em}
+.chapcard h2{font-family:var(--serif);font-weight:900;font-size:clamp(34px,6vw,54px);margin:8px 0 14px;letter-spacing:.08em}
+.chapcard p{font-family:var(--serif);font-size:17px;line-height:1.8;max-width:30em;margin:0 auto;color:#E9DFC6}
+.tl{list-style:none;padding:0;margin:14px 0;display:flex;flex-direction:column;gap:10px}
+.tl li{border-left:3px solid #D9CCAE;padding:2px 0 2px 12px}
+.tl li.ok{border-color:var(--jade)} .tl li.bad{border-color:var(--cinnabar)} .tl li.mid{border-color:var(--gold-deep)}
+.tl b{font-family:var(--serif)} .tl .tag{font-size:12px;margin-left:6px;color:#6F6450}
+.tl p{font-size:14px;margin:4px 0 0;color:#4C4434;line-height:1.6}
+.stats{display:flex;gap:18px;font-size:14px;color:#6F6450;margin-bottom:6px}
+.stats b{font-size:20px;color:var(--ink);font-family:var(--serif);display:block}
+@media (max-width:560px){
+  .title{flex-direction:column;gap:14px} .title .v{writing-mode:horizontal-tb;font-size:56px} .title .v.a{margin-left:0;align-self:center;font-size:15px;letter-spacing:.15em} .title .side{align-items:center;text-align:center} .title .side .primary{align-self:center}
+  .roles{grid-template-columns:1fr}
+  #line{font-size:16px}
+  .chap strong{font-size:15px}
+  .title{gap:18px}
+  #assistBubble{top:112px}
+}
+
+.scorebox{background:var(--panel);border:1px solid var(--panel-line);border-radius:12px;padding:7px 14px;display:flex;gap:16px}
+.scorebox div{display:flex;flex-direction:column;align-items:flex-end;font-size:12px;color:var(--muted)}
+.scorebox b{font-family:var(--serif);font-size:20px;color:var(--paper);font-variant-numeric:tabular-nums}
+.tool{pointer-events:auto;display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--gold);border-radius:999px;padding:6px 12px 6px 9px;font-size:13px}
+.tool svg{width:17px;height:17px}.tool:disabled{opacity:.4;cursor:default;border-color:var(--panel-line)}
+#toast{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:min(560px,calc(100% - 20px));background:var(--panel);border:1px solid var(--panel-line);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:10px 14px;pointer-events:none;z-index:3}
+#toast.ok{border-left-color:var(--jade)}#toast.bad{border-left-color:var(--cinnabar)}
+#toast b{font-family:var(--serif);font-size:15px;display:block;margin-bottom:2px}#toast.ok b{color:var(--jade)}#toast.bad b{color:#F08A74}
+#toast span{font-size:14px;line-height:1.55;color:#E6DCC4}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.pbtn{display:flex;justify-content:space-between;align-items:center;gap:6px;background:rgba(244,235,214,.06);border:1px solid rgba(244,235,214,.28);border-radius:10px;padding:8px 10px;font-size:14px}
+.pbtn b{font-family:var(--serif);font-size:16px;color:var(--muted)}
+.pbtn.float{border-color:#5AA8E0}.pbtn.float b{color:#8CC8F2}.pbtn.sink{border-color:#C98E1E}.pbtn.sink b{color:#F2C14E}
+.pbtn:hover{border-color:var(--gold)}
+.shaper .srow{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.shaper input[type=range]{flex:1;accent-color:var(--gold);height:28px}
+.status{font-size:13px;color:var(--muted);margin:6px 0 0}
+.notes{list-style:none;padding:0;margin:10px 0 14px;display:flex;flex-direction:column;gap:14px}
+.notes b{font-family:var(--serif)}.notes p{font-size:14px;margin:6px 0 0;line-height:1.6;color:#4C4434}
+.dt{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}
+.dt th{text-align:left;font-weight:600;color:#6F6450;border-bottom:1px solid #D9CCAE;padding:4px 6px}
+.dt td{padding:4px 6px;border-bottom:1px solid #EEE4CC}.dt td.hit{color:#2E7D62;font-weight:600}.dt td.miss{color:#B5412E;font-weight:600}
+.review{list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:10px}
+.review li{border-left:3px solid var(--jade);padding:2px 0 2px 12px}.review b{font-family:var(--serif)}.review p{font-size:14px;margin:3px 0 0;color:#4C4434;line-height:1.6}
+
+.spot{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;background:var(--panel);border:1px solid var(--gold);color:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;white-space:nowrap}
+.plain{margin:0 0 4px;font-size:15px;line-height:1.7;color:#E6DCC4}
+.pz-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}.pz-row b{font-size:15px;color:var(--paper);font-family:var(--serif);font-weight:500;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chipb{background:rgba(244,235,214,.06);border:1px solid rgba(244,235,214,.28);border-radius:999px;padding:6px 14px;font-size:14px}
+.chipb.on{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+
+.ecard{background:rgba(244,235,214,.06);border:1px solid rgba(224,176,75,.4);border-radius:12px;padding:12px 14px;margin-bottom:4px}
+.card .ecard{background:#fff;border-color:#D9CCAE;margin-bottom:10px}
+.ecard .eh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}.ecard .eh b{font-family:var(--serif);font-size:16px}.ecard .eh span{font-size:12px;border:1px solid currentColor;border-radius:999px;padding:1px 8px;opacity:.8}
+.ecard dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0 0 8px;font-size:13px}.ecard dt{opacity:.65}.ecard dd{margin:0}
+.ecard .ex{font-family:var(--serif);font-size:15px;line-height:1.7;margin:0 0 6px}.ecard .nt{font-size:13px;line-height:1.6;margin:0;opacity:.85}
+.cards h3{font-family:var(--serif);font-size:16px;margin:14px 0 6px}.tst{margin:0;padding-left:1.4em;font-size:14px;line-height:1.7}
+.seqlist{margin:0 0 10px;padding-left:1.6em;display:flex;flex-direction:column;gap:4px;font-size:15px}.seqlist li.empty{color:var(--muted)}
+.chipb.used{opacity:.35}.ghost{align-self:flex-start;background:none;border:1px solid rgba(244,235,214,.3);border-radius:10px;padding:7px 14px;font-size:14px;color:var(--muted)}
+#actions .chips{gap:8px}
+#objection{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%) rotate(-6deg);font-family:var(--serif);font-weight:900;font-size:clamp(40px,9vw,84px);color:#fff;background:var(--cinnabar);padding:6px 28px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.35);pointer-events:none;z-index:5}
+@media (prefers-reduced-motion: no-preference){#objection.pop{animation:pop .5s cubic-bezier(.2,1.6,.4,1)}@keyframes pop{0%{transform:translate(-50%,-50%) rotate(-6deg) scale(.3)}100%{transform:translate(-50%,-50%) rotate(-6deg) scale(1)}}}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="scene" aria-label="3D 遊戲場景"></canvas>
+  <div id="spots"></div>
+  <div id="bubbles"></div>
+  <header id="hud" hidden>
+    <div class="chap"><span id="chapNo"></span><strong id="chapTitle"></strong></div>
+    <div class="meters">
+      <div class="lamp" aria-label="真相值">
+        <svg viewBox="0 0 40 52" aria-hidden="true"><circle cx="20" cy="26" r="17" fill="#1E3A5A" stroke="#E0B04B" stroke-width="2"/><circle id="mGlow" cx="20" cy="26" r="12" fill="#F2C14E" opacity=".3"/><path d="M8 34 L16 22 L21 29 L26 20 L33 34 Z" fill="#0E2A22" opacity=".75"/></svg>
+        <div class="lab"><div class="row"><span>真相值</span><b id="mStage">40</b></div><div class="bar"><i id="mBar"></i></div><div class="row"><span>分數</span><b id="score">0</b></div><span id="mVal" hidden></span></div>
+      </div>
+      <button class="tool" id="assist" aria-label="學伴提示，扣兩分"><svg viewBox="0 0 24 24" fill="none" stroke="#E0B04B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>學伴提示</button>
+      <button class="tool" id="notebook"><svg viewBox="0 0 24 24" fill="none" stroke="#E0B04B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM9 8h6M9 12h6"/></svg>證物冊<small id="nbCount" style="color:var(--muted);font-size:11px;margin-left:4px">0</small></button>
+    </div>
+  </header>
+  <div id="objection" hidden aria-hidden="true">有矛盾！</div>
+  <div id="toast" hidden role="status"><b id="toastT"></b><span id="toastD"></span></div>
+  <div id="toast" hidden role="status"><b id="toastT"></b><span id="toastD"></span></div>
+  <div id="assistBubble" hidden role="status"></div>
+  <section id="dialog" hidden aria-live="polite">
+    <div class="who"><i class="dot" id="whoDot"></i><span id="whoName"></span></div>
+    <p id="line"></p>
+    <div id="actions"></div>
+  </section>
+  <div id="overlay"></div>
+</div>
+
+<script type="application/json" id="d-content">{"meta": {"topic": "赤壁疑案：史料與小說", "short_title": "赤壁疑案", "author": "初中中國歷史", "language": "zh-Hant", "audience": "初中學生", "central_thesis": "歷史要靠史料重建。判斷史料要看成書時間、作者立場和史料性質；小說和戲曲可以虛構，不能當作史實。", "title_lines": ["草船借箭，是真的嗎？", "赤壁的大火，又是誰放的？"], "meter": {"label": "真相值"}}, "npc_slots": {"mentor": {"character_id": "G", "display_name": "裴松之", "persona": "南朝史學家，曾為《三國志》作注，搜集各種不同說法", "costume": ["ru_hat"]}, "companion": {"character_id": "O", "display_name": "小查", "persona": "史館的小書吏，你的查案助手", "costume": []}, "rival": {"character_id": "A", "display_name": "說書人", "persona": "茶館裡最受歡迎的說書人，深信小說情節就是歷史", "costume": []}, "gatekeeper": {"character_id": "I", "display_name": "史館主簿", "persona": "負責審核你的結案報告", "costume": ["lantern"]}}, "evidence": {"poster": {"name": "戲曲海報", "author": "戲班", "date": "後世", "kind": "戲曲", "stance": "為了吸引觀眾", "excerpt": "大型戲曲《草船借箭》，諸葛亮神機妙算，今晚隆重上演！", "note": "戲曲多改編自小說，重視娛樂效果。"}, "yanyi": {"name": "《三國演義》", "author": "羅貫中", "date": "元末明初（約公元 14 世紀）", "kind": "歷史小說", "stance": "推崇劉備、諸葛亮一方", "excerpt": "小說描寫諸葛亮以草船擂鼓吶喊，誘曹軍放箭，借得十萬多枝箭；又寫他設壇借來東風。", "note": "成書距赤壁之戰一千多年，是小說，可以虛構情節。"}, "sgz_zhuge": {"name": "《三國志・諸葛亮傳》", "author": "陳壽", "date": "西晉（約公元 280 年代）", "kind": "正史", "stance": "西晉官修史書，以曹魏為正統", "excerpt": "亮曰：「事急矣，請奉命求救於孫將軍。」", "note": "記載諸葛亮出使東吳，說服孫權聯合抗曹；全傳沒有草船借箭的記載。"}, "pei": {"name": "裴松之《三國志注》", "author": "裴松之", "date": "南朝宋（公元 429 年）", "kind": "史書注釋", "stance": "廣泛搜集各方史料，並加以比較辨析", "excerpt": "注中引用了《魏略》、《江表傳》等多種史料，補充陳壽沒有寫入的說法。", "note": "注釋保存了許多今已失傳的史料。"}, "weilue": {"name": "《魏略》（見裴注引）", "author": "魚豢", "date": "曹魏時期", "kind": "史書", "stance": "曹魏一方的記載", "excerpt": "權因迴船，復以一面受箭，箭均船平，乃還。", "note": "記載公元 213 年濡須之戰：孫權乘船觀察曹軍，船一面中箭將傾，於是掉轉船身讓另一面受箭。受箭的是孫權，不是諸葛亮，地點也不是赤壁。"}, "zhouyu": {"name": "《三國志・周瑜傳》", "author": "陳壽", "date": "西晉（約公元 280 年代）", "kind": "正史", "stance": "記述東吳將領事跡", "excerpt": "操軍方連船艦，首尾相接，可燒而走也。", "note": "黃蓋提出火攻，並向曹操詐降，乘機放火燒船，曹軍大敗。放火的是黃蓋。"}, "wind": {"name": "《江表傳》（見裴注引）", "author": "虞溥", "date": "西晉", "kind": "史書", "stance": "以記述東吳事跡為主", "excerpt": "時東南風急。", "note": "當時正好颳起強勁的東南風，是天氣條件，並沒有人「借」風。"}, "wudi": {"name": "《三國志・武帝紀》", "author": "陳壽", "date": "西晉（約公元 280 年代）", "kind": "正史", "stance": "曹操的本紀，以曹魏為正統", "excerpt": "公至赤壁，與備戰，不利。於是大疫，吏士多死者，乃引軍還。", "note": "曹魏一方的記載，只說「不利」，強調軍中瘟疫，沒有提到火攻。"}, "cao_letter": {"name": "曹操致孫權書（見《江表傳》引）", "author": "曹操", "date": "赤壁之戰後", "kind": "書信", "stance": "曹操本人，有為戰敗開脫的動機", "excerpt": "赤壁之役，值有疾病，孤燒船自退，橫使周瑜虛獲此名。", "note": "曹操說是自己燒船撤退，周瑜只是白白得了名聲。"}}, "locations": [{"id": "teahouse", "title": "茶館開講", "type": "investigate", "env": "morning", "lines": {"enter": "今天茶館爆滿，說書人正講到最精彩的地方！", "rival": "話說赤壁之戰前夕，諸葛亮駕著二十艘草船，借得曹軍十萬枝箭！後來又設壇作法，借來東風，一把火燒得曹軍片甲不留！列位看官，這可是史書寫得清清楚楚的真事！", "mentor": "精彩是精彩，但「史書寫得清清楚楚」？我替《三國志》作注多年，可不記得有這回事。你來查一查吧。"}, "hotspots": [{"id": "poster", "label": "戲曲海報"}, {"id": "script", "label": "說書人的話本", "evidence": "yanyi"}], "testimony_intro": "說書人的說法，我都記下來了。查清楚之前，先別信。"}, {"id": "library", "title": "藏書閣", "type": "timeline", "env": "overcast", "lines": {"enter": "要查真相，先找史料。藏書閣裡有三部書和赤壁之戰有關。", "after": "越接近事件、越重視紀實的史料，一般越可靠；但也要看作者的立場。小說成書最晚，而且可以虛構。"}, "hotspots": [{"id": "b1", "label": "《三國演義》", "evidence": "yanyi"}, {"id": "b2", "label": "《三國志》", "evidence": "sgz_zhuge"}, {"id": "b3", "label": "《三國志注》", "evidence": "pei"}], "timeline": {"prompt": "把以下各項，按時間先後排列。", "items": [{"text": "赤壁之戰（公元 208 年）"}, {"text": "陳壽寫成《三國志》"}, {"text": "裴松之為《三國志》作注"}, {"text": "羅貫中寫成《三國演義》"}]}}, {"id": "ruxu", "title": "濡須口", "type": "arrow_boat", "env": "morning", "lines": {"enter": "裴注引了《魏略》一段記載，說的是赤壁之戰五年後的濡須之戰。我們來看看當時的情形。", "task": "公元 213 年，孫權乘大船觀察曹軍。按「曹軍放箭」，看看會發生甚麼事。", "tilt": "船的一面插滿了箭，太重了，快要翻了！", "task2": "按「掉轉船身」，讓另一面受箭。", "done": "兩面的箭一樣多，船又平穩了。這就是「草船借箭」故事最早的原型：受箭的是孫權，不是諸葛亮；地點在濡須，不在赤壁。"}, "evidence": "weilue"}, {"id": "chibi", "title": "赤壁江邊", "type": "replay", "env": "dusk", "lines": {"enter": "赤壁之戰到底怎樣打？不同的史料，說法不一樣。我們按三份史料，各重演一次。", "after": "同一場戰役，東吳一方說是火攻，曹魏一方說是瘟疫，曹操自己說是燒船自退。立場不同，強調的重點就不同。"}, "replays": [{"id": "r1", "button": "按《周瑜傳》重演", "evidence": "zhouyu", "show": "fire", "caption": "黃蓋詐降，戰船滿載柴草衝向曹軍連船，乘風放火。"}, {"id": "r2", "button": "查看當日的風", "evidence": "wind", "show": "wind", "caption": "史書記載：當時東南風很急。"}, {"id": "r3", "button": "按《武帝紀》重演", "evidence": "wudi", "show": "plague", "caption": "曹軍營中瘟疫流行，士兵大量病死，曹操於是退兵。"}, {"id": "r4", "button": "讀曹操的書信", "evidence": "cao_letter", "show": "self", "caption": "曹操說：遇上疾病，是我自己燒船退兵的。"}]}, {"id": "court", "title": "公堂對質", "type": "cross_exam", "env": "morning", "lines": {"enter": "說書人來了。逐句聽他的證詞，找出和史料矛盾的地方，出示證據。", "win": "說書人：唉，原來我說的都是小說……不過故事好聽，我還是會照講的！"}, "testimony": [{"text": "草船借箭，是諸葛亮在赤壁之戰時想出的妙計！", "press": "我小時候聽師父講的，他說千真萬確。", "answer": "weilue", "reveal": "《魏略》記載以船受箭的是孫權，在公元 213 年的濡須，不是諸葛亮，也不在赤壁。"}, {"text": "這件事，正史《三國志》寫得清清楚楚！", "press": "諸葛亮傳裡一定有寫，你自己去看！", "answer": "sgz_zhuge", "reveal": "《三國志・諸葛亮傳》只記載諸葛亮出使東吳、說服孫權聯合抗曹，根本沒有草船借箭。"}, {"text": "赤壁那把火，是諸葛亮作法借來東風點的！", "press": "不是神機妙算，怎會剛好有東風？", "answer": "zhouyu", "reveal": "《周瑜傳》記載火攻是黃蓋提出並執行的；東南風只是當時的天氣。"}, {"text": "就連曹操自己也承認，是被周瑜打敗的！", "press": "敗軍之將，當然要認輸啦。", "answer": "cao_letter", "reveal": "曹操在信中說是自己燒船撤退，周瑜只是「虛獲此名」。他根本不肯承認敗給周瑜。"}]}], "deduction": [{"question": "草船借箭的故事，最早可以追溯到哪裡？", "options": ["《魏略》記載孫權在濡須以船受箭", "《三國志・諸葛亮傳》的記載", "曹操寫給孫權的書信", "陳壽親眼所見的赤壁之戰"], "answer": 0, "explain": "《魏略》的孫權受箭事件，後來被小說移花接木，改成諸葛亮在赤壁借箭。"}, {"question": "為甚麼曹魏一方的記載強調「大疫」，東吳一方的記載強調「火攻」？", "options": ["雙方立場不同，各自強調對自己有利的原因", "其中一方一定在說謊", "瘟疫和火攻不可能同時發生", "史官記錯了日期"], "answer": 0, "explain": "兩者可以同時存在。立場會影響史料強調甚麼、淡化甚麼，所以要多方比對。"}], "gate": {"question": "判斷一份史料的可信程度，最應該考慮甚麼？", "options": ["作者立場、成書時間和史料性質", "故事是否精彩動人", "書本是否廣為流傳", "內容是否和戲曲一致"], "answer": 0, "explain": "史料要問三件事：誰寫的、甚麼時候寫的、是甚麼性質的材料。流傳廣、故事好聽，都不等於可信。"}, "endings": {"best": {"title": "真相大白", "text": "你分清了小說與史實，也看懂了不同立場的史料。"}, "normal": {"title": "大致查明", "text": "案件已破，但有些證據可以出示得更準確。"}, "fail": {"title": "疑點重重", "text": "你被說書人帶偏了好幾次。記住：好聽的故事不一定是歷史。"}}, "debrief": "草船借箭來自小說的移花接木，赤壁大火是黃蓋的火攻，曹操卻說是自己燒船。查史料，要問誰寫的、甚麼時候寫、為甚麼這樣寫。"}</script>
+<script type="application/json" id="d-world">{"scene_kit": "ancient_sets", "layout": "locations_on_line", "spacing": 42, "locations": {"teahouse": [0, 0, 0], "library": [42, 0, 0], "ruxu": [84, 0, 0], "chibi": [126, 0, 0], "court": [168, 0, 0]}, "npc_layout": {"mentor": [-3.2, 0, 0.8], "companion": [3.2, 0, 1.4], "rival": [2.4, 0, -1.8], "gatekeeper": [-2.6, 0, -2.2]}, "court_layout": {"gatekeeper": [0, 0, -3.4], "rival": [2.6, 0, -0.6], "mentor": [-3, 0, 0.6], "companion": [3.4, 0, 1.6]}}</script>
+<script type="application/json" id="d-game">{"mode": "detective", "meter": {"label": "真相值", "start": 40}, "scoring": {"present_right": 15, "present_wrong": -8, "timeline_first_try": 10, "deduction_first_try": 10, "gate_first_try": 10, "wrong_penalty": 3, "hint_penalty": 2}, "camera": {"user_orbit_deg": 32}, "endings": [{"id": "best", "min_meter": 85}, {"id": "normal", "min_meter": 55}, {"id": "fail", "min_meter": 0}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>/* OpenMAIC-GamePlay shared engine v0.2
+   Renderer, toon materials, scene-kit helpers, environment presets,
+   character factory with procedural animation, camera, 3D-anchored UI,
+   dialog, assistant bubble and overlays. Game modes build on window.ENG. */
+(function(){
+"use strict";
+const E={};window.ENG=E;
+const RM=E.RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=E.$=id=>document.getElementById(id);
+E.sleep=ms=>new Promise(r=>setTimeout(r,ms));
+E.NUM=['一','二','三','四','五','六','七','八'];
+
+/* renderer */
+let canvas,renderer,scene,camera;
+E.portrait=false;
+E.init=function(opts){
+  const sk=document.createElement('style');sk.textContent='.skipbtn{align-self:flex-start;background:none;border:1px dashed rgba(244,235,214,.4);border-radius:10px;padding:6px 12px;font-size:13px;color:#B8AD94;cursor:pointer}.skipbtn:hover{color:#F4EBD6;border-color:#E0B04B}';document.head.appendChild(sk);
+  canvas=E.canvas=opts.canvas;
+  renderer=E.renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  scene=E.scene=new THREE.Scene();
+  camera=E.camera=new THREE.PerspectiveCamera(46,1,.1,500);
+  E.hemi=new THREE.HemisphereLight(0xffffff,0x556644,.9);scene.add(E.hemi);
+  E.sun=new THREE.DirectionalLight(0xffffff,.9);E.sun.position.set(12,22,10);scene.add(E.sun);
+  scene.fog=new THREE.Fog(0xBFDDE8,40,170);scene.background=new THREE.Color(0xBFDDE8);
+  E.onResize=opts.onResize||null;E.onFrame=opts.onFrame||null;
+  addEventListener('resize',resize);resize();
+};
+function resize(){
+  const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=camera.aspect<.85?54:46;camera.updateProjectionMatrix();
+  const p=camera.aspect<.85;const changed=p!==E.portrait;E.portrait=p;if(E.onResize)E.onResize(changed);
+}
+
+/* materials & primitives */
+let gm=null;const mats={};
+E.M=function(hex,o){
+  if(!gm){gm=new THREE.DataTexture(new Uint8Array([92,165,232]),3,1,THREE.LuminanceFormat);gm.minFilter=gm.magFilter=THREE.NearestFilter;gm.generateMipmaps=false;gm.needsUpdate=true;}
+  const k=hex+(o?JSON.stringify(o):'');if(!mats[k])mats[k]=new THREE.MeshToonMaterial(Object.assign({color:hex,gradientMap:gm},o||{}));return mats[k];
+};
+E.mesh=function(geo,mat,x,y,z,parent){const m=new THREE.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);if(parent)parent.add(m);return m;};
+E.box=function(w,h,d,c,x,y,z,p){return E.mesh(new THREE.BoxGeometry(w,h,d),E.M(c),x,y,z,p);};
+E.rng=function(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};};
+E.shuffle=function(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
+let RG=null;E.roofGeo=()=>{if(!RG){RG=new THREE.ConeGeometry(1,1,4);RG.rotateY(Math.PI/4);}return RG;};
+E.house=function(parent,x,z,w,d,h,wall,roof,ry){
+  const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry||0;parent.add(g);
+  E.box(w,h,d,wall,0,h/2,0,g);E.box(w+.12,.18,d+.12,0x6E4A32,0,h+.05,0,g);
+  const rf=E.mesh(E.roofGeo(),E.M(roof),0,h+.62,0,g);rf.scale.set((w/2+.45)/.707,1.15,(d/2+.45)/.707);
+  E.box(.7,1.3,.06,0x3B2A22,0,.65,d/2+.03,g);return g;
+};
+E.tree=function(parent,x,z,s,kind,canopy){
+  const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);parent.add(g);
+  E.mesh(new THREE.CylinderGeometry(.13,.18,1.1,6),E.M(0x7A5236),0,.55,0,g);
+  if(kind==='pine'){E.mesh(new THREE.ConeGeometry(.9,1.5,7),E.M(0x3E6B4E,{flatShading:true}),0,1.5,0,g);E.mesh(new THREE.ConeGeometry(.65,1.2,7),E.M(0x4A7C59,{flatShading:true}),0,2.2,0,g);}
+  else E.mesh(new THREE.IcosahedronGeometry(.95,0),E.M(canopy||0x6FA35A,{flatShading:true}),0,1.75,0,g);
+  return g;
+};
+E.lanterns=[];
+E.lantern=function(parent,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);
+  const b=E.mesh(new THREE.SphereGeometry(.5,12,10),E.M(0xC8452F,{emissive:0x7A1E10}),0,0,0,g);b.scale.set(.28,.34,.28);
+  E.mesh(new THREE.CylinderGeometry(.09,.09,.06,8),E.M(0xE0B04B),0,.19,0,g);E.mesh(new THREE.CylinderGeometry(.09,.09,.06,8),E.M(0xE0B04B),0,-.19,0,g);E.lanterns.push(b);return g;};
+
+/* environment */
+E.ENV={
+  morning:{sky:0xB9D6E2,hs:0xF4ECDC,hg:0x5C6E4C,hi:.72,sc:0xFFE2B0,si:.75,sp:[12,22,10]},
+  dusk:{sky:0xE6B08A,hs:0xFFD2A8,hg:0x6A5A4A,hi:.78,sc:0xFF9E5E,si:.9,sp:[-18,9,6]},
+  overcast:{sky:0xA7B0AE,hs:0xD9DED9,hg:0x5E6658,hi:.85,sc:0xDDE3E0,si:.45,sp:[4,20,6]},
+  night:{sky:0x1D2A44,hs:0x8EA2CC,hg:0x2B2E3A,hi:.55,sc:0xA9BCEB,si:.38,sp:[-8,18,-6]}
+};
+const env=E.env={cur:{sky:new THREE.Color(),hs:new THREE.Color(),hg:new THREE.Color(),sc:new THREE.Color(),hi:1,si:1},tgt:null,pulse:0,pulseColor:new THREE.Color(0xFFD27A),dim:0};
+E.setEnv=function(name,instant){const e=E.ENV[name];env.tgt=e;if(instant){env.cur.sky.set(e.sky);env.cur.hs.set(e.hs);env.cur.hg.set(e.hg);env.cur.sc.set(e.sc);env.cur.hi=e.hi;env.cur.si=e.si;}};
+E.flash=function(good,color){env.pulse=1;env.pulseColor.set(color!=null?color:(good?0xFFD27A:0x2A2440));};
+const dimColor=new THREE.Color(0x4E4A58),tmpC=new THREE.Color(),sunT=new THREE.Vector3();
+function updateEnv(dt){
+  const e=env.tgt;if(!e)return;const k=Math.min(1,dt*1.4);
+  env.cur.sky.lerp(tmpC.set(e.sky),k);env.cur.hs.lerp(tmpC.set(e.hs),k);env.cur.hg.lerp(tmpC.set(e.hg),k);env.cur.sc.lerp(tmpC.set(e.sc),k);
+  env.cur.hi+=(e.hi-env.cur.hi)*k;env.cur.si+=(e.si-env.cur.si)*k;sunT.set(e.sp[0],e.sp[1],e.sp[2]);E.sun.position.lerp(sunT,k);
+  const dim=env.dim*.38;const sky=env.cur.sky.clone().lerp(dimColor,dim);
+  env.pulse*=Math.pow(.25,dt);if(env.pulse>.01)sky.lerp(env.pulseColor,env.pulse*.35);
+  scene.background.copy(sky);scene.fog.color.copy(sky);
+  E.hemi.color.copy(env.cur.hs);E.hemi.groundColor.copy(env.cur.hg);E.hemi.intensity=env.cur.hi*(1-dim*.5)+env.pulse*.25;
+  E.sun.color.copy(env.cur.sc);E.sun.intensity=env.cur.si*(1-dim*.6);
+  const night=env.tgt===E.ENV.night;E.lanterns.forEach(l=>l.material.emissive.setHex(night?0xD8501E:0x7A1E10));
+}
+
+/* characters: slot + skin; every skin follows the character spec (body, 2 eyes, 2 legs) */
+E.PAL={G:[0xFF8A1C,0xD9631A],O:[0x10C77A,0x0A9E5E],A:[0x1677E8,0x0F55B8],I:[0xFDD015,0xE5A80E],P:[0xE8577E,0xC23E63]};
+E.hex=n=>'#'+n.toString(16).padStart(6,'0');
+const NAVY=0x0B1F5E;
+function rrect(w,h,r){const s=new THREE.Shape();s.moveTo(-w+r,0);s.lineTo(w-r,0);s.quadraticCurveTo(w,0,w,r);s.lineTo(w,h-r);s.quadraticCurveTo(w,h,w-r,h);s.lineTo(-w+r,h);s.quadraticCurveTo(-w,h,-w,h-r);s.lineTo(-w,r);s.quadraticCurveTo(-w,0,-w+r,0);return s;}
+function shapeFor(id){
+  const S=[];let eyes;
+  if(id==='A'){const s=new THREE.Shape();s.moveTo(-.54,0);s.lineTo(.54,0);s.lineTo(0,.95);s.closePath();S.push(s);eyes=[[-.14,.3,.13],[.14,.3,.13]];}
+  if(id==='I'){S.push(rrect(.27,.96,.05));eyes=[[-.15,.64,.15],[.15,.64,.15]];}
+  if(id==='P'){S.push(rrect(.3,.8,.28));eyes=[[-.12,.56,.12],[.12,.56,.12]];}
+  if(id==='G'){const s=new THREE.Shape(),R=.46,r=.26,cy=.47,a0=.62,a1=Math.PI*2-.72;s.absarc(0,cy,R,a0,a1,false);s.absarc(0,cy,r,a1,a0,true);S.push(s);
+    const t=new THREE.Shape();const P=[[.14,.62],[.62,.62],[.62,.14],[.5,.14],[.5,.42],[.27,.19],[.18,.28],[.41,.5],[.14,.5]];t.moveTo(P[0][0],P[0][1]);P.slice(1).forEach(p=>t.lineTo(p[0],p[1]));t.closePath();S.push(t);
+    eyes=[[-.16,.88,.13],[.1,.88,.13]];}
+  if(id==='O'){const s=new THREE.Shape(),cy=.46;s.absarc(0,cy,.44,0,Math.PI*2,false);const hole=new THREE.Path();hole.absarc(0,cy,.25,0,Math.PI*2,true);s.holes.push(hole);S.push(s);eyes=[[-.3,.78,.13],[-.05,.88,.13]];}
+  return {S,eyes};
+}
+E.chars={};
+E.makeChar=function(slot,id,costume){
+  const [col,dk]=E.PAL[id];const {S,eyes}=shapeFor(id);const M=E.M,mesh=E.mesh,box=E.box;
+  const root=new THREE.Group();scene.add(root);
+  const hip=new THREE.Group();hip.position.y=.47;root.add(hip);const body=new THREE.Group();hip.add(body);
+  S.forEach(s=>{const g=new THREE.ExtrudeGeometry(s,{depth:.26,bevelEnabled:true,bevelThickness:.05,bevelSize:.035,bevelSegments:3,curveSegments:28});g.translate(0,0,-.13);mesh(g,M(col),0,0,0,body);});
+  const eyeObjs=eyes.map(([x,y,r])=>{const g=new THREE.Group();g.position.set(x,y,.2);body.add(g);
+    const o=mesh(new THREE.CylinderGeometry(r+.03,r+.03,.03,28),M(col),0,0,-.012,g);o.rotation.x=Math.PI/2;
+    const w=mesh(new THREE.CylinderGeometry(r,r,.035,28),new THREE.MeshBasicMaterial({color:0xffffff}),0,0,.006,g);w.rotation.x=Math.PI/2;
+    const p=mesh(new THREE.CylinderGeometry(r*.56,r*.56,.03,24),new THREE.MeshBasicMaterial({color:NAVY}),0,0,.03,g);p.rotation.x=Math.PI/2;return {g,p,x,y,r};});
+  const legs=[-1,1].map(sd=>{const piv=new THREE.Group();piv.position.set(sd*.13,.47,0);root.add(piv);
+    box(.115,.44,.125,col,0,-.22,0,piv);box(.118,.07,.128,dk,0,-.06,0,piv);
+    const f=mesh(new THREE.SphereGeometry(.5,14,10),M(col),sd*.07,-.44,.04,piv);f.scale.set(.34,.2,.3);return piv;});
+  const sh=mesh(new THREE.CircleGeometry(.48,24),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.2,depthWrite:false}),0,.02,0,root);sh.rotation.x=-Math.PI/2;
+  const c={slot,id,root,hip,body,eyes:eyeObjs,legs,target:new THREE.Vector3(),speed:3,phase:Math.random()*6,blinkAt:1+Math.random()*3,blinkT:0,emote:null,emoteT:0,talk:false,face:null,lookAt:null,onArrive:null};
+  root.scale.setScalar(1.25);
+  const bb=new THREE.Box3().setFromObject(body);const topY=bb.max.y;
+  (costume||[]).forEach(k=>{
+    if(k==='goggles'){const lensM=new THREE.MeshPhongMaterial({color:0xE8FAFF,transparent:true,opacity:.1,depthWrite:false,shininess:120,specular:0xFFFFFF});eyeObjs.forEach(e=>{mesh(new THREE.TorusGeometry(e.r+.05,.012,6,28),new THREE.MeshPhongMaterial({color:0xD8E6EE,transparent:true,opacity:.85}),e.x,e.y,.27,body);const l=mesh(new THREE.CircleGeometry(e.r+.045,28),lensM,e.x,e.y,.285,body);l.renderOrder=5;});
+      const y=eyeObjs[0].y;box(Math.abs(eyeObjs[1].x-eyeObjs[0].x)-.1,.018,.012,0xD8E6EE,(eyeObjs[0].x+eyeObjs[1].x)/2,y,.27,body);}
+    if(k==='hardhat'||k==='hardhat_o'){const hc=k==='hardhat'?0xF2C81A:0xF27A1A;const d=mesh(new THREE.SphereGeometry(.2,16,10,0,Math.PI*2,0,Math.PI/2),M(hc),0,topY-.05,0,body);d.scale.set(1,.85,1);mesh(new THREE.CylinderGeometry(.27,.27,.025,20),M(hc),0,topY-.05,0,body);box(.04,.08,.36,hc,0,topY+.08,0,body);}
+    if(k==='cap'){const d=mesh(new THREE.SphereGeometry(.17,14,8,0,Math.PI*2,0,Math.PI/2),M(0xE0574A),0,topY-.04,0,body);d.scale.set(1,.8,1);box(.3,.025,.18,0xC23E33,0,topY-.03,.17,body);}
+    if(k==='ru_hat'){box(.5,.04,.28,0x2A2A33,-.03,1.06,0,body);box(.22,.13,.2,0x2A2A33,-.03,1.14,0,body);}
+    if(k==='coin'){const cn=mesh(new THREE.CylinderGeometry(.09,.09,.03,20),M(0xE8B93A,{emissive:0x4A3000}),0,.12,.205,body);cn.rotation.x=Math.PI/2;box(.04,.04,.035,0x3A2A10,0,.12,.225,body);}
+    if(k==='tie'){box(.1,.05,.03,0x1E2A44,0,.36,.21,body);const t=box(.08,.22,.03,0x2F4A8A,0,.22,.21,body);}
+    if(k==='hood'){const hd=mesh(new THREE.ConeGeometry(.32,.36,4),M(0x2A2F3A,{flatShading:true}),0,1.05,0,body);hd.rotation.y=Math.PI/4;}
+    if(k==='beacon'){const lg=new THREE.Group();lg.position.set(0,1.32,0);body.add(lg);E.mesh(new THREE.CylinderGeometry(.12,.14,.07,12),M(0x4A4F58),0,-.04,0,lg);
+      const dome=mesh(new THREE.SphereGeometry(.12,14,8,0,Math.PI*2,0,Math.PI/2),M(0x3FD08A,{emissive:0x1AA060}),0,0,0,lg);
+      const pl=new THREE.PointLight(0x7CFFC0,1,8,1.5);lg.add(pl);c.lamp={g:lg,mat:dome.material.clone(),light:pl,beacon:true,baseY:1.32};dome.material=c.lamp.mat;}
+    if(k==='lantern'){const lg=new THREE.Group();lg.position.set(.55,1.35,0);root.add(lg);
+      const lb=mesh(new THREE.SphereGeometry(.5,14,10),M(0xC8452F,{emissive:0xFF7A2A}),0,0,0,lg);lb.scale.set(.3,.36,.3);
+      mesh(new THREE.CylinderGeometry(.1,.1,.06,10),M(0xE0B04B),0,.2,0,lg);mesh(new THREE.CylinderGeometry(.1,.1,.06,10),M(0xE0B04B),0,-.2,0,lg);
+      const pl=new THREE.PointLight(0xFFB050,1,9,1.5);lg.add(pl);c.lamp={g:lg,mat:lb.material.clone(),light:pl};lb.material=c.lamp.mat;}
+  });
+  E.chars[slot]=c;return c;
+};
+E.emote=function(c,type){c.emote=type;c.emoteT=0;};
+E.lookFocus=null;E.lampValue=()=>.6;
+const tv=new THREE.Vector3(),tv2=new THREE.Vector3(),tv3=new THREE.Vector3();
+function updateChar(c,dt,t){
+  const p=c.root.position;tv.copy(c.target).sub(p);tv.y=0;const dist=tv.length();let moving=false;
+  if(dist>.04){moving=true;p.addScaledVector(tv.normalize(),Math.min(dist,c.speed*dt));}
+  else if(c.onArrive){const f=c.onArrive;c.onArrive=null;f();}
+  const yawT=moving?Math.atan2(tv.x,tv.z):(c.face!=null?c.face:Math.atan2(camera.position.x-p.x,camera.position.z-p.z));
+  let dy=yawT-c.root.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));c.root.rotation.y+=dy*Math.min(1,dt*8);
+  if(moving)c.phase+=dt*11;else c.phase+=(Math.round(c.phase/Math.PI)*Math.PI-c.phase)*Math.min(1,dt*10);
+  const sw=Math.sin(c.phase)*(moving?.6:0);c.legs[0].rotation.x=sw;c.legs[1].rotation.x=-sw;
+  let by=moving?Math.abs(Math.sin(c.phase))*.06:Math.sin(t*2+c.phase)*.008,sx=1,sy=1,rz=0;
+  if(c.talk){const k=Math.sin(t*15)*.045;sy+=k;sx-=k*.6;}
+  if(c.emote){c.emoteT+=dt;const e=c.emoteT;
+    if(c.emote==='hop')by+=Math.max(0,Math.sin(e*9))*.35*Math.max(0,1-e/1.1);
+    if(c.emote==='shake')rz=Math.sin(e*28)*.12*Math.max(0,1-e/.8);
+    if(c.emote==='slump'){const f=Math.max(0,1-Math.max(0,e-1.2)/.6);sy-=.12*Math.sin(Math.min(1,e/.5)*Math.PI/2)*f;sx+=.06*f;}
+    if(e>1.9)c.emote=null;}
+  c.hip.position.y=.47+by;c.body.scale.set(sx,sy,1);c.body.rotation.z=rz;
+  c.blinkAt-=dt;if(c.blinkAt<0){c.blinkT=.14;c.blinkAt=2+Math.random()*3.5;}
+  let bl=1;if(c.blinkT>0){c.blinkT-=dt;bl=Math.max(.08,Math.abs(c.blinkT/.07-1));}
+  let look;if(c.lookAt)look=tv2.copy(c.lookAt);else if(E.lookFocus&&E.lookFocus!==c)look=tv2.copy(E.lookFocus.root.position).add(tv3.set(0,1.3,0));else look=tv2.copy(camera.position);
+  c.root.updateMatrixWorld();const loc=c.body.worldToLocal(look.clone());
+  c.eyes.forEach(e=>{e.g.scale.y=bl;const v=tv3.set(loc.x-e.x,loc.y-e.y,loc.z-.2).normalize();e.p.position.x=v.x*e.r*.42;e.p.position.y=v.y*e.r*.42;});
+  if(c.lamp){const b=E.lampValue();c.lamp.light.intensity=.25+b*1.9;if(c.lamp.beacon){c.lamp.mat.emissive.setRGB(.9-b*.8,.15+b*.6,.1+b*.3);c.lamp.light.color.setRGB(1-b*.5,.3+b*.7,.3+b*.45);}else{c.lamp.mat.emissive.setRGB(.25+b*.75,.12+b*.36,.04);c.lamp.g.position.y=1.35+Math.sin(t*1.6)*.06;c.lamp.g.rotation.z=Math.sin(t*1.3)*.08;}}
+}
+
+/* camera */
+const cam=E.cam={p0:new THREE.Vector3(),p1:new THREE.Vector3(),l0:new THREE.Vector3(),l1:new THREE.Vector3(),look:new THREE.Vector3(),t:1,dur:1,res:null,idle:null};
+const par={x:0,y:0,cx:0,cy:0};E.parallax=1;
+addEventListener('pointermove',e=>{par.x=e.clientX/innerWidth-.5;par.y=e.clientY/innerHeight-.5;});
+E.camTo=function(pos,look,dur){cam.p0.copy(camera.position);cam.l0.copy(cam.look);cam.p1.copy(pos);cam.l1.copy(look);cam.t=0;cam.dur=RM?.01:dur;return new Promise(r=>cam.res=r);};
+E.camSet=function(pos,look){camera.position.copy(pos);cam.look.copy(look);cam.t=1;};
+function updateCam(dt,t){
+  if(cam.t<1){cam.t=Math.min(1,cam.t+dt/cam.dur);const k=cam.t*cam.t*(3-2*cam.t);camera.position.lerpVectors(cam.p0,cam.p1,k);cam.look.lerpVectors(cam.l0,cam.l1,k);if(cam.t>=1&&cam.res){const r=cam.res;cam.res=null;r();}}
+  else if(cam.idle)cam.idle(t);
+  par.cx+=(par.x-par.cx)*Math.min(1,dt*3);par.cy+=(par.y-par.cy)*Math.min(1,dt*3);const pk=RM?0:E.parallax;
+  camera.lookAt(cam.look.x+par.cx*.6*pk,cam.look.y-par.cy*.3*pk,cam.look.z);
+}
+
+/* 3D-anchored UI */
+const pv=new THREE.Vector3();
+E.project=function(v,el){pv.copy(v).project(camera);if(pv.z>1||Math.abs(pv.x)>1.15||Math.abs(pv.y)>1.15){el.style.visibility='hidden';return;}
+  el.style.visibility='';el.style.left=((pv.x+1)/2*canvas.clientWidth)+'px';el.style.top=((1-pv.y)/2*canvas.clientHeight)+'px';};
+const bubbles=[];
+E.floatBubble=function(c,text,ms){const el=document.createElement('div');el.className='bub';el.textContent=text;$('bubbles').appendChild(el);const b={c,el};bubbles.push(b);
+  setTimeout(()=>{el.remove();const i=bubbles.indexOf(b);if(i>=0)bubbles.splice(i,1);},ms||3000);};
+E.anchors=[];
+
+
+/* occlusion fade: anything between the camera and what it looks at becomes see-through */
+E.fade={on:true,extra:null,list:new Map(),tick:0};
+const fray=new THREE.Raycaster(),fdir=new THREE.Vector3();
+function occlusion(dt){const F=E.fade;if(!F.on||!scene)return;const now=performance.now();F.tick++;
+  for(const k in E.chars){const c=E.chars[k];if(c&&c.root)c.root.userData.isChar=true;}
+  if(F.tick%4===0){const tg=[cam.look].concat(F.extra||[]);
+    for(const t of tg){fdir.copy(t).sub(camera.position);const dist=fdir.length();if(dist<1)continue;fdir.normalize();fray.set(camera.position,fdir);fray.near=.2;fray.far=Math.max(.5,dist-.9);
+      const hits=fray.intersectObjects(scene.children,true);
+      for(const h of hits){const m=h.object;if(!m.isMesh||m.userData.noFade||m===E.ground||Array.isArray(m.material)||m.material.visible===false)continue;
+        let o=m,isChar=false;while(o){if(o.userData&&o.userData.isChar){isChar=true;break;}o=o.parent;}if(isChar)continue;const g=m.geometry,p=g&&g.parameters;
+        if(p&&((p.width&&p.width>30)||(p.radius&&p.radius>30)))continue;
+        let rec=F.list.get(m);if(!rec){const src=m.material,cl=src.clone();cl.transparent=true;cl.depthWrite=false;rec={src,cl,base:src.transparent?src.opacity:1};cl.opacity=rec.base;m.material=cl;F.list.set(m,rec);}rec.seen=now;}}}
+  F.list.forEach((rec,m)=>{const hid=now-rec.seen<450;const want=hid?Math.min(rec.base,.22):rec.base;rec.cl.opacity+=(want-rec.cl.opacity)*Math.min(1,dt*9);
+    if(!hid&&Math.abs(rec.cl.opacity-rec.base)<.03){m.material=rec.src;rec.cl.dispose();F.list.delete(m);}});}
+/* loop */
+const clock=E.clock=new THREE.Clock();
+function frame(){
+  const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+  updateEnv(dt);updateCam(dt,t);
+  Object.values(E.chars).forEach(c=>updateChar(c,dt,t));
+  if(E.onFrame)E.onFrame(dt,t);
+  occlusion(dt);
+  bubbles.forEach(b=>E.project(tv.copy(b.c.root.position).add(tv2.set(0,2.35,0)),b.el));
+  E.anchors.forEach(a=>{if(!a.el.hidden)E.project(a.pos,a.el);});
+  renderer.render(scene,camera);requestAnimationFrame(frame);
+}
+E.start=()=>requestAnimationFrame(frame);
+
+/* dialog */
+E.SPK={};let typing=null;
+E.setTalker=function(key){Object.values(E.chars).forEach(c=>c.talk=false);E.lookFocus=null;const c=E.chars[key];if(c){c.talk=true;E.lookFocus=c;}};
+E.showLine=function(key,text,quote){
+  const d=$('dialog');d.hidden=false;const s=E.SPK[key]||{name:key,col:'#F4EBD6'};$('whoName').textContent=s.name;$('whoDot').style.background=s.col;
+  const line=$('line');line.classList.toggle('quote',!!quote);E.setTalker(key);
+  if(typing){clearInterval(typing.id);typing=null;}
+  const done=()=>{const c=E.chars[key];if(c)c.talk=false;};
+  if(RM){line.textContent=text;done();return Promise.resolve();}
+  line.textContent='';let i=0;
+  return new Promise(res=>{typing={id:setInterval(()=>{i++;line.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing.id);typing=null;done();res();}},24),
+    finish:()=>{clearInterval(typing.id);typing=null;line.textContent=text;done();res();}};});
+};
+E.actions=function(nodes){const a=$('actions');a.innerHTML='';nodes.forEach(n=>a.appendChild(n));};
+E.btn=function(cls,html,on){const b=document.createElement('button');b.className=cls;b.innerHTML=html;b.addEventListener('click',on);return b;};
+E.say=async function(key,text,opt){opt=opt||{};E.actions([]);await E.showLine(key,text,opt.quote);E.setTalker('');
+  return new Promise(res=>{const b=E.btn('next',opt.btn||'繼續',()=>res());E.actions([b]);b.focus({preventScroll:true});});};
+E.ask=async function(key,text,options,disabled,opts){E.actions([]);await E.showLine(key,text);
+  return new Promise(res=>{const n=options.map((o,i)=>{const b=E.btn('opt','<span class="k">'+'甲乙丙丁戊'[i]+'</span><span>'+o+'</span>',()=>res(i));if(disabled&&disabled.has(i))b.disabled=true;return b;});if(opts&&opts.skip)n.push(E.skipBtn(()=>res(-1)));E.actions(n);});};
+E.skipBtn=(fn,label)=>E.btn('skipbtn',label||'跳過，看答案',fn);
+E.hideDialog=()=>{$('dialog').hidden=true;E.setTalker('');};
+E.bindDialog=()=>$('dialog').addEventListener('click',e=>{if(typing&&!e.target.closest('button'))typing.finish();});
+
+/* assistant bubble */
+E.bubble=function(title,text,ms){const b=$('assistBubble');b.innerHTML='';const t=document.createElement('div');t.className='t';const s=document.createElement('span');s.textContent=title;
+  const x=document.createElement('button');x.textContent='收起';x.onclick=()=>b.hidden=true;t.append(s,x);const p=document.createElement('div');p.textContent=text;b.append(t,p);b.hidden=false;
+  clearTimeout(E._bt);if(ms)E._bt=setTimeout(()=>b.hidden=true,ms);};
+E.hideBubble=()=>{$('assistBubble').hidden=true;};
+
+/* overlays */
+E.overlay=function(html,dim){const o=$('overlay');o.className=dim?'dim':'';o.innerHTML=html;return o;};
+E.clearOverlay=function(){const o=$('overlay');o.innerHTML='';o.className='';};
+E.waitClick=sel=>new Promise(r=>document.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>r(b))));
+E.glyph=function(id){const col=E.hex(E.PAL[id][0]);const eye='<circle cx="CX" cy="CY" r="4.2" fill="#fff"/><circle cx="CX" cy="CY" r="2.3" fill="#0B1F5E"/>';
+  const e=pts=>pts.map(([x,y])=>eye.replace(/CX/g,x).replace(/CY/g,y)).join('');
+  const sh={A:'<path d="M17 3 L31 27 H3 Z" fill="'+col+'" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>'+e([[13,19],[21,19]]),
+    I:'<rect x="11" y="2" width="12" height="27" rx="2" fill="'+col+'"/>'+e([[13,11],[21,11]]),
+    G:'<path d="M26 9 A11 11 0 1 0 26 25" stroke="'+col+'" stroke-width="6" fill="none"/><path d="M20 17 L29 17 L29 26" stroke="'+col+'" stroke-width="4" fill="none"/>'+e([[12,7],[19,7]]),
+    O:'<circle cx="17" cy="17" r="10" stroke="'+col+'" stroke-width="6" fill="none"/>'+e([[10,8],[17,6]]),
+    P:'<rect x="9" y="5" width="16" height="24" rx="8" fill="'+col+'"/>'+e([[14,14],[20,14]])}[id];
+  return '<svg viewBox="0 0 34 34" aria-hidden="true">'+sh+'</svg>';};
+})();
+</script>
+
+<script>/* Detective mode (source-based investigation) built on ENG */
+(function(){
+"use strict";
+const E=ENG,$=E.$,V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textContent),GM=JSON.parse($('d-game').textContent);
+const EV=C.evidence;
+const st={loc:-1,meter:GM.meter.start,shown:GM.meter.start,score:0,hints:0,cards:[],testimony:[],yaw:0,drag:null,fx:[],anims:[],wrongs:0,hint:null};
+window.__det=st;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.1;
+E.SPK={narrator:{name:'你',col:'#F4EBD6'},card:{name:'證物',col:'#F2C14E'}};
+Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
+const M=(h,o)=>E.M(h,o),mesh=(...a)=>E.mesh(...a),box=(...a)=>E.box(...a);const L=W.locations,LP={};Object.keys(L).forEach(k=>LP[k]=V(...L[k]));
+E.setEnv('morning',true);
+
+/* ---------- sets ---------- */
+const S={};
+(function(){
+  const g0=mesh(new THREE.PlaneGeometry(400,120),M(0x86A85E),84,0,-10,E.scene);g0.rotation.x=-Math.PI/2;
+  const r=E.rng(5);for(let i=0;i<90;i++){const x=-30+r()*230,z=-50+r()*30;E.tree(E.scene,x,z,1+r(),r()<.4?'pine':'',[0x5E8F4C,0x6FA35A][i%2]);}
+  for(let i=0;i<20;i++){const x=-40+i*14,h=14+r()*14;const m=mesh(new THREE.ConeGeometry(12+r()*6,h,5),M(0x7E93A6,{flatShading:true}),x,h/2-1,-75-r()*15,E.scene);}
+  // teahouse
+  {const g=new THREE.Group();g.position.copy(LP.teahouse);E.scene.add(g);box(12,.25,9,0x9C6A3C,0,.12,-1.5,g);
+    [[-5.6,2.8],[5.6,2.8],[-5.6,-5.8],[5.6,-5.8],[-2,-5.8],[2,-5.8]].forEach(([x,z])=>box(.3,3.4,.3,0xA8322A,x,1.85,z,g));
+    const rf=mesh(E.roofGeo(),M(0x4D5862),0,4.3,-1.5,g);rf.scale.set(6.8/.707,1.4,5.2/.707);
+    box(4,.6,2.2,0x7A4A2A,0,.55,-4.4,g);box(1.4,.8,.7,0x8A5A2B,0,1.25,-4.3,g);box(.3,.08,.14,0x3A2A1A,.3,1.7,-4.1,g);
+    [[-3.4,-.6],[3.4,-.4],[-3.2,1.6],[3.6,1.8]].forEach(([x,z])=>{box(1.2,.08,1.2,0x8A5A2B,x,.9,z,g);box(.12,.75,.12,0x6E4A32,x,.5,z,g);for(let k=0;k<2;k++)mesh(new THREE.CylinderGeometry(.07,.05,.1,10),M(0xF2EFE6),x-.25+k*.5,1,z,g);});
+    [-4,-1.3,1.3,4].forEach(x=>E.lantern(g,x,3.3,2.6));
+    const pst=new THREE.Group();pst.position.set(5,0,-2.2);g.add(pst);box(.1,2.4,.1,0x6E4A32,0,1.2,0,pst);box(1.3,1.7,.06,0xC8452F,0,1.9,.05,pst);box(1,.25,.02,0xF2C14E,0,2.45,.09,pst);
+    S.teahouse={g,hot:{poster:V(5,2.6,-2.1),script:V(.3,1.9,-4.1)}};}
+  // library
+  {const g=new THREE.Group();g.position.copy(LP.library);E.scene.add(g);E.house(g,0,-7,12,4,4.6,0xE6D6B4,0x4D5862,0);box(12,.2,8,0xB89A70,0,.1,-1.5,g);
+    const shelf=(x,col)=>{const s=new THREE.Group();s.position.set(x,0,-4);g.add(s);box(2.4,3,.6,0x6E4A32,0,1.5,0,s);for(let row=0;row<4;row++){box(2.3,.05,.55,0x5A3A22,0,.35+row*.7,.02,s);for(let k=0;k<9;k++)box(.18,.5,.4,[0x8A2A2A,0x2A4A6A,0x4A6A3A,0xB8862A][(k+row)%4],-1+k*.25,.62+row*.7,.05,s);}
+      box(.5,.6,.42,col,0,1.37+.7,.12,s);return s;};
+    shelf(-3.6,0xE04A3A);shelf(0,0xF2C14E);shelf(3.6,0x3FA8E0);
+    box(2.2,.1,1.2,0x8A5A2B,0,.85,.6,g);const sc=mesh(new THREE.CylinderGeometry(.08,.08,1,10),M(0xE8DCC0),0,.98,.6,g);sc.rotation.z=Math.PI/2;
+    S.library={g,hot:{b1:V(-3.6,2.5,-3.6),b2:V(0,2.5,-3.6),b3:V(3.6,2.5,-3.6)}};}
+  // water sets
+  const water=(c,w,d)=>{const m=mesh(new THREE.PlaneGeometry(w,d,24,12),new THREE.MeshPhongMaterial({color:0x4F8FB8,transparent:true,opacity:.88,shininess:70}),c.x,.38,c.z-4,E.scene);m.rotation.x=-Math.PI/2;m.userData.base=m.geometry.attributes.position.array.slice();waters.push(m);return m;};
+  const waters=[];S.waters=waters;
+  {const c=LP.ruxu;water(c,40,22);const b=new THREE.Group();b.position.set(c.x,.55,c.z-3);E.scene.add(b);
+    box(4.2,.6,1.6,0x7A4A2A,0,0,0,b);box(1.6,1,1.2,0xA8322A,-.6,.8,0,b);const rf=mesh(E.roofGeo(),M(0x4D5862),-.6,1.55,0,b);rf.scale.set(1.2/.707,.5,.9/.707);box(.08,2.6,.08,0x5A3A22,1.2,1.3,0,b);
+    const fl=box(.9,.55,.02,0xF2C14E,1.62,2.2,0,b);S.boat=b;S.boatSides=[0,0];
+    const shore=box(40,.6,6,0x9A8E6A,c.x,.2,c.z-15,E.scene);for(let i=0;i<7;i++){const t=new THREE.Group();t.position.set(c.x-10+i*3.3,.5,c.z-14);E.scene.add(t);box(.5,1,.4,0x2F3A4A,0,.7,0,t);mesh(new THREE.SphereGeometry(.22,8,6),M(0xD8B890),0,1.4,0,t);}
+    S.ruxu={c};}
+  {const c=LP.chibi;water(c,46,24);
+    for(let i=0;i<10;i++){const sd=i<5?-1:1,k=i%5;box(3+r()*2,5+r()*4,4,i%2?0xB0402E:0xC0503A,c.x+sd*(17+k*1.2),2.5,c.z+5-k*4.2,E.scene);}
+    const fleet=[];for(let i=0;i<7;i++){const s=new THREE.Group();s.position.set(c.x-9+i*3,.6,c.z-9);E.scene.add(s);box(2.6,.6,1.2,0x5A4A3A,0,0,0,s);box(1.2,.9,.9,0x3A3A44,0,.7,0,s);box(.08,2.2,.08,0x3A2A1A,.6,1.2,0,s);box(.7,.5,.02,0x2A2A2A,.92,1.9,0,s);fleet.push(s);if(i)box(.6,.06,.06,0x8A8A8A,-1.6,.2,0,s);}
+    const fire=[];for(let i=0;i<5;i++){const s=new THREE.Group();s.position.set(c.x-8+i*4,.5,c.z+3.5);E.scene.add(s);box(1.6,.4,.7,0x8A5A2B,0,0,0,s);box(1.2,.5,.5,0xC9B36A,0,.4,0,s);fire.push(s);}
+    const tents=[];for(let i=0;i<5;i++){const t=mesh(new THREE.ConeGeometry(1.1,1.4,4),M(0xD8CCB0),c.x-8+i*4,.7,c.z-15.5,E.scene);tents.push(t);}
+    box(46,.6,5,0x9A8E6A,c.x,.2,c.z-15.5,E.scene);
+    const vane=new THREE.Group();vane.position.set(c.x+12,0,c.z+5);E.scene.add(vane);box(.1,4,.1,0x5A3A22,0,2,0,vane);const flag=box(1.4,.8,.03,0xE04A3A,.7,3.6,0,vane);S.flag=flag;
+    S.chibi={c,fleet,fire,tents,hot:{}};}
+  // court
+  {const g=new THREE.Group();g.position.copy(LP.court);E.scene.add(g);box(13,.3,10,0xBFB094,0,.15,-1.5,g);
+    [[-5.5,-5.5],[5.5,-5.5],[-5.5,2.5],[5.5,2.5]].forEach(([x,z])=>box(.35,4.2,.35,0xA8322A,x,2.3,z,g));const rf=mesh(E.roofGeo(),M(0x4D5862),0,5,-1.5,g);rf.scale.set(7/.707,1.3,5.6/.707);
+    box(3.6,1.1,1.1,0x7A2A22,0,.85,-3.4,g);box(3.8,.08,1.2,0xC9962E,0,1.42,-3.4,g);box(3.4,1,.1,0x2A2A33,0,3.4,-5.4,g);box(2.8,.6,.02,0xE0B04B,0,3.4,-5.33,g);
+    [-4.6,4.6].forEach(x=>box(.8,.6,3,0x8A5A2B,x,.6,0,g));S.court={g};}
+})();
+
+/* characters */
+Object.entries(C.npc_slots).forEach(([s,d])=>E.makeChar(s,d.character_id,d.costume));
+const CH=E.chars;E.lampValue=()=>st.shown/100;
+function place(loc,instant,court){const lay=court?W.court_layout:W.npc_layout;const k=E.portrait?.7:1;
+  Object.values(CH).forEach(c=>{const l=lay[c.slot];const t=LP[loc].clone().add(V(l[0]*k,0,l[2]));if(loc==='ruxu'||loc==='chibi')t.z+=8.5;c.target.copy(t);if(instant)c.root.position.copy(t);else c.speed=Math.max(3,c.root.position.distanceTo(t)/3);});}
+
+/* camera */
+function view(loc){const p=LP[loc];const water=loc==='ruxu'||loc==='chibi';
+  if(E.portrait)return {look:p.clone().add(V(0,water?.4:1.3,water?-2:-1.8)),off:water?V(0,9,20):V(0,1.9,13.5)};
+  return {look:p.clone().add(V(0,water?1:1.2,water?-1:-1.6)),off:water?V(0,6,15.5):V(0,3.2,9)};}
+let vw=null;E.cam.idle=t=>{if(!vw){const a=t*.05;E.camera.position.set(Math.sin(a)*12,4,Math.cos(a)*12);E.cam.look.set(0,1.2,-1.5);return;}
+  E.camera.position.copy(vw.look).add(vw.off.clone().applyAxisAngle(V(0,1,0),st.yaw));E.cam.look.copy(vw.look);};
+async function goTo(loc,court){const v=view(loc);const from={p:E.camera.position.clone(),l:E.cam.look.clone()};vw=null;place(loc,false,court);
+  await E.camTo(v.look.clone().add(v.off),v.look,st.loc<0?2:3.2);st.yaw=0;vw=v;}
+E.canvas.addEventListener('pointerdown',e=>{if(!vw)return;st.drag={x:e.clientX,y0:st.yaw,m:0};E.canvas.setPointerCapture(e.pointerId);});
+E.canvas.addEventListener('pointermove',e=>{if(!st.drag)return;st.drag.m=Math.max(st.drag.m,Math.abs(e.clientX-st.drag.x));const lim=GM.camera.user_orbit_deg*Math.PI/180;st.yaw=Math.max(-lim,Math.min(lim,st.drag.y0-(e.clientX-st.drag.x)*.005));});
+['pointerup','pointercancel'].forEach(k=>E.canvas.addEventListener(k,()=>st.drag=null));
+
+/* frame */
+function anim(dur,update){return new Promise(res=>st.anims.push({t:0,dur:E.RM?.05:dur,update,done:res}));}
+function onFrame(dt,t){
+  st.shown+=(st.meter-st.shown)*Math.min(1,dt*2.5);meterHud();
+  for(let i=st.anims.length-1;i>=0;i--){const a=st.anims[i];a.t+=dt;const k=Math.min(1,a.t/a.dur);a.update(k,dt);if(k>=1){st.anims.splice(i,1);a.done();}}
+  S.waters.forEach(w=>{const pa=w.geometry.attributes.position,b=w.userData.base;for(let i=0;i<pa.count;i++){pa.array[i*3+2]=Math.sin(b[i*3]*.6+t*1.4)*.06+Math.cos(b[i*3+1]*.8+t)*.05;}pa.needsUpdate=true;});
+  for(let i=st.fx.length-1;i>=0;i--){const f=st.fx[i];f.life-=dt;f.m.position.addScaledVector(f.v,dt);f.v.y+=f.g*dt;if(f.m.material.opacity!=null)f.m.material.opacity=Math.max(0,Math.min(1,f.life));f.m.scale.multiplyScalar(f.grow||1);if(f.life<=0){E.scene.remove(f.m);st.fx.splice(i,1);}}
+  if(S.boat){S.boat.position.y=.55+Math.sin(t*1.3)*.05;}
+  if(S.flag)S.flag.rotation.y=Math.sin(t*3)*.15+(st.windOn?-.6:0);
+}
+function puff(pos,col,n,spd,g,life,size,grow){for(let i=0;i<n;i++){const m=mesh(new THREE.SphereGeometry(size||.25,6,4),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:1}),pos.x+(Math.random()-.5),pos.y,pos.z+(Math.random()-.5),E.scene);
+  st.fx.push({m,v:V((Math.random()-.5)*spd,Math.random()*spd+.5,(Math.random()-.5)*spd),g:g||0,life:life||1.5,grow});}}
+
+/* hud & helpers */
+function meterHud(){const v=Math.round(st.shown);$('mStage').textContent=v;$('mBar').style.width=v+'%';$('mBar').style.background=v<40?'var(--cinnabar)':v>=75?'var(--jade)':'var(--gold)';$('mGlow').setAttribute('opacity',(.15+v/100*.85).toFixed(2));}
+function meter(n){st.meter=Math.max(0,Math.min(100,st.meter+n));}
+function addScore(n){st.score=Math.max(0,st.score+n);$('score').textContent=st.score;}
+let toastT=null;function toast(title,text,cls){const el=$('toast');el.className=cls||'';const dg=$('dialog');el.style.bottom=dg.hidden?'14px':Math.min(innerHeight-120,dg.offsetHeight+24)+'px';$('toastT').textContent=title;$('toastD').textContent=text||'';el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,4000);}
+function cardHTML(id){const e=EV[id];return '<div class="ecard"><div class="eh"><b>'+e.name+'</b><span>'+e.kind+'</span></div><dl><dt>作者</dt><dd>'+e.author+'</dd><dt>時間</dt><dd>'+e.date+'</dd><dt>立場</dt><dd>'+e.stance+'</dd></dl><p class="ex">'+e.excerpt+'</p><p class="nt">'+e.note+'</p></div>';}
+async function getCard(id,by){const isNew=!st.cards.includes(id);if(isNew)st.cards.push(id);$('nbCount').textContent=st.cards.length;
+  E.actions([]);await E.showLine(by||'card',(isNew?'新證物：':'')+EV[id].name);const d=document.createElement('div');d.innerHTML=cardHTML(id);await new Promise(r=>E.actions([d.firstChild,E.btn('next','收入證物冊',r)]));}
+$('notebook').addEventListener('click',async()=>{if($('overlay').innerHTML)return;E.overlay('<div class="card"><h2>證物冊</h2><p class="sub">每份史料都要問：誰寫的？甚麼時候寫的？是甚麼性質？</p><div class="cards">'+(st.cards.map(cardHTML).join('')||'<p class="sub">還沒有證物。</p>')+(st.testimony.length?'<h3>說書人的證詞</h3><ol class="tst">'+st.testimony.map(t=>'<li>'+t+'</li>').join('')+'</ol>':'')+'</div><button class="primary" id="nbc">收起</button></div>',true);await E.waitClick('#nbc');E.clearOverlay();});
+$('assist').addEventListener('click',()=>{if(!st.hint)return;st.hints++;addScore(-GM.scoring.hint_penalty);E.bubble('學伴提示（扣 '+GM.scoring.hint_penalty+' 分）',st.hint,6500);});
+function hotspots(loc,list,base){return new Promise(res=>{const left=new Set(list.map(h=>h.id));const els=[];
+  list.forEach(h=>{const el=document.createElement('button');el.className='spot';el.textContent=h.label;$('spots').appendChild(el);const pos=(S[loc].hot[h.id]).clone().add(LP[loc]);const a={el,pos};E.anchors.push(a);els.push(a);
+    el.addEventListener('click',async()=>{if(st.busy)return;st.busy=true;el.remove();E.anchors.splice(E.anchors.indexOf(a),1);left.delete(h.id);await getCard(h.evidence||h.id);st.busy=false;
+      if(!left.size)res();else{E.actions([]);E.showLine('companion','還有 '+left.size+' 處可以查看。');}});});
+  E.actions([]);E.showLine('companion',base);});}
+
+/* ---------- locations ---------- */
+async function locTeahouse(l){
+  await E.say('companion',l.lines.enter);E.emote(CH.rival,'hop');CH.rival.talk=true;await E.say('rival',l.lines.rival);
+  await E.say('mentor',l.lines.mentor);st.hint='點擊畫面上的標籤：戲曲海報和說書人的話本。';
+  await hotspots('teahouse',l.hotspots,'點擊標籤，查看茶館裡的線索。');
+  st.testimony=C.locations.find(x=>x.type==='cross_exam').testimony.map(t=>t.text);toast('已記錄說書人的證詞','共 '+st.testimony.length+' 句，可在「證物冊」查看。','');
+  await E.say('mentor',l.testimony_intro);
+}
+async function locLibrary(l){
+  await E.say('companion',l.lines.enter);st.hint='三部書分別放在左、中、右三個書架上，點擊它們的標籤。';
+  await hotspots('library',l.hotspots,'點擊三個書架上的書。');
+  const T=l.timeline;const items=E.shuffle(T.items.map((x,i)=>({text:x.text,i})));let first=true;st.hint='先發生事件，然後才有人寫史書；注釋要在原書之後；小說最晚。';
+  for(;;){const order=[];const ok=await new Promise(async res=>{const wrap=document.createElement('div');const draw=()=>{wrap.innerHTML='';const ol=document.createElement('ol');ol.className='seqlist';for(let k=0;k<items.length;k++){const li=document.createElement('li');li.textContent=order[k]?order[k].text:'……';if(!order[k])li.className='empty';ol.appendChild(li);}wrap.appendChild(ol);
+        const ch=document.createElement('div');ch.className='chips';items.forEach(it=>{const used=order.includes(it);ch.appendChild(E.btn('chipb'+(used?' used':''),it.text,()=>{if(used)return;order.push(it);draw();}));});wrap.appendChild(ch);sub.disabled=order.length<items.length;};
+      const sub=E.btn('next','確定次序',()=>res(order.every((o,k)=>o.i===k)));const rs=E.btn('ghost','重排',()=>{order.length=0;draw();});draw();E.actions([]);await E.showLine('mentor',T.prompt);E.actions([wrap,sub,rs,E.skipBtn(()=>res('skip'))]);});
+    if(ok==='skip'){first=false;break;}if(ok)break;first=false;toast('次序不對',st.hint,'bad');E.emote(CH.companion,'shake');}
+  if(first)addScore(GM.scoring.timeline_first_try);meter(8);toast('次序正確','赤壁之戰（208）→《三國志》（約 280 年代）→ 裴注（429）→《三國演義》（約 14 世紀）','ok');
+  await E.say('mentor',l.lines.after);
+}
+async function locRuxu(l){
+  await E.say('mentor',l.lines.enter);const b=S.boat;st.hint='先按「曹軍放箭」，船傾側後再按「掉轉船身」。';
+  const arrows=[[],[]];let side=0,tilt=0;
+  const shoot=async n=>{for(let i=0;i<n;i++){const z=side?-.82:.82;const ar=new THREE.Group();const sh=mesh(new THREE.CylinderGeometry(.025,.025,1.1,5),M(0x6E4A32),0,0,0,ar);sh.rotation.z=Math.PI/2;mesh(new THREE.ConeGeometry(.05,.15,5),M(0x8A8A8A),.6,0,0,ar).rotation.z=-Math.PI/2;
+      const from=V(b.position.x-1.6+Math.random()*3.2,4,b.position.z-14);ar.position.copy(from);E.scene.add(ar);const lx=-1.6+Math.random()*3.2,ly=.1+Math.random()*.9;
+      anim(.5,k=>{const to=b.localToWorld(V(lx,ly,z*(side?1:1)));ar.position.lerpVectors(from,to,k);ar.position.y+=Math.sin(k*Math.PI)*2;ar.lookAt(to);ar.rotateY(Math.PI/2);}).then(()=>{E.scene.remove(ar);b.add(ar);ar.position.set(lx,ly,side?-.85:.85);ar.rotation.set(0,side?Math.PI/2:-Math.PI/2,(Math.random()-.5)*.4);arrows[side].push(ar);});
+      await E.sleep(80);}await E.sleep(600);};
+  const setTilt=()=>{const d=arrows[0].length-arrows[1].length;const target=Math.max(-.32,Math.min(.32,d*.018));return anim(.8,k=>{b.rotation.x=tilt+(target-tilt)*k;}).then(()=>tilt=target);};
+  await new Promise(res=>{let shots=0;const btn=E.btn('next','曹軍放箭',async()=>{btn.disabled=true;await shoot(6);shots++;await setTilt();if(shots>=3){E.emote(CH.companion,'shake');E.floatBubble(CH.companion,'船要翻了！',2200);res();}else btn.disabled=false;});
+    E.actions([]);E.showLine('narrator',l.lines.task).then(()=>E.actions([btn]));});
+  await E.say('companion',l.lines.tilt);
+  await new Promise(res=>{const btn=E.btn('next','掉轉船身',async()=>{btn.disabled=true;await anim(1.6,k=>{b.rotation.y=Math.PI*k;});side=1;b.rotation.y=0;
+      arrows[0].forEach(a=>{a.position.z=-a.position.z;a.rotation.y+=Math.PI;});arrows[1]=arrows[0];arrows[0]=[];tilt=-tilt;b.rotation.x=tilt;side=0;
+      const again=E.btn('next','曹軍再放箭',async()=>{again.disabled=true;await shoot(18);await setTilt();res();});E.actions([again]);});
+    E.actions([]);E.showLine('narrator',l.lines.task2).then(()=>E.actions([btn]));});
+  E.flash(true);await E.say('mentor',l.lines.done);await getCard(l.evidence,'mentor');meter(8);
+}
+async function locChibi(l){
+  await E.say('mentor',l.lines.enter);const X=S.chibi;st.hint='逐一按下面的按鈕，從不同史料的角度重演赤壁之戰。';
+  const done=new Set();
+  const show={
+    fire:async()=>{const tg=X.fleet;await anim(3,k=>{X.fire.forEach((s,i)=>{s.position.z=X.c.z+3.5-k*11.5;s.position.x=X.c.x-8+i*4;});});
+      X.fire.forEach(s=>puff(s.position.clone().add(V(0,.8,0)),0xFF8A2A,6,1.2,1,1.2,.35));for(let i=0;i<tg.length;i++){const s=tg[i];setTimeout(()=>{for(let k=0;k<3;k++)puff(s.position.clone().add(V(0,1,0)),k?0xFFB23A:0xFF5A1A,8,1.4,1.2,1.6,.4);s.children.forEach(m=>{if(m.material&&m.material.color)m.material=M(0x2A2420);});},i*260);}
+      E.flash(false,0xFF6A2A);await E.sleep(2600);for(let i=0;i<14;i++)puff(V(X.c.x-9+Math.random()*18,1.5,X.c.z-9),0x4A4A4A,2,.8,.6,3,.6,1.01);},
+    wind:async()=>{st.windOn=true;for(let i=0;i<30;i++){const m=mesh(new THREE.BoxGeometry(1.4,.03,.03),new THREE.MeshBasicMaterial({color:0xFFFFFF,transparent:true,opacity:.7}),X.c.x+8+Math.random()*6,1+Math.random()*4,X.c.z+4+Math.random()*4,E.scene);m.rotation.y=.8;st.fx.push({m,v:V(-6,0,-6),g:0,life:2.2});}await E.sleep(2200);},
+    plague:async()=>{X.tents.forEach(t=>{for(let k=0;k<4;k++)puff(t.position.clone().add(V(0,1,0)),0x9AB86A,3,.5,.3,3,.5,1.005);});E.flash(false,0x5A6A3A);await E.sleep(2500);},
+    self:async()=>{for(let i=X.fleet.length-1;i>=0;i--){const s=X.fleet[i];puff(s.position.clone().add(V(0,1,0)),0xFF8A2A,6,1,1,1.4,.35);await E.sleep(180);}E.emote(CH.rival,'shake');await E.sleep(1400);}
+  };
+  await new Promise(res=>{const draw=()=>{const nodes=l.replays.map(rp=>{const b=E.btn(done.has(rp.id)?'chipb used':'chipb',rp.button,async()=>{if(st.busy||done.has(rp.id))return;st.busy=true;E.actions([]);E.hideDialog();
+        await show[rp.show]();toast(rp.button.replace('按','').replace('重演',''),rp.caption,'');await getCard(rp.evidence,'mentor');done.add(rp.id);st.busy=false;if(done.size>=l.replays.length)res();else{E.actions([]);E.showLine('mentor','還有 '+(l.replays.length-done.size)+' 種說法。').then(draw);}});return b;});
+      const w=document.createElement('div');w.className='chips';nodes.forEach(n=>w.appendChild(n));E.actions([w]);};
+    E.actions([]);E.showLine('mentor','選一份史料，重演當時的情形。').then(draw);});
+  meter(6);await E.say('mentor',l.lines.after);
+}
+async function locCourt(l){
+  await E.say('mentor',l.lines.enter);const R=CH.rival;
+  for(let i=0;i<l.testimony.length;i++){const t=l.testimony[i];st.hint='這句證詞，和哪一份證物的記載矛盾？打開證物冊對照作者和內容。';
+    for(;;){const act=await new Promise(async res=>{E.actions([]);E.emote(R,'hop');await E.showLine('rival','證詞 '+(i+1)+'：'+t.text);E.actions([E.btn('ghost','追問',()=>res('press')),E.btn('next','出示證據',()=>res('present')),E.skipBtn(()=>res('skip'),'跳過這句，看答案')]);});
+      if(act==='press'){await E.say('rival',t.press);continue;}
+      if(act==='skip'){if(!st.cards.includes(t.answer))st.cards.push(t.answer);await E.say('mentor','應該出示的是'+EV[t.answer].name+'。'+t.reveal);break;}
+      const pick=await new Promise(async res=>{E.actions([]);await E.showLine('narrator','出示哪一份證物？');const w=document.createElement('div');w.className='pgrid';st.cards.forEach(id=>w.appendChild(E.btn('pbtn','<span>'+EV[id].name+'</span>',()=>res(id))));E.actions([w,E.btn('ghost','返回',()=>res(null))]);});
+      if(!pick)continue;
+      if(pick===t.answer){meter(GM.scoring.present_right);addScore(GM.scoring.present_right);E.flash(true);E.emote(R,'shake');E.emote(CH.companion,'hop');
+        const o=$('objection');o.hidden=false;o.classList.remove('pop');void o.offsetWidth;o.classList.add('pop');await E.sleep(900);o.hidden=true;
+        await E.say('mentor',t.reveal);break;}
+      st.wrongs++;meter(GM.scoring.present_wrong);E.emote(R,'hop');E.flash(false);toast('這份證物對不上',EV[pick].name+'的內容和這句證詞沒有直接矛盾。','bad');await E.say('rival','哈！這和我說的有甚麼關係？');}
+  }
+  E.emote(R,'slump');await E.say('rival',l.lines.win);
+}
+const RUN={investigate:locTeahouse,timeline:locLibrary,arrow_boat:locRuxu,replay:locChibi,cross_exam:locCourt};
+
+/* final */
+async function finale(){
+  for(const q of C.deduction){const dis=new Set();let w=0;for(;;){const i=await E.ask('mentor',q.question,q.options,dis,{skip:true});if(i===-1){w=99;break;}if(i===q.answer)break;w++;dis.add(i);meter(-3);E.emote(CH.mentor,'shake');}
+    if(w===99)await E.say('mentor','答案是「'+q.options[q.answer]+'」。'+q.explain);else{addScore(Math.max(2,GM.scoring.deduction_first_try-w*GM.scoring.wrong_penalty));await E.say('mentor','沒錯。'+q.explain);}}
+  const g=C.gate,dis=new Set();let w=0;for(;;){const i=await E.ask('gatekeeper',g.question,g.options,dis,{skip:true});if(i===-1){w=99;break;}if(i===g.answer)break;w++;dis.add(i);E.emote(CH.gatekeeper,'shake');}
+  if(w===99)await E.say('gatekeeper','答案是「'+g.options[g.answer]+'」。'+g.explain);else{addScore(Math.max(2,GM.scoring.gate_first_try-w*GM.scoring.wrong_penalty));meter(5);await E.say('gatekeeper','結案。'+g.explain);}
+}
+async function main(){
+  E.start();E.overlay('<div class="title"><div class="v">'+C.meta.short_title+'</div><div class="v a">'+C.meta.author+'</div><div class="side"><p>'+C.meta.title_lines.join('<br>')+'</p><button class="primary" id="go">接案</button></div></div>',true);
+  $('go').focus();await E.waitClick('#go');
+  E.overlay('<div class="card"><h2>本案人物</h2><div class="cast">'+Object.values(C.npc_slots).map(x=>'<div>'+E.glyph(x.character_id)+'<p style="margin:0"><b>'+x.display_name+'</b><br><span>'+x.persona+'</span></p></div>').join('')+'</div><p class="sub">你是史館的新任查案官。收集史料、比較說法，最後在公堂上用證據拆穿錯誤的說法。右上角的「真相值」會隨你的判斷升降。</p><button class="primary" id="go">出發</button></div>',true);
+  await E.waitClick('#go');E.clearOverlay();$('hud').hidden=false;
+  for(let i=0;i<C.locations.length;i++){const l=C.locations[i];st.loc=i;
+    E.overlay('<div class="chapcard"><small>第'+E.NUM[i]+'幕</small><h2>'+l.title+'</h2></div>',true);await Promise.race([E.sleep(E.RM?800:1800),new Promise(r=>$('overlay').addEventListener('click',r,{once:true}))]);E.clearOverlay();
+    $('chapNo').textContent='第'+E.NUM[i]+'幕';$('chapTitle').textContent=l.title;E.setEnv(l.env);await goTo(l.id,l.type==='cross_exam');
+    await RUN[l.type](l);E.hideDialog();st.hint=null;}
+  await finale();E.hideDialog();
+  const tier=GM.endings.find(e=>st.meter>=e.min_meter).id,EN=C.endings[tier];E.flash(true);Object.values(CH).forEach(c=>E.emote(c,'hop'));await E.sleep(700);
+  E.overlay('<div class="card"><p class="sub" style="margin:0">結案報告</p><h2>'+EN.title+'</h2><p>'+EN.text+'</p><div class="stats"><div><b>'+Math.round(st.meter)+'</b>真相值</div><div><b>'+st.score+'</b>分數</div><div><b>'+st.wrongs+'</b>出示錯誤</div></div>'+
+    '<p style="margin-top:6px"><b>拆穿的說法</b></p><ul class="review">'+C.locations.find(x=>x.type==='cross_exam').testimony.map(t=>'<li><b>'+t.text+'</b><p>'+t.reveal+'</p></li>').join('')+'</ul><p style="font-family:var(--serif)">裴松之：'+C.debrief+'</p><button class="primary" id="again">再查一次</button></div>',true);
+  await E.waitClick('#again');location.reload();
+}
+main();
+})();
+</script>
+</body>
+</html>

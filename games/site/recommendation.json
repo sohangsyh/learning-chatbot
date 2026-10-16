@@ -1,0 +1,41 @@
+{
+  "inputs": {
+    "subject": "數學",
+    "has_construction": true,
+    "has_spatial": true,
+    "has_variables": false
+  },
+  "subject_candidates": [
+    "building",
+    "escape",
+    "carry"
+  ],
+  "feasibility": {
+    "building": {
+      "pass": true,
+      "why": "學生要按三視圖親手砌出立體，並從不同角度驗證"
+    },
+    "carry": {
+      "pass": true,
+      "why": "視圖配對可做溫習"
+    },
+    "rpg": {
+      "pass": false,
+      "why": "沒有情境抉擇"
+    }
+  },
+  "scores": {
+    "building": 0.94,
+    "escape": 0.5,
+    "carry": 0.48
+  },
+  "recommendation": {
+    "primary": "building",
+    "reason": "三視圖的核心能力是在腦中轉換二維與三維，最有效的方法是親手砌、轉動視角對照。",
+    "learning_path": [
+      "building",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "building"
+}

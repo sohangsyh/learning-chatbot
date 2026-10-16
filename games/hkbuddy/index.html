@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hong Kong Buddy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#121A24; --panel:rgba(18,26,37,.92); --panel-line:rgba(224,176,75,.38);
+  --paper:#F4EBD6; --ink:#16202A; --muted:#B8AD94; --gold:#E0B04B; --gold-deep:#B9862A;
+  --jade:#5FB49C; --cinnabar:#D2553F;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0E141C; --panel:rgba(14,20,29,.94); } }
+:root[data-theme="dark"]{ --bg:#0E141C; --panel:rgba(14,20,29,.94); }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{height:100%;margin:0;background:var(--bg);color:var(--paper);font-family:var(--sans);-webkit-tap-highlight-color:transparent;overflow:hidden}
+#app{position:relative;height:100%;width:100%;overflow:hidden}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* HUD */
+#hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.chap{background:var(--panel);border:1px solid var(--panel-line);border-radius:12px;padding:8px 14px;display:flex;align-items:baseline;gap:10px;min-width:0}
+.chap span{font-size:12px;color:var(--muted);white-space:nowrap}
+.chap strong{font-family:var(--serif);font-weight:700;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meters{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.lamp{background:var(--panel);border:1px solid var(--panel-line);border-radius:12px;padding:6px 12px 6px 8px;display:flex;align-items:center;gap:8px}
+.lamp svg{width:26px;height:34px;flex:none}
+.lamp .lab{display:flex;flex-direction:column;gap:4px;min-width:92px}
+.lamp .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.lamp .row b{color:var(--paper);font-weight:600;font-variant-numeric:tabular-nums}
+.bar{height:5px;border-radius:3px;background:rgba(244,235,214,.14);overflow:hidden}
+.bar i{display:block;height:100%;width:50%;background:var(--gold);transition:width .6s ease,background .6s}
+#assist{pointer-events:auto;display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--gold);border-radius:999px;padding:6px 12px 6px 8px;font-size:13px}
+#assist svg{width:18px;height:18px}
+#assist:disabled{opacity:.4;cursor:default;border-color:var(--panel-line)}
+#assist.ready{box-shadow:0 0 0 0 rgba(224,176,75,.6)}
+@media (prefers-reduced-motion: no-preference){ #assist.ready{animation:ping 1.8s ease-out infinite} @keyframes ping{0%{box-shadow:0 0 0 0 rgba(224,176,75,.55)}80%,100%{box-shadow:0 0 0 10px rgba(224,176,75,0)}} }
+#assistBubble{position:absolute;right:12px;top:118px;width:min(320px,calc(100% - 24px));background:var(--paper);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.6;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#assistBubble .t{font-size:12px;color:#7A6A45;margin-bottom:4px;display:flex;justify-content:space-between;gap:8px}
+#assistBubble button{background:none;border:0;color:#7A6A45;font-size:12px;padding:0}
+
+/* dialog */
+#dialog{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(760px,calc(100% - 20px));max-height:52%;overflow:auto;background:var(--panel);border:1px solid var(--panel-line);border-radius:14px;padding:14px 18px 16px}
+.who{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--gold);margin-bottom:6px}
+.who .dot{width:12px;height:12px;border-radius:50%;flex:none}
+#line{margin:0;font-size:17px;line-height:1.75;min-height:1.75em}
+#line.quote{font-family:var(--serif);font-weight:500}
+#actions{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+#actions .next{align-self:flex-end;background:var(--gold);color:var(--ink);border:0;border-radius:10px;padding:9px 20px;font-weight:600}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:rgba(244,235,214,.05);border:1px solid rgba(244,235,214,.22);border-radius:10px;padding:11px 14px;font-size:16px;line-height:1.55}
+.opt:hover:not(:disabled){border-color:var(--gold);background:rgba(224,176,75,.1)}
+.opt .k{font-family:var(--serif);color:var(--gold);flex:none}
+.opt:disabled{opacity:.45;border-color:rgba(210,85,63,.6);text-decoration:line-through;cursor:default}
+.status{font-size:14px;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){ .shake{animation:shake .35s} @keyframes shake{25%{transform:translateX(calc(-50% - 6px))}75%{transform:translateX(calc(-50% + 6px))}} }
+
+/* 3D-anchored labels */
+#spots,#bubbles{position:absolute;inset:0;pointer-events:none}
+.spot{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;background:var(--panel);border:1px solid var(--gold);color:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;white-space:nowrap}
+.spot.done{border-color:var(--jade);color:var(--jade)}
+.bub{position:absolute;transform:translate(-50%,-100%);background:var(--paper);color:var(--ink);border-radius:12px;padding:7px 12px;font-size:14px;max-width:220px;line-height:1.45;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.bub::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--paper)}
+
+/* overlays */
+#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#overlay.dim{background:rgba(10,15,22,.7)}
+#overlay:empty{display:none}
+.card{background:var(--paper);color:var(--ink);border-radius:16px;padding:26px 24px;width:min(560px,100%);max-height:100%;overflow:auto}
+.card h2{font-family:var(--serif);font-weight:900;font-size:26px;margin:0 0 6px;letter-spacing:.04em}
+.card p{line-height:1.75;margin:0 0 12px}
+.card .sub{color:#6F6450;font-size:14px}
+.primary{background:var(--ink);color:var(--paper);border:0;border-radius:10px;padding:11px 24px;font-weight:600;font-size:16px}
+.title{display:flex;align-items:center;gap:28px;color:var(--paper)}
+.title .v{writing-mode:vertical-rl;font-family:var(--serif);font-weight:900;font-size:clamp(52px,11vh,96px);letter-spacing:.12em;line-height:1;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.title .v.a{font-size:clamp(18px,2.6vh,24px);font-weight:500;letter-spacing:.4em;color:var(--gold);align-self:flex-start;margin-left:-14px}
+.title .side{display:flex;flex-direction:column;gap:18px;max-width:260px}
+.title .side p{font-family:var(--serif);font-size:18px;line-height:1.8;margin:0;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.title .side .primary{background:var(--gold);color:var(--ink);align-self:flex-start}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 4px}
+.role{text-align:left;background:#fff;border:1.5px solid #D9CCAE;border-radius:12px;padding:14px;color:var(--ink)}
+.role:hover{border-color:var(--gold-deep)}
+.role b{font-family:var(--serif);font-size:19px;display:block;margin-bottom:6px}
+.role span{font-size:14px;line-height:1.6;display:block;color:#4C4434}
+.role em{font-style:normal;font-size:12px;color:#8A7A55;display:block;margin-top:8px}
+.cast{display:flex;flex-direction:column;gap:10px;margin:14px 0 18px}
+.cast div{display:flex;align-items:center;gap:12px}
+.cast svg{width:34px;height:34px;flex:none}
+.cast b{font-family:var(--serif)}
+.cast span{font-size:14px;color:#4C4434}
+.chapcard{text-align:center;color:var(--paper)}
+.chapcard small{font-size:14px;color:var(--gold);letter-spacing:.3em}
+.chapcard h2{font-family:var(--serif);font-weight:900;font-size:clamp(34px,6vw,54px);margin:8px 0 14px;letter-spacing:.08em}
+.chapcard p{font-family:var(--serif);font-size:17px;line-height:1.8;max-width:30em;margin:0 auto;color:#E9DFC6}
+.tl{list-style:none;padding:0;margin:14px 0;display:flex;flex-direction:column;gap:10px}
+.tl li{border-left:3px solid #D9CCAE;padding:2px 0 2px 12px}
+.tl li.ok{border-color:var(--jade)} .tl li.bad{border-color:var(--cinnabar)} .tl li.mid{border-color:var(--gold-deep)}
+.tl b{font-family:var(--serif)} .tl .tag{font-size:12px;margin-left:6px;color:#6F6450}
+.tl p{font-size:14px;margin:4px 0 0;color:#4C4434;line-height:1.6}
+.stats{display:flex;gap:18px;font-size:14px;color:#6F6450;margin-bottom:6px}
+.stats b{font-size:20px;color:var(--ink);font-family:var(--serif);display:block}
+@media (max-width:560px){
+  .title{flex-direction:column;gap:14px} .title .v{writing-mode:horizontal-tb;font-size:56px} .title .v.a{margin-left:0;align-self:center;font-size:15px;letter-spacing:.15em} .title .side{align-items:center;text-align:center} .title .side .primary{align-self:center}
+  .roles{grid-template-columns:1fr}
+  #line{font-size:16px}
+  .chap strong{font-size:15px}
+  .title{gap:18px}
+  #assistBubble{top:112px}
+}
+
+.scorebox{background:var(--panel);border:1px solid var(--panel-line);border-radius:12px;padding:7px 14px;display:flex;gap:16px}
+.scorebox div{display:flex;flex-direction:column;align-items:flex-end;font-size:12px;color:var(--muted)}
+.scorebox b{font-family:var(--serif);font-size:20px;color:var(--paper);font-variant-numeric:tabular-nums}
+.tool{pointer-events:auto;display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--gold);border-radius:999px;padding:6px 12px 6px 9px;font-size:13px}
+.tool svg{width:17px;height:17px}.tool:disabled{opacity:.4;cursor:default;border-color:var(--panel-line)}
+#toast{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:min(560px,calc(100% - 20px));background:var(--panel);border:1px solid var(--panel-line);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:10px 14px;pointer-events:none;z-index:3}
+#toast.ok{border-left-color:var(--jade)}#toast.bad{border-left-color:var(--cinnabar)}
+#toast b{font-family:var(--serif);font-size:15px;display:block;margin-bottom:2px}#toast.ok b{color:var(--jade)}#toast.bad b{color:#F08A74}
+#toast span{font-size:14px;line-height:1.55;color:#E6DCC4}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.pbtn{display:flex;justify-content:space-between;align-items:center;gap:6px;background:rgba(244,235,214,.06);border:1px solid rgba(244,235,214,.28);border-radius:10px;padding:8px 10px;font-size:14px}
+.pbtn b{font-family:var(--serif);font-size:16px;color:var(--muted)}
+.pbtn.float{border-color:#5AA8E0}.pbtn.float b{color:#8CC8F2}.pbtn.sink{border-color:#C98E1E}.pbtn.sink b{color:#F2C14E}
+.pbtn:hover{border-color:var(--gold)}
+.shaper .srow{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.shaper input[type=range]{flex:1;accent-color:var(--gold);height:28px}
+.status{font-size:13px;color:var(--muted);margin:6px 0 0}
+.notes{list-style:none;padding:0;margin:10px 0 14px;display:flex;flex-direction:column;gap:14px}
+.notes b{font-family:var(--serif)}.notes p{font-size:14px;margin:6px 0 0;line-height:1.6;color:#4C4434}
+.dt{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}
+.dt th{text-align:left;font-weight:600;color:#6F6450;border-bottom:1px solid #D9CCAE;padding:4px 6px}
+.dt td{padding:4px 6px;border-bottom:1px solid #EEE4CC}.dt td.hit{color:#2E7D62;font-weight:600}.dt td.miss{color:#B5412E;font-weight:600}
+.review{list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:10px}
+.review li{border-left:3px solid var(--jade);padding:2px 0 2px 12px}.review b{font-family:var(--serif)}.review p{font-size:14px;margin:3px 0 0;color:#4C4434;line-height:1.6}
+
+.spot{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;background:var(--panel);border:1px solid var(--gold);color:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;white-space:nowrap}
+.slabel{position:absolute;transform:translate(-50%,-50%);font-family:var(--serif);font-weight:900;font-size:16px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6);pointer-events:none;white-space:nowrap}
+#line[lang="en"]{font-size:19px}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.mini{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid rgba(244,235,214,.3);border-radius:999px;padding:4px 11px;font-size:13px;color:var(--muted)}
+.mini svg,.mic svg,.play svg{width:16px;height:16px}
+.zh{margin:0;font-size:14px;color:var(--muted)}
+.target{margin:0;font-size:20px;line-height:1.5;color:var(--paper);background:rgba(244,235,214,.06);border-left:3px solid var(--gold);padding:8px 12px;border-radius:0 8px 8px 0}
+#actions .mic{display:inline-flex;align-items:center;gap:8px}
+.ghost{align-self:flex-start;background:none;border:1px solid rgba(244,235,214,.3);border-radius:10px;padding:7px 14px;font-size:14px;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){#dialog.listening{animation:lis 1.2s ease-in-out infinite}@keyframes lis{50%{box-shadow:0 0 0 6px rgba(224,176,75,.35)}}}
+.pb{list-style:none;padding:0;margin:12px 0;display:flex;flex-direction:column;gap:8px}
+.pb li{display:flex;gap:10px;align-items:flex-start}.pb b{display:block;font-weight:600}.pb span{font-size:13px;color:#6F6450}
+.pb .play{flex:none;background:var(--ink);color:var(--paper);border:0;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.opt-row{display:flex;gap:8px;align-items:center;font-size:15px;margin:6px 0}
+.opt-row input{width:18px;height:18px;accent-color:#2E7D62}
+.privacy{background:#F4EEDD;border-radius:8px;padding:8px 10px;margin-top:8px}
+.mtrmap{width:100%;height:auto;border:1px solid #D9CCAE;border-radius:8px;background:#fff;margin:6px 0}
+#hud .meters{flex-wrap:wrap;justify-content:flex-end;flex-direction:column;align-items:flex-end}
+@media (max-width:560px){#ttsBtn,#speakBtn{font-size:12px;padding:5px 10px}}
+.vstat{margin:0;font-size:14px;color:var(--muted);min-height:1.2em}
+#actions .vans{align-self:flex-start;display:inline-flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="scene" aria-label="3D 遊戲場景"></canvas>
+  <div id="spots"></div>
+  <div id="bubbles"></div>
+  <header id="hud" hidden>
+    <div class="chap"><span id="chapNo"></span><strong id="chapTitle"></strong></div>
+    <div class="meters">
+      <div class="scorebox"><div>分數<b id="score">0</b></div></div>
+      <button class="tool" id="assist"><svg viewBox="0 0 24 24" fill="none" stroke="#E0B04B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>老師提示</button>
+      <button class="tool" id="phrasebook"><svg viewBox="0 0 24 24" fill="none" stroke="#E0B04B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM9 8h6M9 12h6"/></svg>短語簿<small id="pbCount" style="color:var(--muted);font-size:11px;margin-left:4px">0</small></button>
+      <button class="tool" id="ttsBtn">讀出對白：<span id="ttsSt">開</span></button>
+      <button class="tool" id="speakBtn" aria-pressed="false">開口說話：<span id="speakSt">關</span></button>
+    </div>
+  </header>
+  <div id="toast" hidden role="status"><b id="toastT"></b><span id="toastD"></span></div>
+  <div id="assistBubble" hidden role="status"></div>
+  <section id="dialog" hidden aria-live="polite">
+    <div class="who"><i class="dot" id="whoDot"></i><span id="whoName"></span></div>
+    <p id="line"></p>
+    <div id="actions"></div>
+  </section>
+  <div id="overlay"></div>
+</div>
+
+<script type="application/json" id="d-content">{"meta": {"topic": "English in daily situations", "short_title": "Hong Kong Buddy", "author": "初中英國語文", "language": "en-GB", "ui_language": "zh-Hant", "audience": "初中學生", "central_thesis": "Choose responses that are both grammatically correct and polite for the situation.", "title_lines": ["帶交換生 Sam 遊香港一天。", "用英文點餐、指路、介紹、講價；開啟語音後，可以直接讀出答案。"]}, "npc_slots": {"mentor": {"character_id": "G", "display_name": "Miss Lee", "persona": "你的英文老師，會用中文解釋錯在哪裡", "costume": ["tie"]}, "companion": {"character_id": "O", "display_name": "Sam", "persona": "剛從英國來港的交換生，對甚麼都好奇", "costume": ["cap"]}, "rival": {"character_id": "A", "display_name": "Kenny", "persona": "你的同學，說英文總是太隨便，常常犯錯", "costume": []}, "gatekeeper": {"character_id": "I", "display_name": "Coach Ho", "persona": "每個場景結束時考你一題", "costume": ["beacon"]}}, "scenes": [{"id": "cafe", "title": "茶餐廳", "en_title": "At a cha chaan teng", "env": "indoor_warm", "intro_zh": "第一站帶 Sam 吃早餐。侍應很忙，要說得清楚又有禮貌。", "stranger": {"name": "Waiter", "zh": "侍應"}, "turns": [{"speaker": "stranger", "line": "Hi, what can I get you?", "zh": "你好，想要甚麼？", "options": [{"text": "Could we have two cups of iced lemon tea and a pineapple bun, please?", "correct": true}, {"text": "Give me two iced lemon tea and pineapple bun.", "why": "「Give me」對侍應太直接；飲品要說 two cups of iced lemon tea；pineapple bun 前面也漏了 a。"}, {"text": "I want to eat two cups of iced lemon tea.", "why": "飲品不能用 eat，要用 have 或 drink；而且 I want 不及 Could we have…, please? 有禮貌。"}, {"text": "Two cup iced lemon tea, one pineapple bun.", "why": "cup 是可數名詞，兩杯要說 two cups of；整句只有名詞，沒有 please，語氣生硬。"}], "kenny": "Give me two lemon tea lah!"}, {"speaker": "companion", "line": "What's a pineapple bun? Is there pineapple in it?", "zh": "菠蘿包是甚麼？裡面有菠蘿嗎？", "options": [{"text": "No, there isn't. It's called that because the top looks like a pineapple.", "correct": true}, {"text": "No, it don't have pineapple.", "why": "主語 it 是第三身單數，要用 doesn't，不是 don't。"}, {"text": "Pineapple bun is pineapple.", "why": "這句意思錯誤，也沒有回答 Sam 的問題。要解釋名字的由來。"}, {"text": "No, it isn't have pineapple.", "why": "is 和 have 不能一起用，應說 It doesn't have any pineapple。"}]}, {"speaker": "stranger", "line": "That'll be forty-six dollars.", "zh": "一共四十六元。", "options": [{"text": "Here you are. Can I pay by Octopus?", "correct": true}, {"text": "Forty-six? So expensive!", "why": "對侍應抱怨價錢並不禮貌，而且沒有回應付款。"}, {"text": "I pay by Octopus card, OK?", "why": "詢問可否做某事，用 Can I...? 比較自然有禮；句末加 OK 聽起來像命令。"}, {"text": "Here is it. Can I pay by Octopus?", "why": "次序錯了，應說 Here it is 或 Here you are。"}]}], "check": {"question": "在餐廳點餐，哪一個說法最有禮貌？", "options": ["Could I have a cup of milk tea, please?", "Give me a milk tea.", "I want milk tea.", "Milk tea, quick."], "answer": 0, "explain": "Could I have…, please? 是點餐最常用、最有禮貌的句式。"}}, {"id": "mtr", "title": "港鐵站", "en_title": "At Central MTR station", "env": "indoor_cool", "intro_zh": "你們在中環站，一位遊客走過來問路。可以點擊牆上的路線圖查看。", "stranger": {"name": "Tourist", "zh": "遊客"}, "map": true, "turns": [{"speaker": "stranger", "line": "Excuse me, how do I get to Tsim Sha Tsui?", "zh": "請問怎樣去尖沙咀？", "options": [{"text": "Take the Tsuen Wan Line towards Tsuen Wan. It's two stops from here.", "correct": true}, {"text": "You go red line, two stop.", "why": "句子不完整：要用 Take the... Line，而且 two 之後要用複數 stops。"}, {"text": "Take the Island Line to Tsim Sha Tsui.", "why": "看看路線圖：港島綫只在香港島行駛，不經過尖沙咀。"}, {"text": "Take the Tsuen Wan Line towards Central.", "why": "你們已經在中環。方向要看列車的終點站，去尖沙咀應乘往荃灣方向的列車。"}], "kenny": "Island Line lah, all the same!"}, {"speaker": "stranger", "line": "Do I need to change trains?", "zh": "需要轉車嗎？", "options": [{"text": "No, you don't. It's a direct train.", "correct": true}, {"text": "No, you don't need change.", "why": "need 之後要加 to 再接動詞：need to change。"}, {"text": "Yes, you must change at Kowloon Tong.", "why": "從中環乘荃灣綫，可以直達尖沙咀，不用轉車。"}, {"text": "No, you don't need to changing.", "why": "need to 之後要用動詞原形：need to change。"}]}, {"speaker": "stranger", "line": "Thank you so much!", "zh": "非常感謝！", "options": [{"text": "You're welcome. Enjoy your trip!", "correct": true}, {"text": "Welcome.", "why": "單獨說 Welcome 是「歡迎光臨」的意思，回應道謝要說 You're welcome。"}, {"text": "OK.", "why": "只說 OK 太簡短冷淡，回應別人道謝應該更友善。"}, {"text": "Never mind.", "why": "Never mind 用於回應道歉或表示「算了」，不是用來回應道謝。"}], "kenny": "Welcome! Welcome!"}], "check": {"question": "別人對你說 Thank you，最恰當的回應是？", "options": ["You're welcome.", "Welcome.", "Thank you too.", "Yes."], "answer": 0, "explain": "You're welcome 才是「不客氣」；Welcome 單獨使用是「歡迎」。"}}, {"id": "ferry", "title": "天星小輪", "en_title": "On the Star Ferry", "env": "ferry_day", "intro_zh": "你們乘天星小輪過海，Sam 對維港的一切都很好奇。", "turns": [{"speaker": "companion", "line": "Wow, what's that tall building over there?", "zh": "嘩，那邊那幢很高的大廈是甚麼？", "options": [{"text": "That's the ICC. It's the tallest building in Hong Kong.", "correct": true}, {"text": "That is ICC, it is most tall building in Hong Kong.", "why": "形容詞 tall 的最高級是 the tallest，不是 most tall；ICC 前面也要加 the。"}, {"text": "I don't know, who cares?", "why": "對客人這樣回答很不禮貌。"}, {"text": "That's the ICC. It's the most tallest building in Hong Kong.", "why": "最高級不能同時用 most 和 -est，應說 the tallest。"}]}, {"speaker": "companion", "line": "How long has the Star Ferry been running?", "zh": "天星小輪營運了多久？", "options": [{"text": "It has been running for over a hundred years.", "correct": true}, {"text": "It runs since 1888.", "why": "since 表示由過去持續到現在，要用現在完成式：has been running since 1888。"}, {"text": "It has been running since a hundred years.", "why": "since 之後接時間點（例如 1888），一段時間要用 for：for a hundred years。"}, {"text": "It has been run for over a hundred years.", "why": "持續到現在的動作用 has been running；has been run 是被動語態，意思不對。"}], "kenny": "It runs since long long ago!"}, {"speaker": "companion", "line": "Shall we take a photo together?", "zh": "我們一起拍張照好嗎？", "options": [{"text": "Sure, that's a great idea!", "correct": true}, {"text": "Yes, I am agree.", "why": "agree 本身是動詞，不用加 am：I agree。"}, {"text": "Photo? No need lah.", "why": "對客人的邀請這樣回應太隨便，句末的 lah 是廣東話語氣詞，不是英文。"}, {"text": "Sure, let's take photo.", "why": "photo 是可數名詞，前面要加冠詞：take a photo。"}]}], "check": {"question": "以下哪一句是正確的？", "options": ["It has been running for over a hundred years.", "It is running since 1888.", "It has been running since a hundred years.", "It run for a hundred years."], "answer": 0, "explain": "持續到現在的事用現在完成進行式；一段時間用 for，時間點用 since。"}}, {"id": "market", "title": "街市", "en_title": "At the wet market", "env": "morning", "intro_zh": "最後一站，Sam 想買芒果。檔主會說一點英文，試試幫 Sam 講價。", "stranger": {"name": "Stall owner", "zh": "檔主"}, "turns": [{"speaker": "stranger", "line": "Mangoes, twenty dollars each! Very sweet!", "zh": "芒果，每個二十元！很甜的！", "options": [{"text": "Excuse me, could you give us a discount if we buy three?", "correct": true}, {"text": "Cheaper! Cheaper!", "why": "只喊「平啲」既不禮貌，也沒有說清楚條件。"}, {"text": "Could you give us a discount if we will buy three?", "why": "if 條件句說將來的事，if 子句用現在式：if we buy，不用 will。"}, {"text": "Can you give discount?", "why": "discount 前面要加 a 或 us；而且 Could you…? 比 Can you…? 更有禮貌。"}], "kenny": "Cheaper la! Cheaper!"}, {"speaker": "stranger", "line": "OK, three for fifty-five dollars.", "zh": "好，三個五十五元。", "options": [{"text": "Great, that saves us five dollars. We'll take them.", "correct": true}, {"text": "Great, that saves us fifteen dollars.", "why": "算一算：三個原價 60 元，現在 55 元，只省了 5 元。"}, {"text": "Great, it are cheap.", "why": "it 要配 is：it is cheap。"}, {"text": "Great, that save us five dollars.", "why": "that 是單數主語，動詞要加 s：that saves us。"}]}, {"speaker": "stranger", "line": "Do you need a plastic bag?", "zh": "要膠袋嗎？", "options": [{"text": "No, thank you. We've brought our own bag.", "correct": true}, {"text": "No, thanks. We have brought our own bag yesterday.", "why": "現在完成式不能和 yesterday 這類過去時間連用。"}, {"text": "No need.", "why": "只說 No need 太簡短生硬，加上 thank you 會有禮貌得多。"}, {"text": "No, thank you. We bring our own bag.", "why": "表示已經帶備了，要用現在完成式 We've brought；We bring 表示習慣。"}]}], "check": {"question": "「Could you give us a discount if we buy three?」為甚麼用 buy 而不是 will buy？", "options": ["if 條件句說將來的事時，if 子句用現在式", "因為 buy 是不規則動詞", "因為句子是問句", "兩種都可以，沒有分別"], "answer": 0, "explain": "第一類條件句：if + 現在式，主句才用 will 或 can、could。"}}], "endings": {"best": {"title": "Excellent Buddy!", "text": "Sam 這一天玩得很開心，你的英文既正確又得體。"}, "normal": {"title": "Good Buddy", "text": "你帶 Sam 走完了一天，有幾句還可以說得更好。"}, "fail": {"title": "Keep Practising", "text": "有不少句子說錯了。看看短語簿，下次再試！"}}, "debrief": "好的英文不只是文法對，還要看場合：對陌生人用 Could I...? 和 please，回應道謝說 You're welcome，時態和單複數也要小心。"}</script>
+<script type="application/json" id="d-world">{"scene_kit": "hk_city", "locations": {"cafe": [0, 0, 0], "mtr": [50, 0, 0], "ferry": [100, 0, 0], "market": [150, 0, 0]}, "npc_layout": {"mentor": [-3.2, 0, 0.6], "companion": [1.6, 0, 1.4], "rival": [3.4, 0, 0.4], "gatekeeper": [-3.4, 0, -2.2], "stranger": [-0.4, 0, -1.2]}}</script>
+<script type="application/json" id="d-game">{"mode": "dialogue", "tts": {"lang": "en-GB", "rate": 0.92, "enabled_default": true}, "speaking": {"enabled_default": false, "url_param": "speak", "lang": "en-GB", "pass_ratio": 0.7, "max_seconds": 8, "choose_min": 0.6, "choose_margin": 0.1}, "scoring": {"choice_first_try": 10, "choice_wrong_penalty": 4, "speak_pass": 5, "check_first_try": 10, "check_wrong_penalty": 3, "hint_penalty": 2}, "endings": [{"id": "best", "min_score": 150}, {"id": "normal", "min_score": 90}, {"id": "fail", "min_score": 0}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>/* OpenMAIC-GamePlay shared engine v0.2
+   Renderer, toon materials, scene-kit helpers, environment presets,
+   character factory with procedural animation, camera, 3D-anchored UI,
+   dialog, assistant bubble and overlays. Game modes build on window.ENG. */
+(function(){
+"use strict";
+const E={};window.ENG=E;
+const RM=E.RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=E.$=id=>document.getElementById(id);
+E.sleep=ms=>new Promise(r=>setTimeout(r,ms));
+E.NUM=['一','二','三','四','五','六','七','八'];
+
+/* renderer */
+let canvas,renderer,scene,camera;
+E.portrait=false;
+E.init=function(opts){
+  const sk=document.createElement('style');sk.textContent='.skipbtn{align-self:flex-start;background:none;border:1px dashed rgba(244,235,214,.4);border-radius:10px;padding:6px 12px;font-size:13px;color:#B8AD94;cursor:pointer}.skipbtn:hover{color:#F4EBD6;border-color:#E0B04B}';document.head.appendChild(sk);
+  canvas=E.canvas=opts.canvas;
+  renderer=E.renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  scene=E.scene=new THREE.Scene();
+  camera=E.camera=new THREE.PerspectiveCamera(46,1,.1,500);
+  E.hemi=new THREE.HemisphereLight(0xffffff,0x556644,.9);scene.add(E.hemi);
+  E.sun=new THREE.DirectionalLight(0xffffff,.9);E.sun.position.set(12,22,10);scene.add(E.sun);
+  scene.fog=new THREE.Fog(0xBFDDE8,40,170);scene.background=new THREE.Color(0xBFDDE8);
+  E.onResize=opts.onResize||null;E.onFrame=opts.onFrame||null;
+  addEventListener('resize',resize);resize();
+};
+function resize(){
+  const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=camera.aspect<.85?54:46;camera.updateProjectionMatrix();
+  const p=camera.aspect<.85;const changed=p!==E.portrait;E.portrait=p;if(E.onResize)E.onResize(changed);
+}
+
+/* materials & primitives */
+let gm=null;const mats={};
+E.M=function(hex,o){
+  if(!gm){gm=new THREE.DataTexture(new Uint8Array([92,165,232]),3,1,THREE.LuminanceFormat);gm.minFilter=gm.magFilter=THREE.NearestFilter;gm.generateMipmaps=false;gm.needsUpdate=true;}
+  const k=hex+(o?JSON.stringify(o):'');if(!mats[k])mats[k]=new THREE.MeshToonMaterial(Object.assign({color:hex,gradientMap:gm},o||{}));return mats[k];
+};
+E.mesh=function(geo,mat,x,y,z,parent){const m=new THREE.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);if(parent)parent.add(m);return m;};
+E.box=function(w,h,d,c,x,y,z,p){return E.mesh(new THREE.BoxGeometry(w,h,d),E.M(c),x,y,z,p);};
+E.rng=function(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};};
+E.shuffle=function(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
+let RG=null;E.roofGeo=()=>{if(!RG){RG=new THREE.ConeGeometry(1,1,4);RG.rotateY(Math.PI/4);}return RG;};
+E.house=function(parent,x,z,w,d,h,wall,roof,ry){
+  const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry||0;parent.add(g);
+  E.box(w,h,d,wall,0,h/2,0,g);E.box(w+.12,.18,d+.12,0x6E4A32,0,h+.05,0,g);
+  const rf=E.mesh(E.roofGeo(),E.M(roof),0,h+.62,0,g);rf.scale.set((w/2+.45)/.707,1.15,(d/2+.45)/.707);
+  E.box(.7,1.3,.06,0x3B2A22,0,.65,d/2+.03,g);return g;
+};
+E.tree=function(parent,x,z,s,kind,canopy){
+  const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);parent.add(g);
+  E.mesh(new THREE.CylinderGeometry(.13,.18,1.1,6),E.M(0x7A5236),0,.55,0,g);
+  if(kind==='pine'){E.mesh(new THREE.ConeGeometry(.9,1.5,7),E.M(0x3E6B4E,{flatShading:true}),0,1.5,0,g);E.mesh(new THREE.ConeGeometry(.65,1.2,7),E.M(0x4A7C59,{flatShading:true}),0,2.2,0,g);}
+  else E.mesh(new THREE.IcosahedronGeometry(.95,0),E.M(canopy||0x6FA35A,{flatShading:true}),0,1.75,0,g);
+  return g;
+};
+E.lanterns=[];
+E.lantern=function(parent,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);
+  const b=E.mesh(new THREE.SphereGeometry(.5,12,10),E.M(0xC8452F,{emissive:0x7A1E10}),0,0,0,g);b.scale.set(.28,.34,.28);
+  E.mesh(new THREE.CylinderGeometry(.09,.09,.06,8),E.M(0xE0B04B),0,.19,0,g);E.mesh(new THREE.CylinderGeometry(.09,.09,.06,8),E.M(0xE0B04B),0,-.19,0,g);E.lanterns.push(b);return g;};
+
+/* environment */
+E.ENV={
+  morning:{sky:0xB9D6E2,hs:0xF4ECDC,hg:0x5C6E4C,hi:.72,sc:0xFFE2B0,si:.75,sp:[12,22,10]},
+  dusk:{sky:0xE6B08A,hs:0xFFD2A8,hg:0x6A5A4A,hi:.78,sc:0xFF9E5E,si:.9,sp:[-18,9,6]},
+  overcast:{sky:0xA7B0AE,hs:0xD9DED9,hg:0x5E6658,hi:.85,sc:0xDDE3E0,si:.45,sp:[4,20,6]},
+  night:{sky:0x1D2A44,hs:0x8EA2CC,hg:0x2B2E3A,hi:.55,sc:0xA9BCEB,si:.38,sp:[-8,18,-6]}
+};
+const env=E.env={cur:{sky:new THREE.Color(),hs:new THREE.Color(),hg:new THREE.Color(),sc:new THREE.Color(),hi:1,si:1},tgt:null,pulse:0,pulseColor:new THREE.Color(0xFFD27A),dim:0};
+E.setEnv=function(name,instant){const e=E.ENV[name];env.tgt=e;if(instant){env.cur.sky.set(e.sky);env.cur.hs.set(e.hs);env.cur.hg.set(e.hg);env.cur.sc.set(e.sc);env.cur.hi=e.hi;env.cur.si=e.si;}};
+E.flash=function(good,color){env.pulse=1;env.pulseColor.set(color!=null?color:(good?0xFFD27A:0x2A2440));};
+const dimColor=new THREE.Color(0x4E4A58),tmpC=new THREE.Color(),sunT=new THREE.Vector3();
+function updateEnv(dt){
+  const e=env.tgt;if(!e)return;const k=Math.min(1,dt*1.4);
+  env.cur.sky.lerp(tmpC.set(e.sky),k);env.cur.hs.lerp(tmpC.set(e.hs),k);env.cur.hg.lerp(tmpC.set(e.hg),k);env.cur.sc.lerp(tmpC.set(e.sc),k);
+  env.cur.hi+=(e.hi-env.cur.hi)*k;env.cur.si+=(e.si-env.cur.si)*k;sunT.set(e.sp[0],e.sp[1],e.sp[2]);E.sun.position.lerp(sunT,k);
+  const dim=env.dim*.38;const sky=env.cur.sky.clone().lerp(dimColor,dim);
+  env.pulse*=Math.pow(.25,dt);if(env.pulse>.01)sky.lerp(env.pulseColor,env.pulse*.35);
+  scene.background.copy(sky);scene.fog.color.copy(sky);
+  E.hemi.color.copy(env.cur.hs);E.hemi.groundColor.copy(env.cur.hg);E.hemi.intensity=env.cur.hi*(1-dim*.5)+env.pulse*.25;
+  E.sun.color.copy(env.cur.sc);E.sun.intensity=env.cur.si*(1-dim*.6);
+  const night=env.tgt===E.ENV.night;E.lanterns.forEach(l=>l.material.emissive.setHex(night?0xD8501E:0x7A1E10));
+}
+
+/* characters: slot + skin; every skin follows the character spec (body, 2 eyes, 2 legs) */
+E.PAL={G:[0xFF8A1C,0xD9631A],O:[0x10C77A,0x0A9E5E],A:[0x1677E8,0x0F55B8],I:[0xFDD015,0xE5A80E],P:[0xE8577E,0xC23E63]};
+E.hex=n=>'#'+n.toString(16).padStart(6,'0');
+const NAVY=0x0B1F5E;
+function rrect(w,h,r){const s=new THREE.Shape();s.moveTo(-w+r,0);s.lineTo(w-r,0);s.quadraticCurveTo(w,0,w,r);s.lineTo(w,h-r);s.quadraticCurveTo(w,h,w-r,h);s.lineTo(-w+r,h);s.quadraticCurveTo(-w,h,-w,h-r);s.lineTo(-w,r);s.quadraticCurveTo(-w,0,-w+r,0);return s;}
+function shapeFor(id){
+  const S=[];let eyes;
+  if(id==='A'){const s=new THREE.Shape();s.moveTo(-.54,0);s.lineTo(.54,0);s.lineTo(0,.95);s.closePath();S.push(s);eyes=[[-.14,.3,.13],[.14,.3,.13]];}
+  if(id==='I'){S.push(rrect(.27,.96,.05));eyes=[[-.15,.64,.15],[.15,.64,.15]];}
+  if(id==='P'){S.push(rrect(.3,.8,.28));eyes=[[-.12,.56,.12],[.12,.56,.12]];}
+  if(id==='G'){const s=new THREE.Shape(),R=.46,r=.26,cy=.47,a0=.62,a1=Math.PI*2-.72;s.absarc(0,cy,R,a0,a1,false);s.absarc(0,cy,r,a1,a0,true);S.push(s);
+    const t=new THREE.Shape();const P=[[.14,.62],[.62,.62],[.62,.14],[.5,.14],[.5,.42],[.27,.19],[.18,.28],[.41,.5],[.14,.5]];t.moveTo(P[0][0],P[0][1]);P.slice(1).forEach(p=>t.lineTo(p[0],p[1]));t.closePath();S.push(t);
+    eyes=[[-.16,.88,.13],[.1,.88,.13]];}
+  if(id==='O'){const s=new THREE.Shape(),cy=.46;s.absarc(0,cy,.44,0,Math.PI*2,false);const hole=new THREE.Path();hole.absarc(0,cy,.25,0,Math.PI*2,true);s.holes.push(hole);S.push(s);eyes=[[-.3,.78,.13],[-.05,.88,.13]];}
+  return {S,eyes};
+}
+E.chars={};
+E.makeChar=function(slot,id,costume){
+  const [col,dk]=E.PAL[id];const {S,eyes}=shapeFor(id);const M=E.M,mesh=E.mesh,box=E.box;
+  const root=new THREE.Group();scene.add(root);
+  const hip=new THREE.Group();hip.position.y=.47;root.add(hip);const body=new THREE.Group();hip.add(body);
+  S.forEach(s=>{const g=new THREE.ExtrudeGeometry(s,{depth:.26,bevelEnabled:true,bevelThickness:.05,bevelSize:.035,bevelSegments:3,curveSegments:28});g.translate(0,0,-.13);mesh(g,M(col),0,0,0,body);});
+  const eyeObjs=eyes.map(([x,y,r])=>{const g=new THREE.Group();g.position.set(x,y,.2);body.add(g);
+    const o=mesh(new THREE.CylinderGeometry(r+.03,r+.03,.03,28),M(col),0,0,-.012,g);o.rotation.x=Math.PI/2;
+    const w=mesh(new THREE.CylinderGeometry(r,r,.035,28),new THREE.MeshBasicMaterial({color:0xffffff}),0,0,.006,g);w.rotation.x=Math.PI/2;
+    const p=mesh(new THREE.CylinderGeometry(r*.56,r*.56,.03,24),new THREE.MeshBasicMaterial({color:NAVY}),0,0,.03,g);p.rotation.x=Math.PI/2;return {g,p,x,y,r};});
+  const legs=[-1,1].map(sd=>{const piv=new THREE.Group();piv.position.set(sd*.13,.47,0);root.add(piv);
+    box(.115,.44,.125,col,0,-.22,0,piv);box(.118,.07,.128,dk,0,-.06,0,piv);
+    const f=mesh(new THREE.SphereGeometry(.5,14,10),M(col),sd*.07,-.44,.04,piv);f.scale.set(.34,.2,.3);return piv;});
+  const sh=mesh(new THREE.CircleGeometry(.48,24),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.2,depthWrite:false}),0,.02,0,root);sh.rotation.x=-Math.PI/2;
+  const c={slot,id,root,hip,body,eyes:eyeObjs,legs,target:new THREE.Vector3(),speed:3,phase:Math.random()*6,blinkAt:1+Math.random()*3,blinkT:0,emote:null,emoteT:0,talk:false,face:null,lookAt:null,onArrive:null};
+  root.scale.setScalar(1.25);
+  const bb=new THREE.Box3().setFromObject(body);const topY=bb.max.y;
+  (costume||[]).forEach(k=>{
+    if(k==='goggles'){const lensM=new THREE.MeshPhongMaterial({color:0xE8FAFF,transparent:true,opacity:.1,depthWrite:false,shininess:120,specular:0xFFFFFF});eyeObjs.forEach(e=>{mesh(new THREE.TorusGeometry(e.r+.05,.012,6,28),new THREE.MeshPhongMaterial({color:0xD8E6EE,transparent:true,opacity:.85}),e.x,e.y,.27,body);const l=mesh(new THREE.CircleGeometry(e.r+.045,28),lensM,e.x,e.y,.285,body);l.renderOrder=5;});
+      const y=eyeObjs[0].y;box(Math.abs(eyeObjs[1].x-eyeObjs[0].x)-.1,.018,.012,0xD8E6EE,(eyeObjs[0].x+eyeObjs[1].x)/2,y,.27,body);}
+    if(k==='hardhat'||k==='hardhat_o'){const hc=k==='hardhat'?0xF2C81A:0xF27A1A;const d=mesh(new THREE.SphereGeometry(.2,16,10,0,Math.PI*2,0,Math.PI/2),M(hc),0,topY-.05,0,body);d.scale.set(1,.85,1);mesh(new THREE.CylinderGeometry(.27,.27,.025,20),M(hc),0,topY-.05,0,body);box(.04,.08,.36,hc,0,topY+.08,0,body);}
+    if(k==='cap'){const d=mesh(new THREE.SphereGeometry(.17,14,8,0,Math.PI*2,0,Math.PI/2),M(0xE0574A),0,topY-.04,0,body);d.scale.set(1,.8,1);box(.3,.025,.18,0xC23E33,0,topY-.03,.17,body);}
+    if(k==='ru_hat'){box(.5,.04,.28,0x2A2A33,-.03,1.06,0,body);box(.22,.13,.2,0x2A2A33,-.03,1.14,0,body);}
+    if(k==='coin'){const cn=mesh(new THREE.CylinderGeometry(.09,.09,.03,20),M(0xE8B93A,{emissive:0x4A3000}),0,.12,.205,body);cn.rotation.x=Math.PI/2;box(.04,.04,.035,0x3A2A10,0,.12,.225,body);}
+    if(k==='tie'){box(.1,.05,.03,0x1E2A44,0,.36,.21,body);const t=box(.08,.22,.03,0x2F4A8A,0,.22,.21,body);}
+    if(k==='hood'){const hd=mesh(new THREE.ConeGeometry(.32,.36,4),M(0x2A2F3A,{flatShading:true}),0,1.05,0,body);hd.rotation.y=Math.PI/4;}
+    if(k==='beacon'){const lg=new THREE.Group();lg.position.set(0,1.32,0);body.add(lg);E.mesh(new THREE.CylinderGeometry(.12,.14,.07,12),M(0x4A4F58),0,-.04,0,lg);
+      const dome=mesh(new THREE.SphereGeometry(.12,14,8,0,Math.PI*2,0,Math.PI/2),M(0x3FD08A,{emissive:0x1AA060}),0,0,0,lg);
+      const pl=new THREE.PointLight(0x7CFFC0,1,8,1.5);lg.add(pl);c.lamp={g:lg,mat:dome.material.clone(),light:pl,beacon:true,baseY:1.32};dome.material=c.lamp.mat;}
+    if(k==='lantern'){const lg=new THREE.Group();lg.position.set(.55,1.35,0);root.add(lg);
+      const lb=mesh(new THREE.SphereGeometry(.5,14,10),M(0xC8452F,{emissive:0xFF7A2A}),0,0,0,lg);lb.scale.set(.3,.36,.3);
+      mesh(new THREE.CylinderGeometry(.1,.1,.06,10),M(0xE0B04B),0,.2,0,lg);mesh(new THREE.CylinderGeometry(.1,.1,.06,10),M(0xE0B04B),0,-.2,0,lg);
+      const pl=new THREE.PointLight(0xFFB050,1,9,1.5);lg.add(pl);c.lamp={g:lg,mat:lb.material.clone(),light:pl};lb.material=c.lamp.mat;}
+  });
+  E.chars[slot]=c;return c;
+};
+E.emote=function(c,type){c.emote=type;c.emoteT=0;};
+E.lookFocus=null;E.lampValue=()=>.6;
+const tv=new THREE.Vector3(),tv2=new THREE.Vector3(),tv3=new THREE.Vector3();
+function updateChar(c,dt,t){
+  const p=c.root.position;tv.copy(c.target).sub(p);tv.y=0;const dist=tv.length();let moving=false;
+  if(dist>.04){moving=true;p.addScaledVector(tv.normalize(),Math.min(dist,c.speed*dt));}
+  else if(c.onArrive){const f=c.onArrive;c.onArrive=null;f();}
+  const yawT=moving?Math.atan2(tv.x,tv.z):(c.face!=null?c.face:Math.atan2(camera.position.x-p.x,camera.position.z-p.z));
+  let dy=yawT-c.root.rotation.y;dy=Math.atan2(Math.sin(dy),Math.cos(dy));c.root.rotation.y+=dy*Math.min(1,dt*8);
+  if(moving)c.phase+=dt*11;else c.phase+=(Math.round(c.phase/Math.PI)*Math.PI-c.phase)*Math.min(1,dt*10);
+  const sw=Math.sin(c.phase)*(moving?.6:0);c.legs[0].rotation.x=sw;c.legs[1].rotation.x=-sw;
+  let by=moving?Math.abs(Math.sin(c.phase))*.06:Math.sin(t*2+c.phase)*.008,sx=1,sy=1,rz=0;
+  if(c.talk){const k=Math.sin(t*15)*.045;sy+=k;sx-=k*.6;}
+  if(c.emote){c.emoteT+=dt;const e=c.emoteT;
+    if(c.emote==='hop')by+=Math.max(0,Math.sin(e*9))*.35*Math.max(0,1-e/1.1);
+    if(c.emote==='shake')rz=Math.sin(e*28)*.12*Math.max(0,1-e/.8);
+    if(c.emote==='slump'){const f=Math.max(0,1-Math.max(0,e-1.2)/.6);sy-=.12*Math.sin(Math.min(1,e/.5)*Math.PI/2)*f;sx+=.06*f;}
+    if(e>1.9)c.emote=null;}
+  c.hip.position.y=.47+by;c.body.scale.set(sx,sy,1);c.body.rotation.z=rz;
+  c.blinkAt-=dt;if(c.blinkAt<0){c.blinkT=.14;c.blinkAt=2+Math.random()*3.5;}
+  let bl=1;if(c.blinkT>0){c.blinkT-=dt;bl=Math.max(.08,Math.abs(c.blinkT/.07-1));}
+  let look;if(c.lookAt)look=tv2.copy(c.lookAt);else if(E.lookFocus&&E.lookFocus!==c)look=tv2.copy(E.lookFocus.root.position).add(tv3.set(0,1.3,0));else look=tv2.copy(camera.position);
+  c.root.updateMatrixWorld();const loc=c.body.worldToLocal(look.clone());
+  c.eyes.forEach(e=>{e.g.scale.y=bl;const v=tv3.set(loc.x-e.x,loc.y-e.y,loc.z-.2).normalize();e.p.position.x=v.x*e.r*.42;e.p.position.y=v.y*e.r*.42;});
+  if(c.lamp){const b=E.lampValue();c.lamp.light.intensity=.25+b*1.9;if(c.lamp.beacon){c.lamp.mat.emissive.setRGB(.9-b*.8,.15+b*.6,.1+b*.3);c.lamp.light.color.setRGB(1-b*.5,.3+b*.7,.3+b*.45);}else{c.lamp.mat.emissive.setRGB(.25+b*.75,.12+b*.36,.04);c.lamp.g.position.y=1.35+Math.sin(t*1.6)*.06;c.lamp.g.rotation.z=Math.sin(t*1.3)*.08;}}
+}
+
+/* camera */
+const cam=E.cam={p0:new THREE.Vector3(),p1:new THREE.Vector3(),l0:new THREE.Vector3(),l1:new THREE.Vector3(),look:new THREE.Vector3(),t:1,dur:1,res:null,idle:null};
+const par={x:0,y:0,cx:0,cy:0};E.parallax=1;
+addEventListener('pointermove',e=>{par.x=e.clientX/innerWidth-.5;par.y=e.clientY/innerHeight-.5;});
+E.camTo=function(pos,look,dur){cam.p0.copy(camera.position);cam.l0.copy(cam.look);cam.p1.copy(pos);cam.l1.copy(look);cam.t=0;cam.dur=RM?.01:dur;return new Promise(r=>cam.res=r);};
+E.camSet=function(pos,look){camera.position.copy(pos);cam.look.copy(look);cam.t=1;};
+function updateCam(dt,t){
+  if(cam.t<1){cam.t=Math.min(1,cam.t+dt/cam.dur);const k=cam.t*cam.t*(3-2*cam.t);camera.position.lerpVectors(cam.p0,cam.p1,k);cam.look.lerpVectors(cam.l0,cam.l1,k);if(cam.t>=1&&cam.res){const r=cam.res;cam.res=null;r();}}
+  else if(cam.idle)cam.idle(t);
+  par.cx+=(par.x-par.cx)*Math.min(1,dt*3);par.cy+=(par.y-par.cy)*Math.min(1,dt*3);const pk=RM?0:E.parallax;
+  camera.lookAt(cam.look.x+par.cx*.6*pk,cam.look.y-par.cy*.3*pk,cam.look.z);
+}
+
+/* 3D-anchored UI */
+const pv=new THREE.Vector3();
+E.project=function(v,el){pv.copy(v).project(camera);if(pv.z>1||Math.abs(pv.x)>1.15||Math.abs(pv.y)>1.15){el.style.visibility='hidden';return;}
+  el.style.visibility='';el.style.left=((pv.x+1)/2*canvas.clientWidth)+'px';el.style.top=((1-pv.y)/2*canvas.clientHeight)+'px';};
+const bubbles=[];
+E.floatBubble=function(c,text,ms){const el=document.createElement('div');el.className='bub';el.textContent=text;$('bubbles').appendChild(el);const b={c,el};bubbles.push(b);
+  setTimeout(()=>{el.remove();const i=bubbles.indexOf(b);if(i>=0)bubbles.splice(i,1);},ms||3000);};
+E.anchors=[];
+
+
+/* occlusion fade: anything between the camera and what it looks at becomes see-through */
+E.fade={on:true,extra:null,list:new Map(),tick:0};
+const fray=new THREE.Raycaster(),fdir=new THREE.Vector3();
+function occlusion(dt){const F=E.fade;if(!F.on||!scene)return;const now=performance.now();F.tick++;
+  for(const k in E.chars){const c=E.chars[k];if(c&&c.root)c.root.userData.isChar=true;}
+  if(F.tick%4===0){const tg=[cam.look].concat(F.extra||[]);
+    for(const t of tg){fdir.copy(t).sub(camera.position);const dist=fdir.length();if(dist<1)continue;fdir.normalize();fray.set(camera.position,fdir);fray.near=.2;fray.far=Math.max(.5,dist-.9);
+      const hits=fray.intersectObjects(scene.children,true);
+      for(const h of hits){const m=h.object;if(!m.isMesh||m.userData.noFade||m===E.ground||Array.isArray(m.material)||m.material.visible===false)continue;
+        let o=m,isChar=false;while(o){if(o.userData&&o.userData.isChar){isChar=true;break;}o=o.parent;}if(isChar)continue;const g=m.geometry,p=g&&g.parameters;
+        if(p&&((p.width&&p.width>30)||(p.radius&&p.radius>30)))continue;
+        let rec=F.list.get(m);if(!rec){const src=m.material,cl=src.clone();cl.transparent=true;cl.depthWrite=false;rec={src,cl,base:src.transparent?src.opacity:1};cl.opacity=rec.base;m.material=cl;F.list.set(m,rec);}rec.seen=now;}}}
+  F.list.forEach((rec,m)=>{const hid=now-rec.seen<450;const want=hid?Math.min(rec.base,.22):rec.base;rec.cl.opacity+=(want-rec.cl.opacity)*Math.min(1,dt*9);
+    if(!hid&&Math.abs(rec.cl.opacity-rec.base)<.03){m.material=rec.src;rec.cl.dispose();F.list.delete(m);}});}
+/* loop */
+const clock=E.clock=new THREE.Clock();
+function frame(){
+  const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+  updateEnv(dt);updateCam(dt,t);
+  Object.values(E.chars).forEach(c=>updateChar(c,dt,t));
+  if(E.onFrame)E.onFrame(dt,t);
+  occlusion(dt);
+  bubbles.forEach(b=>E.project(tv.copy(b.c.root.position).add(tv2.set(0,2.35,0)),b.el));
+  E.anchors.forEach(a=>{if(!a.el.hidden)E.project(a.pos,a.el);});
+  renderer.render(scene,camera);requestAnimationFrame(frame);
+}
+E.start=()=>requestAnimationFrame(frame);
+
+/* dialog */
+E.SPK={};let typing=null;
+E.setTalker=function(key){Object.values(E.chars).forEach(c=>c.talk=false);E.lookFocus=null;const c=E.chars[key];if(c){c.talk=true;E.lookFocus=c;}};
+E.showLine=function(key,text,quote){
+  const d=$('dialog');d.hidden=false;const s=E.SPK[key]||{name:key,col:'#F4EBD6'};$('whoName').textContent=s.name;$('whoDot').style.background=s.col;
+  const line=$('line');line.classList.toggle('quote',!!quote);E.setTalker(key);
+  if(typing){clearInterval(typing.id);typing=null;}
+  const done=()=>{const c=E.chars[key];if(c)c.talk=false;};
+  if(RM){line.textContent=text;done();return Promise.resolve();}
+  line.textContent='';let i=0;
+  return new Promise(res=>{typing={id:setInterval(()=>{i++;line.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing.id);typing=null;done();res();}},24),
+    finish:()=>{clearInterval(typing.id);typing=null;line.textContent=text;done();res();}};});
+};
+E.actions=function(nodes){const a=$('actions');a.innerHTML='';nodes.forEach(n=>a.appendChild(n));};
+E.btn=function(cls,html,on){const b=document.createElement('button');b.className=cls;b.innerHTML=html;b.addEventListener('click',on);return b;};
+E.say=async function(key,text,opt){opt=opt||{};E.actions([]);await E.showLine(key,text,opt.quote);E.setTalker('');
+  return new Promise(res=>{const b=E.btn('next',opt.btn||'繼續',()=>res());E.actions([b]);b.focus({preventScroll:true});});};
+E.ask=async function(key,text,options,disabled,opts){E.actions([]);await E.showLine(key,text);
+  return new Promise(res=>{const n=options.map((o,i)=>{const b=E.btn('opt','<span class="k">'+'甲乙丙丁戊'[i]+'</span><span>'+o+'</span>',()=>res(i));if(disabled&&disabled.has(i))b.disabled=true;return b;});if(opts&&opts.skip)n.push(E.skipBtn(()=>res(-1)));E.actions(n);});};
+E.skipBtn=(fn,label)=>E.btn('skipbtn',label||'跳過，看答案',fn);
+E.hideDialog=()=>{$('dialog').hidden=true;E.setTalker('');};
+E.bindDialog=()=>$('dialog').addEventListener('click',e=>{if(typing&&!e.target.closest('button'))typing.finish();});
+
+/* assistant bubble */
+E.bubble=function(title,text,ms){const b=$('assistBubble');b.innerHTML='';const t=document.createElement('div');t.className='t';const s=document.createElement('span');s.textContent=title;
+  const x=document.createElement('button');x.textContent='收起';x.onclick=()=>b.hidden=true;t.append(s,x);const p=document.createElement('div');p.textContent=text;b.append(t,p);b.hidden=false;
+  clearTimeout(E._bt);if(ms)E._bt=setTimeout(()=>b.hidden=true,ms);};
+E.hideBubble=()=>{$('assistBubble').hidden=true;};
+
+/* overlays */
+E.overlay=function(html,dim){const o=$('overlay');o.className=dim?'dim':'';o.innerHTML=html;return o;};
+E.clearOverlay=function(){const o=$('overlay');o.innerHTML='';o.className='';};
+E.waitClick=sel=>new Promise(r=>document.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>r(b))));
+E.glyph=function(id){const col=E.hex(E.PAL[id][0]);const eye='<circle cx="CX" cy="CY" r="4.2" fill="#fff"/><circle cx="CX" cy="CY" r="2.3" fill="#0B1F5E"/>';
+  const e=pts=>pts.map(([x,y])=>eye.replace(/CX/g,x).replace(/CY/g,y)).join('');
+  const sh={A:'<path d="M17 3 L31 27 H3 Z" fill="'+col+'" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>'+e([[13,19],[21,19]]),
+    I:'<rect x="11" y="2" width="12" height="27" rx="2" fill="'+col+'"/>'+e([[13,11],[21,11]]),
+    G:'<path d="M26 9 A11 11 0 1 0 26 25" stroke="'+col+'" stroke-width="6" fill="none"/><path d="M20 17 L29 17 L29 26" stroke="'+col+'" stroke-width="4" fill="none"/>'+e([[12,7],[19,7]]),
+    O:'<circle cx="17" cy="17" r="10" stroke="'+col+'" stroke-width="6" fill="none"/>'+e([[10,8],[17,6]]),
+    P:'<rect x="9" y="5" width="16" height="24" rx="8" fill="'+col+'"/>'+e([[14,14],[20,14]])}[id];
+  return '<svg viewBox="0 0 34 34" aria-hidden="true">'+sh+'</svg>';};
+})();
+</script>
+<script>/* Scene kit: hk_city — cha chaan teng, MTR platform with PSDs, Star Ferry deck, wet market */
+(function(){
+"use strict";
+const E=ENG;E.kits=E.kits||{};const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+E.ENV.ferry_day={sky:0x9CCCF0,hs:0xF4F6F8,hg:0x4A6A80,hi:.75,sc:0xFFF4E0,si:.8,sp:[14,22,12]};
+E.ENV.indoor_warm={sky:0xC8D4D8,hs:0xFFF4E2,hg:0x6A6058,hi:.85,sc:0xFFF0D8,si:.55,sp:[4,20,10]};
+E.ENV.indoor_cool={sky:0xB8C4CC,hs:0xF2F6FA,hg:0x5A6068,hi:.9,sc:0xF4F8FF,si:.5,sp:[4,22,12]};
+const M=(h,o)=>E.M(h,o),mesh=(...a)=>E.mesh(...a),box=(...a)=>E.box(...a);
+const FONT='"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",sans-serif';
+function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');draw(x,w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;}
+function panel(g,w,h,t,x,y,z,ry,emis){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),emis?new THREE.MeshBasicMaterial({map:t}):new THREE.MeshLambertMaterial({map:t}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
+function floorTex(c1,c2,n,grout){return tex(256,256,(x,w,h)=>{const s=w/n;for(let i=0;i<n;i++)for(let j=0;j<n;j++){x.fillStyle=(i+j)%2?c1:c2;x.fillRect(i*s,j*s,s,s);}if(grout){x.strokeStyle=grout;x.lineWidth=2;for(let i=0;i<=n;i++){x.beginPath();x.moveTo(i*s,0);x.lineTo(i*s,h);x.stroke();x.beginPath();x.moveTo(0,i*s);x.lineTo(w,i*s);x.stroke();}}});}
+function floor(g,w,d,t,rep,y){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1]);const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshLambertMaterial({map:t}));m.rotation.x=-Math.PI/2;m.position.y=y||.02;g.add(m);return m;}
+const glassM=()=>new THREE.MeshPhongMaterial({color:0xCFEFF8,transparent:true,opacity:.22,depthWrite:false,shininess:100});
+
+/* people */
+const SKIN=[0xF2D2B0,0xE0B890,0xC89870],SHIRT=[0x3A6FB0,0xE0574A,0x2E9B5E,0xF2C14E,0x8A5AC8,0xF4F4EF,0x2A2D30,0x9AA4AE,0xD88AA0];
+function person(o){o=o||{};const r=o.r||Math.random;const g=new THREE.Group();
+  const legs=[-1,1].map(s=>{const p=new THREE.Group();p.position.set(s*.11,.62,0);g.add(p);box(.13,.6,.14,o.pants||0x2A3A5A,0,-.3,0,p);box(.14,.07,.2,0x1A1A1A,0,-.6,.03,p);return p;});
+  const body=mesh(new THREE.CylinderGeometry(.21,.24,.7,10),M(o.shirt||SHIRT[Math.floor(r()*SHIRT.length)]),0,.98,0,g);
+  const arms=[-1,1].map(s=>{const a=new THREE.Group();a.position.set(s*.27,1.28,0);g.add(a);box(.1,.55,.1,o.shirt||body.material.color.getHex(),0,-.26,0,a);return a;});
+  mesh(new THREE.SphereGeometry(.18,12,10),M(SKIN[o.skin!=null?o.skin:Math.floor(r()*3)]),0,1.5,0,g);
+  mesh(new THREE.SphereGeometry(.19,12,8,0,Math.PI*2,0,Math.PI/2),M(o.hair||[0x1A1612,0x2A2420,0x5A4030,0x9A9A9A][Math.floor(r()*4)]),0,1.54,0,g);
+  if(o.apron)box(.36,.52,.04,o.apron,0,.88,.22,g);
+  if(o.bag)box(.3,.4,.18,o.bag,0,1.05,-.25,g);
+  if(o.hat){mesh(new THREE.CylinderGeometry(.27,.27,.03,16),M(o.hat),0,1.68,0,g);mesh(new THREE.CylinderGeometry(.15,.17,.14,14),M(o.hat),0,1.75,0,g);}
+  if(o.tray){const t=new THREE.Group();t.position.set(.32,1.12,.18);g.add(t);box(.42,.03,.3,0x8A8E92,0,0,0,t);[[-.1,0],[.1,.05]].forEach(([x,z])=>mesh(new THREE.CylinderGeometry(.055,.045,.13,10),M(0xF2C850),x,.08,z,t));arms[1].rotation.x=-1.1;}
+  if(o.carry){const b=new THREE.Group();b.position.set(-.3,.72,.05);g.add(b);box(.2,.28,.12,o.carry,0,0,0,b);}
+  if(o.paper){box(.5,.36,.02,0xEDEAE0,0,1.18,.32,g);arms.forEach(a=>a.rotation.x=-1.2);}
+  if(o.sit){legs.forEach(l=>l.rotation.x=-1.45);g.userData.sit=true;}
+  g.scale.setScalar(o.scale||1.12);g.userData.legs=legs;g.userData.arms=arms;return g;}
+E.hkPerson=person;
+const walkers=[];
+function walker(parent,o,path,speed){const g=person(o);parent.add(g);g.position.copy(path[0]);walkers.push({g,path,i:1,speed:speed||1.2,ph:Math.random()*6,pause:0,pauseAt:o.pauseAt||null});return g;}
+
+E.kits.hk_city={build(LP){
+  const S={};const r=E.rng(31);E.scene.fog.near=90;E.scene.fog.far=460;
+  mesh(new THREE.PlaneGeometry(420,140),M(0x7E8A80),75,-3,0,E.scene).rotation.x=-Math.PI/2;
+
+  /* ================= cha chaan teng ================= */
+  {const g=new THREE.Group();g.position.copy(LP.cafe);E.scene.add(g);
+    floor(g,13,10,floorTex('#E9E4D6','#2F7D62',8,'#CFC8B4'),[3,2.4]);
+    const tile=tex(128,128,(x,w,h)=>{x.fillStyle='#F4F2EC';x.fillRect(0,0,w,h);x.strokeStyle='#D8D4CA';x.lineWidth=3;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,h);x.stroke();x.beginPath();x.moveTo(0,i*32);x.lineTo(w,i*32);x.stroke();}});tile.wrapS=tile.wrapT=THREE.RepeatWrapping;tile.repeat.set(10,1.4);
+    panel(g,13,1.5,tile,0,.75,-5,0);box(13,5.2,.2,0xEFE6CF,0,4.1,-5.1,g);box(13,.12,.12,0x6A3A22,0,1.52,-4.98,g);
+    [-6.5,6.5].forEach(x=>{box(.2,6.6,10,0xEFE6CF,x,3.3,-.5,g);const mr=box(.04,1.2,6,0xBFD8E0,x+(x<0?.12:-.12),2.1,-1,g);mr.material=new THREE.MeshPhongMaterial({color:0xBFD8E0,shininess:120,specular:0xFFFFFF});});
+    const menuItems=[['奶茶','$18'],['凍檸茶','$20'],['菠蘿油','$14'],['西多士','$26'],['餐蛋麵','$38'],['火腿通粉','$36'],['鴛鴦','$19'],['咖喱牛腩飯','$58']];
+    menuItems.forEach((m,i)=>{const t=tex(96,256,(x,w,h)=>{x.fillStyle='#F7D63A';x.fillRect(0,0,w,h);x.fillStyle='#C8221A';x.font='bold 40px '+FONT;x.textAlign='center';[...m[0]].forEach((ch,k)=>x.fillText(ch,w/2,52+k*44));x.font='bold 30px '+FONT;x.fillText(m[1],w/2,h-18);});
+      panel(g,.42,1.12,t,-5.2+i*.62,2.75,-4.99,0);});
+    const sign=tex(512,128,(x,w,h)=>{x.fillStyle='#B8221A';x.fillRect(0,0,w,h);x.fillStyle='#FCE6A0';x.font='bold 84px '+FONT;x.textAlign='center';x.fillText('金華冰室',w/2,96);});
+    panel(g,3.2,.8,sign,2.6,3.15,-4.99,0);
+    for(let i=0;i<3;i++)box(1.2,.05,.08,0xFFFFFF,-4+i*4,3.55,-4.95,g).material=M(0xFFFFFF,{emissive:0xEEEEEE});
+    const clk=new THREE.Group();clk.position.set(5.2,2.8,-4.98);g.add(clk);mesh(new THREE.CylinderGeometry(.28,.28,.05,24),M(0xF4F4EF),0,0,0,clk).rotation.x=Math.PI/2;box(.02,.18,.02,0x1A1A1A,0,.07,.04,clk);box(.13,.02,.02,0x1A1A1A,.05,0,.04,clk);
+    S.fans=[];[[-3,-1.5],[3,-1.5],[0,1.5]].forEach(([x,z])=>{const f=new THREE.Group();f.position.set(x,3.25,z);g.add(f);box(.04,.5,.04,0x8A8E92,0,.25,0,f);mesh(new THREE.CylinderGeometry(.12,.12,.12,12),M(0xF4F4EF),0,0,0,f);
+      const bl=new THREE.Group();f.add(bl);for(let k=0;k<3;k++){const b=box(.8,.02,.16,0xE8E4DC,.45,-.02,0,bl);b.position.set(Math.cos(k*2.094)*.45,-.02,Math.sin(k*2.094)*.45);b.rotation.y=-k*2.094;}S.fans.push(bl);});
+    const marble=tex(128,128,(x,w,h)=>{x.fillStyle='#F2F0EA';x.fillRect(0,0,w,h);x.strokeStyle='rgba(150,150,150,.35)';for(let i=0;i<9;i++){x.beginPath();x.moveTo(r()*w,0);x.bezierCurveTo(r()*w,h*.3,r()*w,h*.7,r()*w,h);x.stroke();}});
+    const booth=(x,z)=>{const b=new THREE.Group();b.position.set(x,0,z);g.add(b);const top=new THREE.Mesh(new THREE.BoxGeometry(1.5,.06,.8),new THREE.MeshLambertMaterial({map:marble}));top.position.y=.76;b.add(top);box(.12,.73,.12,0x5A5F66,0,.37,0,b);
+      [-1,1].forEach(s=>{box(1.6,.42,.5,0x2F6B4A,0,.24,s*.72,b);box(1.6,.95,.14,0x2F6B4A,0,.75,s*1.0,b);box(1.62,.05,.16,0x6A3A22,0,1.24,s*1.0,b);});
+      [[-.35,.1],[.3,-.12]].forEach(([cx,cz])=>{mesh(new THREE.CylinderGeometry(.11,.11,.015,16),M(0xF4F4EF),cx,.8,cz,b);mesh(new THREE.CylinderGeometry(.06,.05,.1,12),M(0xFFFFFF),cx,.86,cz,b);});
+      const bun=mesh(new THREE.SphereGeometry(.13,12,8,0,Math.PI*2,0,Math.PI/2),M(0xE0A83A),.05,.8,.18,b);bun.scale.y=.6;return b;};
+    const b1=booth(-4.6,-2.6),b2=booth(4.6,-2.6),b3=booth(-4.8,1.2),b4=booth(4.8,1.4);
+    const sit=(b,side,o)=>{const p=person(Object.assign({sit:true,r},o));p.position.set(b.position.x+(o.dx||0),.22,b.position.z+side*.62);p.rotation.y=side>0?Math.PI:0;g.add(p);return p;};
+    sit(b1,-1,{paper:true,dx:-.3});sit(b2,1,{dx:.2});sit(b2,-1,{dx:-.3});sit(b4,1,{dx:.3});
+    const ctr=new THREE.Group();ctr.position.set(1.6,0,-4.2);g.add(ctr);box(3.6,1,.7,0x6A3A22,0,.5,0,ctr);box(3.6,.06,.74,0xE8E4DC,0,1.02,0,ctr);
+    const disp=new THREE.Mesh(new THREE.BoxGeometry(1.4,.6,.6),glassM());disp.position.set(-.9,1.35,0);ctr.add(disp);box(1.38,.04,.58,0xD8D2C6,-.9,1.1,0,ctr);
+    for(let i=0;i<8;i++){const bn=mesh(new THREE.SphereGeometry(.09,10,6,0,Math.PI*2,0,Math.PI/2),M(0xE0A83A),-1.45+(i%4)*.3,1.13,-.12+Math.floor(i/4)*.24,ctr);bn.scale.y=.6;}
+    [.5,.95,1.4].forEach(x=>{mesh(new THREE.CylinderGeometry(.16,.18,.42,16),new THREE.MeshPhongMaterial({color:0xC8CCD0,shininess:90}),x,1.25,-.05,ctr);box(.06,.12,.04,0x2A2A2A,x+.17,1.3,-.05,ctr);});
+    box(.5,.35,.4,0x2A2D30,-.1,1.22,.1,ctr);
+    S.cafeWaiter=walker(g,{shirt:0xF4F4EF,apron:0x2A2D30,tray:true,pants:0x1A1A1A,r},[V(-2.6,0,-3.4),V(-2.8,0,-.6),V(-2.6,0,2.4),V(2.6,0,2.6),V(2.8,0,-.4),V(2.6,0,-3.4)],1.05);
+    S.cafe={g,label:[]};}
+
+  /* ================= MTR platform with PSDs ================= */
+  {const g=new THREE.Group();g.position.copy(LP.mtr);E.scene.add(g);
+    floor(g,20,7,tex(256,256,(x,w,h)=>{x.fillStyle='#B4B6B2';x.fillRect(0,0,w,h);for(let i=0;i<1400;i++){x.fillStyle=['#9EA09C','#C8CAC4','#8A8C88'][i%3];x.fillRect(r()*w,r()*h,2,2);}x.strokeStyle='#8E908C';x.lineWidth=2;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(i*64,0);x.lineTo(i*64,h);x.stroke();x.beginPath();x.moveTo(0,i*64);x.lineTo(w,i*64);x.stroke();}}),[8,3],.02).position.z=-.2;
+    const tact=tex(64,64,(x,w,h)=>{x.fillStyle='#F2C81A';x.fillRect(0,0,w,h);x.fillStyle='#D8B000';for(let i=0;i<4;i++)for(let j=0;j<4;j++){x.beginPath();x.arc(8+i*16,8+j*16,4,0,7);x.fill();}});const tf=floor(g,20,.5,tact,[40,1],.03);tf.position.z=-3.05;
+    const PZ=-3.5;S.psd=[];
+    for(let k=0;k<5;k++){const x0=-8+k*4;
+      box(.12,2.3,.14,0x3A3E44,x0-1.9,1.15,PZ,g);box(.12,2.3,.14,0x3A3E44,x0+1.9,1.15,PZ,g);
+      [-1.35,1.35].forEach(dx=>{const p=new THREE.Mesh(new THREE.BoxGeometry(1,2.05,.04),glassM());p.position.set(x0+dx,1.05,PZ);g.add(p);});
+      const doors=[-1,1].map(s=>{const d=new THREE.Group();d.position.set(x0+s*.425,0,PZ+.02);g.add(d);const p=new THREE.Mesh(new THREE.BoxGeometry(.85,2.05,.04),glassM());p.position.y=1.05;d.add(p);box(.06,2.05,.06,0x5A5E64,s*.42,1.05,0,d);box(.85,.06,.06,0x5A5E64,0,.04,0,d);return d;});
+      S.psd.push({doors,x0});
+      const hdr=tex(512,64,(x,w,h)=>{x.fillStyle='#202428';x.fillRect(0,0,w,h);x.fillStyle='#FF9A2A';x.font='bold 30px '+FONT;x.fillText('往荃灣  To Tsuen Wan',16,42);x.textAlign='right';x.fillText('1 分鐘',w-16,42);});
+      box(4,.5,.22,0x2A2D30,x0,2.35,PZ,g);panel(g,1.9,.24,hdr,x0,2.34,PZ+.12,0,true);
+      box(.12,.04,.01,0xF2C81A,x0,.02,PZ+.6,g);}
+    box(20,.6,.24,0x2A2D30,0,2.9,PZ,g);
+    const trough=box(20,.1,3.6,0x2A2826,0,-.75,-5.6,g);[-.72,.72].forEach(z=>box(20,.12,.08,0x8A8E92,0,-.62,-5.6+z,g));
+    const wallT=tex(256,128,(x,w,h)=>{x.fillStyle='#B5232A';x.fillRect(0,0,w,h);x.strokeStyle='#8E1A20';x.lineWidth=2;for(let i=0;i<=8;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,h);x.stroke();}for(let j=0;j<=4;j++){x.beginPath();x.moveTo(0,j*32);x.lineTo(w,j*32);x.stroke();}});wallT.wrapS=THREE.RepeatWrapping;wallT.repeat.set(6,1);
+    panel(g,22,4.6,wallT,0,1.6,-7.5,0);box(22,5,.2,0x3A3E44,0,6.4,-7.6,g);[-10.5,10.5].forEach(x=>box(.3,9,12,0x3A3E44,x,4,-2,g));
+    const nameT=tex(512,160,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='#1C1C1C';x.font='bold 86px '+FONT;x.textAlign='center';x.fillText('中環',w/2,90);x.font='bold 40px Helvetica,Arial,sans-serif';x.fillText('Central',w/2,142);});
+    [-5,5].forEach(x=>panel(g,2.8,.88,nameT,x,2.3,-7.48,0));
+    const adT=(c1,c2,txt)=>tex(256,384,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,c1);gr.addColorStop(1,c2);x.fillStyle=gr;x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 46px '+FONT;x.textAlign='center';txt.forEach((t,i)=>x.fillText(t,w/2,150+i*60));});
+    panel(g,1.3,1.9,adT('#2A7FC8','#0A3A70',['暑期','優惠']),-.2,1.6,-7.47,0,true);panel(g,1.3,1.9,adT('#F2A23A','#C8452A',['新鮮','果汁']),1.6,1.6,-7.47,0,true);
+    [[-6.6,-.6],[6.6,-.6]].forEach(([x,z])=>{box(.7,3.6,.7,0xE8E2D4,x,1.8,z,g);});
+    const mapT=tex(256,180,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.lineWidth=10;x.lineCap='round';x.strokeStyle='#1A5FB4';x.beginPath();x.moveTo(20,140);x.lineTo(236,140);x.stroke();x.strokeStyle='#C8352A';x.beginPath();x.moveTo(80,140);x.lineTo(80,50);x.lineTo(236,50);x.stroke();x.fillStyle='#1C1C1C';x.font='bold 18px '+FONT;x.fillText('路線圖',10,24);});
+    panel(g,.68,.48,mapT,6.6,1.7,-.24,0);
+    const hang=(x,txt,col)=>{box(.04,.5,.04,0x5A5E64,x-.6,3.4,0,g);box(.04,.5,.04,0x5A5E64,x+.6,3.4,0,g);const t=tex(384,64,(c,w,h)=>{c.fillStyle='#1C1E22';c.fillRect(0,0,w,h);c.fillStyle=col;c.fillRect(0,0,14,h);c.fillStyle='#fff';c.font='bold 30px '+FONT;c.fillText(txt,28,42);});box(1.8,.32,.08,0x1C1E22,x,3.06,0,g);panel(g,1.78,.3,t,x,3.06,.045,0,true);};
+    hang(-3,'荃灣綫 往荃灣 →','#C8352A');hang(3,'出口 Exit A  ↗','#F2C81A');
+    [[-4.6,.9],[4.4,1]].forEach(([x,z])=>{const b=new THREE.Group();b.position.set(x,0,z);g.add(b);for(let k=0;k<3;k++){box(.5,.04,.45,0xA8AEB4,-.55+k*.55,.46,0,b);box(.5,.4,.04,0xA8AEB4,-.55+k*.55,.66,-.22,b);}box(1.7,.44,.06,0x5A5E64,0,.22,0,b);});
+    [[-8,-2.5],[-7.4,-2.5],[-4.2,-2.6],[4.3,-2.5],[8.2,-2.5],[7.6,-2.4]].forEach(([x,z],i)=>{const p=person({r,bag:i%2?0x3A3A3A:null});p.position.set(x,0,z);p.rotation.y=Math.PI;g.add(p);});
+    walker(g,{r,bag:0xC8452F},[V(-9,0,1.8),V(9,0,1.8)],1.3);walker(g,{r},[V(9,0,2.6),V(-9,0,2.6)],1.1);
+    const train=new THREE.Group();train.position.set(-34,0,-5.6);g.add(train);S.train=train;S.trainDoors=[];
+    for(let c=0;c<4;c++){const car=new THREE.Group();car.position.x=c*8.2;train.add(car);
+      box(8,2.5,2.7,0xD8DCE0,0,1.15,0,car);const roof=mesh(new THREE.CylinderGeometry(1.35,1.35,8,16,1,false,0,Math.PI),M(0xC8CCD0),0,2.4,0,car);roof.rotation.z=Math.PI/2;roof.scale.set(1,1,.35);
+      box(8.02,.18,2.72,0xC8352A,0,.55,0,car);box(8.02,.08,2.72,0x1A5FB4,0,.42,0,car);box(8,.55,2.72,0x1C2430,0,1.75,0,car);
+      [-3,-1,1,3].forEach(dx=>{const dg=new THREE.Group();dg.position.set(dx,0,1.36);car.add(dg);const L=box(.5,1.9,.04,0xB8BCC0,-.25,1.05,0,dg),R=box(.5,1.9,.04,0xB8BCC0,.25,1.05,0,dg);box(.3,.6,.05,0x1C2430,-.25,1.45,0,dg);box(.3,.6,.05,0x1C2430,.25,1.45,0,dg);S.trainDoors.push({L,R});});
+      [-3.4,3.4].forEach(dx=>box(1.6,.6,.3,0x2A2A2A,dx,-.15,0,car));
+      if(c===3){const n=new THREE.Group();n.position.x=4.4;car.add(n);box(.9,2.2,2.6,0xD8DCE0,0,1.1,0,n);box(.92,.9,2.2,0x101820,.05,1.65,0,n);box(.94,.18,2.62,0xC8352A,0,.55,0,n);[-.8,.8].forEach(z=>mesh(new THREE.SphereGeometry(.09,8,6),M(0xFFFFFF,{emissive:0xFFFFAA}),.47,.8,z,n));}}
+    S.mtr={g,label:[],map:V(6.6,2.15,-.2)};}
+
+  /* ================= Star Ferry ================= */
+  {const g=new THREE.Group();g.position.copy(LP.ferry);E.scene.add(g);
+    const w=mesh(new THREE.PlaneGeometry(220,140,40,24),new THREE.MeshLambertMaterial({color:0x1A64A8,emissive:0x0A3466}),0,-.35,-30,g);w.rotation.x=-Math.PI/2;w.userData.base=w.geometry.attributes.position.array.slice();S.water=w;
+    const boat=new THREE.Group();g.add(boat);S.boat=boat;
+    box(12,1.3,7.2,0x2E7D4A,0,-.5,-.6,boat);box(12.1,.18,7.3,0xF4F4EF,0,.18,-.6,boat);
+    floor(boat,11.6,6.8,tex(256,64,(x,w,h)=>{x.fillStyle='#B8865A';x.fillRect(0,0,w,h);x.strokeStyle='#8A5E3A';x.lineWidth=2;for(let i=0;i<=8;i++){x.beginPath();x.moveTo(0,i*8);x.lineTo(w,i*8);x.stroke();}}),[3,8],.29).position.z=-.6;
+    for(let x=-5.8;x<=5.8;x+=.5)box(.04,.95,.04,0xF4F4EF,x,.75,-3.95,boat);box(11.7,.08,.08,0xF4F4EF,0,1.2,-3.95,boat);box(11.7,.05,.05,0xF4F4EF,0,.8,-3.95,boat);
+    [[-5.8,2.6],[5.8,2.6],[-5.8,-3.9],[5.8,-3.9],[0,-3.9],[0,2.6]].forEach(([x,z])=>box(.14,3.3,.14,0xF4F4EF,x,1.9,z,boat));
+    box(12,.14,6.9,0xF4F4EF,0,3.55,-.6,boat);for(let i=0;i<4;i++)mesh(new THREE.CylinderGeometry(.14,.14,.05,12),M(0xFFFFFF,{emissive:0xEEEEDD}),-4.2+i*2.8,3.47,-.6,boat);
+    [[-5.8,-2],[5.8,-2]].forEach(([x,z])=>{const lb=mesh(new THREE.TorusGeometry(.3,.08,8,20),M(0xE8501A),x+(x<0?.12:-.12),1.6,z,boat);lb.rotation.y=Math.PI/2;});
+    const bench=(x,z)=>{const b=new THREE.Group();b.position.set(x,.3,z);boat.add(b);
+      [-1,1].forEach(s=>{box(.06,.45,.06,0x2E5A3A,s*.85,.22,-.18,b);box(.06,.45,.06,0x2E5A3A,s*.85,.22,.18,b);box(.06,.7,.06,0x2E5A3A,s*.85,.75,0,b);});
+      for(let k=0;k<4;k++)box(1.8,.04,.09,0x9A6A3A,0,.46,-.16+k*.11,b);
+      const back=new THREE.Group();back.position.set(0,.85,0);b.add(back);back.rotation.x=.18;for(let k=0;k<3;k++)box(1.8,.09,.035,0x9A6A3A,0,-.15+k*.14,0,back);box(.04,.5,.04,0x2E5A3A,-.86,0,0,back);box(.04,.5,.04,0x2E5A3A,.86,0,0,back);return b;};
+    [-4.5,-2.4,2.4,4.5].forEach(x=>[-2.9,-1.7].forEach(z=>bench(x,z)));
+    const nb=tex(512,96,(x,w,h)=>{x.fillStyle='#1E5A3A';x.fillRect(0,0,w,h);x.fillStyle='#F4F4EF';x.font='bold 52px '+FONT;x.textAlign='center';x.fillText('天星小輪  STAR FERRY',w/2,66);});panel(boat,4,.75,nb,0,3.05,-3.93,0);
+    const sk=new THREE.Group();sk.position.set(0,0,-60);g.add(sk);
+    [[-40,26,30],[-10,34,34],[22,30,32],[50,24,28]].forEach(([x,h,rd])=>{const m=mesh(new THREE.SphereGeometry(rd,16,10,0,Math.PI*2,0,Math.PI/2),M(0x4E7A4A,{flatShading:true}),x,-2,-24,sk);m.scale.y=h/rd;});
+    const win=tex(64,128,(x,w,h)=>{x.fillStyle='#7A8A9A';x.fillRect(0,0,w,h);for(let i=0;i<4;i++)for(let j=0;j<10;j++){x.fillStyle=r()<.35?'#FFE6A0':'#3A4A5A';x.fillRect(4+i*15,4+j*12,10,7);}});win.wrapS=win.wrapT=THREE.RepeatWrapping;
+    for(let i=0;i<46;i++){const x=-70+i*3.1+r()*1.2,h=8+r()*20+(Math.abs(x+8)<10?10:0),wd=2.4+r()*1.4;const t=win.clone();t.needsUpdate=true;t.repeat.set(1,h/10);const b=new THREE.Mesh(new THREE.BoxGeometry(wd,h,wd),new THREE.MeshLambertMaterial({map:t,color:[0xFFFFFF,0xDDE6EE,0xEDE4D6][i%3]}));b.position.set(x,h/2-.3,-r()*10);sk.add(b);}
+    const ifc=new THREE.Mesh(new THREE.BoxGeometry(5,42,5),new THREE.MeshLambertMaterial({color:0xB8C8D8}));ifc.position.set(-8,21,-2);sk.add(ifc);mesh(new THREE.ConeGeometry(3,5,4),M(0xC8D4E0),-8,44,-2,sk).rotation.y=Math.PI/4;
+    const icc=new THREE.Group();icc.position.set(60,0,30);g.add(icc);const ib=new THREE.Mesh(new THREE.BoxGeometry(6,62,6),new THREE.MeshLambertMaterial({color:0x8EA8C4}));ib.position.y=31;icc.add(ib);for(let k=1;k<24;k++)box(6.06,.4,6.06,0xD8E8F8,0,k*2.6,0,icc);
+    const junk=new THREE.Group();junk.position.set(-60,0,-24);g.add(junk);S.junk=junk;box(5,.8,1.4,0x5A3A22,0,.1,0,junk);[[-1,3.2],[1.2,2.6]].forEach(([x,h])=>{box(.1,h+.6,.1,0x3A2A1A,x,h/2+.4,0,junk);const sl=new THREE.Mesh(new THREE.PlaneGeometry(1.8,h),new THREE.MeshLambertMaterial({color:0xC8302A,side:THREE.DoubleSide}));sl.position.set(x+.1,h/2+.6,0);sl.rotation.y=Math.PI/2;junk.add(sl);});
+    const f2=new THREE.Group();f2.position.set(40,0,-34);g.add(f2);S.ferry2=f2;box(9,1,4.6,0x2E7D4A,0,-.1,0,f2);box(9,1.6,4.2,0xF4F4EF,0,1.2,0,f2);box(9.2,.2,4.4,0xF4F4EF,0,2.1,0,f2);
+    S.ferry={g,label:[{t:'ICC 環球貿易廣場',p:V(60,66,30)}]};}
+
+  /* ================= wet market ================= */
+  {const g=new THREE.Group();g.position.copy(LP.market);E.scene.add(g);
+    floor(g,18,11,tex(128,128,(x,w,h)=>{x.fillStyle='#7E8482';x.fillRect(0,0,w,h);for(let i=0;i<300;i++){x.fillStyle=r()<.5?'#6E7472':'#8E9492';x.fillRect(r()*w,r()*h,3,3);}}),[6,4]).position.z=-1;
+    for(let i=0;i<7;i++){const p=mesh(new THREE.CircleGeometry(.4+r()*.5,16),new THREE.MeshPhongMaterial({color:0x4A5458,shininess:120,specular:0xFFFFFF,transparent:true,opacity:.7}),-6+r()*12,.035,-1.5+r()*4,g);p.rotation.x=-Math.PI/2;p.scale.x=1.6;}
+    box(18,7.5,.2,0xC8CCC4,0,3.75,-6.2,g);[-9,9].forEach(x=>box(.2,7.5,10,0xC8CCC4,x,3.75,-1.4,g));
+    const shop=(x,name,goods,price)=>{const s=new THREE.Group();s.position.set(x,0,-4.2);g.add(s);
+      [-1.6,1.6].forEach(px=>[-.9,.9].forEach(pz=>box(.08,2.9,.08,0x2E6A4A,px,1.45,pz,s)));
+      const aw=box(3.6,.06,2.6,0x2E6A4A,0,2.92,.3,s);aw.rotation.x=-.12;
+      const st=tex(512,112,(c,w,h)=>{c.fillStyle='#F4E8C8';c.fillRect(0,0,w,h);c.fillStyle='#B8221A';c.font='bold 72px '+FONT;c.textAlign='center';c.fillText(name,w/2,82);});box(3.2,.6,.06,0xF4E8C8,0,3.3,.95,s);panel(s,3.18,.58,st,0,3.3,.99,0);
+      box(3.2,.85,1.5,0x8A9096,0,.43,.2,s);box(3.24,.05,1.54,0x5A6066,0,.87,.2,s);
+      for(let k=0;k<6;k++){const bx=new THREE.Group();bx.position.set(-1.2+(k%3)*1.2,.9,-.15+Math.floor(k/3)*.65);s.add(bx);box(.95,.16,.55,[0xD8322A,0x2A6FC8][k%2],0,.08,0,bx);
+        for(let q=0;q<6;q++){const f=mesh(new THREE.SphereGeometry(.11,10,8),M(goods[(k+q)%goods.length]),-.3+(q%3)*.3,.24,-.1+Math.floor(q/3)*.2,bx);if(goods[0]===0xF2A23A)f.scale.set(1,1.3,.9);}}
+      const pt=tex(128,96,(c,w,h)=>{c.fillStyle='#fff';c.fillRect(0,0,w,h);c.strokeStyle='#C8221A';c.lineWidth=6;c.strokeRect(3,3,w-6,h-6);c.fillStyle='#C8221A';c.font='bold 38px '+FONT;c.textAlign='center';c.fillText(price,w/2,58);});
+      const pc=new THREE.Group();pc.position.set(.6,1.1,.75);s.add(pc);box(.02,.4,.02,0x8A6A3A,0,.2,0,pc);panel(pc,.36,.27,pt,0,.48,.01,0);
+      [-.8,.8].forEach(lx=>{box(.02,.9,.02,0x2A2A2A,lx,2.45,.3,s);mesh(new THREE.ConeGeometry(.36,.42,18,1,true),M(0xD8222A,{emissive:0x7A0A0A,side:THREE.DoubleSide}),lx,1.85,.3,s);mesh(new THREE.SphereGeometry(.12,10,8),M(0xFFE0A0,{emissive:0xFFA040}),lx,1.72,.3,s);});
+      for(let k=0;k<3;k++)box(.6,.3,.4,0xF4F4F4,1.9,.15+k*.31,-.6,s);
+      const scale=new THREE.Group();scale.position.set(-.9,.92,.75);s.add(scale);box(.3,.08,.25,0xD8322A,0,0,0,scale);mesh(new THREE.CylinderGeometry(.16,.16,.02,16),M(0xC8CCD0),0,.08,0,scale);
+      for(let k=0;k<3;k++)box(.25,.32,.02,k%2?0xFFFFFF:0xD8322A,-1.5+k*.1,2.2,.92,s);return s;};
+    shop(-4.4,'陳記果欄',[0x6AB84A,0xD8322A,0xF2C14E],'$10');shop(0,'鮮果之家',[0xF2A23A,0xF2C14E],'$20');shop(4.4,'豐記菜檔',[0x4E9A3A,0x8AC85A,0xE8E0C8],'$8');
+    walker(g,{r,carry:0xF4F4F4},[V(-8,0,1.2),V(8,0,1.4)],1);walker(g,{r,carry:0xD8322A},[V(8,0,2.3),V(-8,0,2.2)],.9);walker(g,{r,bag:0x2A6FC8,pauseAt:1},[V(-7,0,-1.6),V(-4.4,0,-2.2),V(-7,0,-1.6)],.8);
+    S.market={g,label:[]};}
+
+  /* ---------- per-frame ---------- */
+  let trainT=null,doorT=0;
+  S.trainArrive=()=>{trainT=0;doorT=0;};
+  S.update=(dt,t)=>{
+    if(S.fans)S.fans.forEach(f=>f.rotation.y+=dt*4);
+    if(S.water){const pa=S.water.geometry.attributes.position,b=S.water.userData.base;for(let i=0;i<pa.count;i++)pa.array[i*3+2]=Math.sin(b[i*3]*.18+t*1.2)*.16+Math.cos(b[i*3+1]*.22+t*.9)*.12;pa.needsUpdate=true;}
+    if(S.boat){S.boat.rotation.z=Math.sin(t*.8)*.012;S.boat.rotation.x=Math.sin(t*.6)*.008;}
+    if(S.junk){S.junk.position.x=-60+((t*2)%120);S.junk.position.y=Math.sin(t)*.1;}
+    if(S.ferry2){S.ferry2.position.x=40-((t*1.2)%110);}
+    if(trainT!=null){trainT+=dt;const k=Math.min(1,trainT/4.5);S.train.position.x=-34+(1-Math.pow(1-k,3))*29;
+      if(k>=1){doorT=Math.min(1,doorT+dt*.8);S.psd.forEach(p=>{p.doors[0].position.x=p.x0-.425-doorT*.85;p.doors[1].position.x=p.x0+.425+doorT*.85;});S.trainDoors.forEach(d=>{d.L.position.x=-.25-doorT*.48;d.R.position.x=.25+doorT*.48;});}}
+    walkers.forEach(w=>{if(w.pause>0){w.pause-=dt;w.g.userData.legs.forEach(l=>l.rotation.x=0);return;}const tg=w.path[w.i];const d=tg.clone().sub(w.g.position);d.y=0;const L=d.length();
+      if(L<.05){if(w.pauseAt!=null&&w.i===w.pauseAt)w.pause=2.5;w.i=(w.i+1)%w.path.length;if(w.i===0&&w.path.length===2){w.g.position.copy(w.path[0]);w.i=1;}return;}
+      w.g.position.addScaledVector(d.normalize(),Math.min(L,w.speed*dt));w.g.rotation.y=Math.atan2(d.x,d.z);w.ph+=dt*7;const s=Math.sin(w.ph)*.5;w.g.userData.legs[0].rotation.x=s;w.g.userData.legs[1].rotation.x=-s;
+      if(!w.g.userData.arms[1].rotation.x)w.g.userData.arms[0].rotation.x=-s*.6;});
+  };
+  return S;
+}};
+})();
+</script>
+<script>/* Dialogue-quest mode: listening + responding, optional speaking practice */
+(function(){
+"use strict";
+const E=ENG,$=E.$,V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textContent),GM=JSON.parse($('d-game').textContent);
+const qs=new URLSearchParams(location.search);
+const REC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const st={scene:-1,score:0,hints:0,phrases:[],tts:GM.tts.enabled_default,speak:qs.get(GM.speaking.url_param)==='1',yaw:0,drag:null,spoken:0,wrongs:0};
+window.__dlg=st;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.08;
+E.SPK={narrator:{name:'你',col:'#F4EBD6'}};
+Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
+const M=(h,o)=>E.M(h,o),mesh=(...a)=>E.mesh(...a),box=(...a)=>E.box(...a);const LP={};Object.entries(W.locations).forEach(([k,v])=>LP[k]=V(...v));
+E.setEnv('morning',true);
+
+/* ---------- people ---------- */
+const SKIN=[0xF2D2B0,0xE0B890,0xC89870];
+function person(shirt,extra){const g=new THREE.Group();
+  const legs=[-1,1].map(s=>{const p=new THREE.Group();p.position.set(s*.11,.62,0);g.add(p);box(.13,.6,.14,0x2A3A5A,0,-.3,0,p);return p;});
+  mesh(new THREE.CylinderGeometry(.22,.24,.7,10),M(shirt),0,.98,0,g);const head=mesh(new THREE.SphereGeometry(.19,12,10),M(SKIN[extra&&extra.skin||0]),0,1.52,0,g);
+  mesh(new THREE.SphereGeometry(.2,12,8,0,Math.PI*2,0,Math.PI/2),M(extra&&extra.hair||0x2A2420),0,1.56,0,g);
+  if(extra&&extra.apron)box(.36,.5,.04,extra.apron,0,.85,.22,g);
+  if(extra&&extra.bag)box(.3,.4,.18,extra.bag,0,1.05,-.26,g);
+  if(extra&&extra.hat){mesh(new THREE.CylinderGeometry(.26,.26,.03,16),M(extra.hat),0,1.7,0,g);mesh(new THREE.CylinderGeometry(.15,.17,.14,14),M(extra.hat),0,1.77,0,g);}
+  g.scale.setScalar(1.15);E.scene.add(g);g.userData={legs,talk:false};return g;}
+
+/* ---------- sets (scene kit) ---------- */
+const S=E.kits.hk_city.build(LP);
+const labels=[];Object.keys(LP).forEach(k=>(S[k].label||[]).forEach(l=>{const el=document.createElement('div');el.className='slabel';el.textContent=l.t;el.hidden=true;$('spots').appendChild(el);const a={el,pos:l.p.clone().add(LP[k])};E.anchors.push(a);labels.push({k,el});}));
+const mapBtn=document.createElement('button');mapBtn.className='spot';mapBtn.textContent='路線圖';mapBtn.hidden=true;$('spots').appendChild(mapBtn);E.anchors.push({el:mapBtn,pos:S.mtr.map.clone().add(LP.mtr)});
+mapBtn.addEventListener('click',showMap);
+
+/* characters */
+Object.entries(C.npc_slots).forEach(([s,d])=>E.makeChar(s,d.character_id,d.costume));
+const CH=E.chars;E.lampValue=()=>Math.min(1,.3+st.score/180);
+const HP=E.hkPerson;const STR={cafe:HP({shirt:0xF4F4EF,apron:0x2A2D30,pants:0x1A1A1A,skin:0}),mtr:HP({shirt:0x6AB84A,bag:0xC8452F,hat:0xE8D8A8,skin:0,hair:0xC8A060}),market:HP({shirt:0x3A6FB0,apron:0xF2C14E,skin:1})};Object.values(STR).forEach(g=>{E.scene.add(g);g.userData.talk=false;});
+Object.entries(STR).forEach(([k,g])=>{g.position.copy(LP[k]).add(V(...W.npc_layout.stranger));g.rotation.y=0;});
+function place(k,instant){Object.values(CH).forEach(c=>{const l=W.npc_layout[c.slot];const t=LP[k].clone().add(V(l[0],0,l[2]));c.target.copy(t);c.root.position.y=k==='ferry'?.32:0;if(instant)c.root.position.copy(t).setY(k==='ferry'?.32:0);else c.speed=Math.max(3,c.root.position.distanceTo(t)/2.5);});}
+
+/* camera */
+function view(k){const p=LP[k];if(k==='ferry')return E.portrait?{look:p.clone().add(V(0,1.7,-1.2)),off:V(0,1,12.5)}:{look:p.clone().add(V(0,1.6,-1.4)),off:V(0,.9,9.4)};return E.portrait?{look:p.clone().add(V(0,1.5,-.6)),off:V(0,2.4,13)}:{look:p.clone().add(V(0,1.35,-.8)),off:V(0,2.4,8.6)};}
+let vw=null;E.cam.idle=t=>{if(!vw){const a=t*.05;E.camera.position.set(Math.sin(a)*10,3.4,Math.cos(a)*10);E.cam.look.set(0,1.4,-1);return;}E.camera.position.copy(vw.look).add(vw.off.clone().applyAxisAngle(V(0,1,0),st.yaw));E.cam.look.copy(vw.look);};
+E.canvas.addEventListener('pointerdown',e=>{if(!vw)return;st.drag={x:e.clientX,y0:st.yaw};E.canvas.setPointerCapture(e.pointerId);});
+E.canvas.addEventListener('pointermove',e=>{if(!st.drag)return;st.yaw=Math.max(-.55,Math.min(.55,st.drag.y0-(e.clientX-st.drag.x)*.005));});
+['pointerup','pointercancel'].forEach(k=>E.canvas.addEventListener(k,()=>st.drag=null));
+let talkingStranger=null;
+function onFrame(dt,t){
+  S.update(dt,t);
+  Object.values(STR).forEach(g=>{g.position.y=g.userData.talk?Math.abs(Math.sin(t*10))*.04:0;});
+}
+
+/* speech */
+function speak(text){if(!st.tts||!('speechSynthesis' in window))return Promise.resolve();return new Promise(res=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=GM.tts.lang;u.rate=GM.tts.rate;
+  const vs=speechSynthesis.getVoices();const v=vs.find(x=>x.lang==='en-GB')||vs.find(x=>/^en/.test(x.lang));if(v)u.voice=v;u.onend=res;u.onerror=res;speechSynthesis.speak(u);setTimeout(res,8000);}catch(e){res();}});}
+const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g,' ').split(/\s+/).filter(Boolean);
+function lcs(a,b){const dp=Array(a.length+1).fill(0).map(()=>Array(b.length+1).fill(0));for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);return dp[a.length][b.length];}
+function f1(said,target){const a=norm(said),b=norm(target);if(!a.length||!b.length)return 0;const m=lcs(a,b);const p=m/a.length,r=m/b.length;return p+r?2*p*r/(p+r):0;}
+function similarity(said,target){const a=norm(said),b=norm(target);const dp=Array(a.length+1).fill(0).map(()=>Array(b.length+1).fill(0));
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);return b.length?dp[a.length][b.length]/b.length:0;}
+function listen(){return new Promise(res=>{if(!REC){res({err:'unsupported'});return;}const r=new REC();r.lang=GM.speaking.lang;r.interimResults=false;r.maxAlternatives=3;let done=false;
+  r.onresult=e=>{done=true;const alts=[...e.results[0]].map(a=>a.transcript);res({alts});};r.onerror=e=>{if(!done){done=true;res({err:e.error});}};r.onend=()=>{if(!done){done=true;res({err:'no-speech'});}};
+  try{r.start();}catch(e){res({err:'start'});}setTimeout(()=>{try{r.stop();}catch(e){}},GM.speaking.max_seconds*1000);});}
+
+/* ui helpers */
+function hud(){$('score').textContent=st.score;$('pbCount').textContent=st.phrases.length;$('speakSt').textContent=st.speak?'開':'關';$('speakBtn').setAttribute('aria-pressed',String(st.speak));$('ttsSt').textContent=st.tts?'開':'關';}
+let toastT=null;function toast(title,text,cls){const el=$('toast');el.className=cls||'';const dg=$('dialog');el.style.bottom=dg.hidden?'14px':Math.min(innerHeight-120,dg.offsetHeight+24)+'px';$('toastT').textContent=title;$('toastD').textContent=text||'';el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,4200);}
+$('speakBtn').addEventListener('click',()=>{st.speak=!st.speak;if(st.speak&&!REC)toast('此瀏覽器不支援語音辨識','建議使用桌面版 Chrome 或 Edge。仍可繼續用選項作答。','bad');hud();});
+$('ttsBtn').addEventListener('click',()=>{st.tts=!st.tts;if(!st.tts&&'speechSynthesis' in window)speechSynthesis.cancel();hud();});
+$('assist').addEventListener('click',()=>{if(!st.hint)return;st.hints++;st.score=Math.max(0,st.score-GM.scoring.hint_penalty);hud();E.bubble(C.npc_slots.mentor.display_name+' 的提示（扣 '+GM.scoring.hint_penalty+' 分）',st.hint,7000);});
+$('phrasebook').addEventListener('click',async()=>{if($('overlay').innerHTML)return;
+  E.overlay('<div class="card"><h2>短語簿</h2><p class="sub">一路上學到的得體說法，按播放鍵可以再聽一次。</p><ul class="pb">'+(st.phrases.map((p,i)=>'<li><button class="play" data-i="'+i+'" aria-label="播放">'+PLAY+'</button><div><b lang="en">'+p.en+'</b><span>'+p.where+'</span></div></li>').join('')||'<p class="sub">還沒有短語。</p>')+'</ul><button class="primary" id="pbc">收起</button></div>',true);
+  document.querySelectorAll('.pb .play').forEach(b=>b.addEventListener('click',()=>speak(st.phrases[+b.dataset.i].en)));await E.waitClick('#pbc');E.clearOverlay();});
+const PLAY='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const MIC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+async function showMap(){if($('overlay').innerHTML)return;
+  E.overlay('<div class="card"><h2>港鐵路線圖（部分）</h2><p class="sub">你們在中環站。</p><svg viewBox="0 0 420 200" class="mtrmap" role="img" aria-label="港島綫由堅尼地城經中環、金鐘到灣仔；荃灣綫由中環經金鐘、尖沙咀到佐敦">'+
+   '<path d="M20 150 H330" stroke="#1A5FB4" stroke-width="9" stroke-linecap="round"/><path d="M110 150 V60 Q110 40 130 40 H400" stroke="#C8352A" stroke-width="9" stroke-linecap="round" fill="none"/>'+
+   '<g font-size="13" fill="#1C2A26"><circle cx="40" cy="150" r="8" fill="#fff" stroke="#1A5FB4" stroke-width="3"/><text x="18" y="178">上環</text>'+
+   '<circle cx="110" cy="150" r="11" fill="#fff" stroke="#1C2A26" stroke-width="4"/><text x="92" y="180" font-weight="700">中環（你在這裡）</text>'+
+   '<circle cx="200" cy="150" r="8" fill="#fff" stroke="#1A5FB4" stroke-width="3"/><text x="186" y="178">金鐘</text><circle cx="290" cy="150" r="8" fill="#fff" stroke="#1A5FB4" stroke-width="3"/><text x="276" y="178">灣仔</text>'+
+   '<circle cx="110" cy="95" r="8" fill="#fff" stroke="#C8352A" stroke-width="3"/><text x="122" y="99">金鐘</text><circle cx="230" cy="40" r="8" fill="#fff" stroke="#C8352A" stroke-width="3"/><text x="212" y="26">尖沙咀</text><circle cx="330" cy="40" r="8" fill="#fff" stroke="#C8352A" stroke-width="3"/><text x="318" y="26">佐敦</text>'+
+   '<text x="300" y="80" fill="#C8352A">荃灣綫 Tsuen Wan Line</text><text x="150" y="130" fill="#1A5FB4">港島綫 Island Line</text></g></svg><p class="sub">簡化示意圖，只顯示附近車站。</p><button class="primary" id="mpc">收起</button></div>',true);
+  await E.waitClick('#mpc');E.clearOverlay();}
+
+/* ---------- a dialogue turn ---------- */
+function spkKey(sc,turn){if(turn.speaker==='stranger'){E.SPK.stranger={name:sc.stranger.name+'（'+sc.stranger.zh+'）',col:'#F2C14E'};return 'stranger';}return turn.speaker;}
+async function doTurn(sc,turn,ti){
+  const key=spkKey(sc,turn);const sg=STR[sc.id];
+  st.hint='這句的意思是：「'+turn.zh+'」。選一個文法正確、語氣又有禮貌的回應。';
+  if(turn.kenny){E.emote(CH.rival,'hop');E.floatBubble(CH.rival,turn.kenny,3200);}
+  const opts=E.shuffle(turn.options);const dis=new Set();let wrong=0,skipped=false;
+  if(sg)sg.userData.talk=true;speak(turn.line).then(()=>{if(sg)sg.userData.talk=false;});
+  for(;;){const pick=await new Promise(async res=>{E.actions([]);await E.showLine(key,turn.line);$('line').setAttribute('lang','en');
+      const tools=document.createElement('div');tools.className='tools';const zh=document.createElement('p');zh.className='zh';zh.textContent=turn.zh;zh.hidden=true;
+      tools.appendChild(E.btn('mini',PLAY+'重聽',()=>speak(turn.line)));tools.appendChild(E.btn('mini','中文意思',()=>{zh.hidden=!zh.hidden;}));
+      const nodes=[tools,zh].concat(opts.map((o,i)=>{const b=E.btn('opt','<span class="k">'+'ABCD'[i]+'</span><span lang="en">'+o.text+'</span>',()=>{st.byVoice=false;res(i);});if(dis.has(i))b.disabled=true;return b;}));
+      if(st.speak){const vs=document.createElement('p');vs.className='vstat';let busy=false;
+        const vb=E.btn('next mic vans',MIC+'讀出你的答案',async()=>{if(busy)return;busy=true;vb.disabled=true;vs.textContent='正在聆聽……請讀出你選擇的句子。';$('dialog').classList.add('listening');
+          const r=await listen();$('dialog').classList.remove('listening');busy=false;vb.disabled=false;
+          if(r.err){vs.textContent={unsupported:'此瀏覽器不支援語音辨識，請直接點選答案。','not-allowed':'未能使用咪高峰，請在瀏覽器設定中允許，或直接點選答案。','no-speech':'聽不到聲音，請靠近咪高峰再讀一次。'}[r.err]||'語音辨識出錯，請再試一次或直接點選。';return;}
+          let best=null;r.alts.forEach(a=>opts.forEach((o,i)=>{if(dis.has(i))return;const sc=f1(a,o.text);if(!best||sc>best.s)best={i,s:sc,a};}));
+          const second=Math.max(0,...opts.map((o,i)=>i===best.i||dis.has(i)?0:Math.max(...r.alts.map(a=>f1(a,o.text)))));
+          if((best.s>=.95&&best.s-second>=.02)||(best.s>=GM.speaking.choose_min&&best.s-second>=GM.speaking.choose_margin)){vs.textContent='系統聽到：「'+best.a+'」，判斷你選了 '+'ABCD'[best.i]+'。';st.byVoice=true;await E.sleep(900);res(best.i);}
+          else vs.textContent='系統聽到：「'+best.a+'」，未能確定是哪一句。請讀得完整一點再試，或直接點選。';});
+        nodes.push(vb,vs);}
+      nodes.push(E.skipBtn(()=>res(-1)));E.actions(nodes);});
+    if(pick===-1){skipped=true;break;}
+    const o=opts[pick];if(o.correct)break;
+    wrong++;st.wrongs++;dis.add(pick);E.emote(CH.mentor,'shake');if(turn.kenny&&wrong===1)E.emote(CH.rival,'hop');toast('再想想',o.why,'bad');
+    const d=$('dialog');d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');}
+  const right=turn.options.find(o=>o.correct);
+  if(skipped){await E.say('mentor','比較好的回應是：「'+right.text+'」');}
+  else{const pts=Math.max(2,GM.scoring.choice_first_try-wrong*GM.scoring.choice_wrong_penalty);st.score+=pts;hud();E.emote(CH.companion,'hop');E.flash(true);toast(wrong?'答對了 +'+pts:'說得好 +'+pts,'','ok');}
+  if(!st.phrases.find(p=>p.en===right.text))st.phrases.push({en:right.text,where:sc.title});hud();
+  await speak(right.text);
+  if(!skipped&&st.byVoice&&!wrong){st.spoken++;st.score+=GM.scoring.speak_pass;hud();toast('讀得清楚 +'+GM.scoring.speak_pass,'你用說話選出了正確答案。','ok');st.byVoice=false;return;}
+  st.byVoice=false;if(st.speak)await practise(right.text);
+}
+async function practise(target){
+  let tries=0;
+  for(;;){const act=await new Promise(async res=>{E.actions([]);await E.showLine('mentor','試試把這句說出來：');
+      const t=document.createElement('p');t.className='target';t.setAttribute('lang','en');t.textContent=target;
+      const nodes=[t,E.btn('mini',PLAY+'聽示範',()=>speak(target)),E.btn('next mic',MIC+'按下後開始說',()=>res('rec')),E.btn('ghost','略過，繼續對話',()=>res('skip'))];E.actions(nodes);});
+    if(act==='skip')return;
+    tries++;E.actions([]);E.showLine('mentor','正在聆聽……請說出句子。');$('dialog').classList.add('listening');
+    const r=await listen();$('dialog').classList.remove('listening');
+    if(r.err){const msg={unsupported:'此瀏覽器不支援語音辨識，建議改用桌面版 Chrome 或 Edge。','not-allowed':'未能使用咪高峰。請在瀏覽器設定中允許使用咪高峰。','no-speech':'聽不到聲音，請靠近咪高峰再試一次。'}[r.err]||'語音辨識出錯（'+r.err+'），請再試一次。';
+      toast('未能辨識',msg,'bad');if(r.err==='unsupported'||r.err==='not-allowed')return;if(tries>=3)return;continue;}
+    const best=r.alts.map(a=>({a,s:similarity(a,target)})).sort((x,y)=>y.s-x.s)[0];
+    if(best.s>=GM.speaking.pass_ratio){st.spoken++;st.score+=GM.speaking.score_pass||GM.scoring.speak_pass;hud();E.emote(CH.companion,'hop');toast('說得很清楚 +'+GM.scoring.speak_pass,'系統聽到：「'+best.a+'」','ok');await E.sleep(600);return;}
+    toast('差一點','系統聽到：「'+best.a+'」，和目標句子吻合 '+Math.round(best.s*100)+'%。再慢一點、清楚一點試試。','bad');if(tries>=3){toast('沒關係','已經練習了三次，我們繼續吧。','');return;}}
+}
+async function check(sc){const q=sc.check,dis=new Set();let w=0;const gk=CH.gatekeeper;gk.target.copy(LP[sc.id]).add(V(-1.2,0,.8));await E.sleep(600);
+  for(;;){const i=await E.ask('gatekeeper',q.question,q.options,dis,{skip:true});if(i===-1){await E.say('gatekeeper','答案是「'+q.options[q.answer]+'」。'+q.explain);break;}
+    if(i===q.answer){st.score+=Math.max(2,GM.scoring.check_first_try-w*GM.scoring.check_wrong_penalty);hud();E.emote(gk,'hop');await E.say('gatekeeper','正確。'+q.explain);break;}w++;dis.add(i);E.emote(gk,'shake');}
+  place(sc.id,false);}
+
+/* ---------- flow ---------- */
+async function scene(i){
+  const sc=C.scenes[i];st.scene=i;
+  E.overlay('<div class="chapcard"><small>第'+E.NUM[i]+'站</small><h2>'+sc.title+'</h2><p lang="en">'+sc.en_title+'</p></div>',true);await Promise.race([E.sleep(E.RM?800:1900),new Promise(r=>$('overlay').addEventListener('click',r,{once:true}))]);E.clearOverlay();
+  $('chapNo').textContent='第'+E.NUM[i]+'站';$('chapTitle').textContent=sc.title;E.setEnv(sc.env);
+  labels.forEach(l=>l.el.hidden=l.k!==sc.id);mapBtn.hidden=!sc.map;
+  const v=view(sc.id);vw=null;place(sc.id,false);await E.camTo(v.look.clone().add(v.off),v.look,i?3:2);st.yaw=0;vw=v;
+  if(sc.id==='mtr')S.trainArrive();
+  await E.say('mentor',sc.intro_zh);
+  for(let t=0;t<sc.turns.length;t++)await doTurn(sc,sc.turns[t],t);
+  await check(sc);
+}
+async function main(){
+  E.start();place('cafe',true);hud();
+  E.overlay('<div class="title"><div class="v" lang="en">'+C.meta.short_title+'</div><div class="v a">'+C.meta.author+'</div><div class="side"><p>'+C.meta.title_lines.join('<br>')+'</p><button class="primary" id="go">開始</button></div></div>',true);
+  $('go').focus();await E.waitClick('#go');
+  E.overlay('<div class="card"><h2>出發前的設定</h2><div class="cast">'+Object.values(C.npc_slots).map(x=>'<div>'+E.glyph(x.character_id)+'<p style="margin:0"><b>'+x.display_name+'</b><br><span>'+x.persona+'</span></p></div>').join('')+'</div>'+
+    '<label class="opt-row"><input type="checkbox" id="ttsChk" '+(st.tts?'checked':'')+'> 讀出對白（聆聽練習）</label>'+
+    '<label class="opt-row"><input type="checkbox" id="spkChk" '+(st.speak?'checked':'')+'> 開口說話練習</label>'+
+    '<p class="sub privacy">開口說話會使用咪高峰，錄音由瀏覽器供應商（例如 Google 或 Apple）的語音服務即時轉成文字，本遊戲不會儲存任何錄音。如學校政策不允許，請保持關閉；之後也可以在右上角隨時開關。'+(REC?'':'<br><b>此瀏覽器不支援語音辨識。</b>')+'</p><button class="primary" id="go">出發</button></div>',true);
+  await E.waitClick('#go');st.tts=$('ttsChk').checked;st.speak=$('spkChk').checked;E.clearOverlay();$('hud').hidden=false;hud();
+  for(let i=Math.max(0,(window.__startScene||1)-1);i<C.scenes.length;i++)await scene(i);
+  E.hideDialog();labels.forEach(l=>l.el.hidden=true);mapBtn.hidden=true;
+  const tier=GM.endings.find(e=>st.score>=e.min_score).id,EN=C.endings[tier];E.flash(true);Object.values(CH).forEach(c=>E.emote(c,'hop'));await E.sleep(600);
+  E.overlay('<div class="card"><p class="sub" style="margin:0">一天結束</p><h2 lang="en">'+EN.title+'</h2><p>'+EN.text+'</p><div class="stats"><div><b>'+st.score+'</b>分數</div><div><b>'+st.phrases.length+'</b>短語</div><div><b>'+st.spoken+'</b>成功說出</div></div>'+
+    '<ul class="pb">'+st.phrases.map((p,i)=>'<li><button class="play" data-i="'+i+'" aria-label="播放">'+PLAY+'</button><div><b lang="en">'+p.en+'</b><span>'+p.where+'</span></div></li>').join('')+'</ul><p style="font-family:var(--serif)">'+C.npc_slots.mentor.display_name+'：'+C.debrief+'</p><button class="primary" id="again">再玩一次</button></div>',true);
+  document.querySelectorAll('.pb .play').forEach(b=>b.addEventListener('click',()=>speak(st.phrases[+b.dataset.i].en)));await E.waitClick('#again');location.reload();
+}
+main();
+})();
+</script>
+</body>
+</html>

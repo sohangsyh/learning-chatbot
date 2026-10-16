@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>互動學習遊戲館</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF3EC; --paper:#FFFFFF; --ink:#1C2A26; --sub:#55665F; --line:#CFDAD2;
+  --g:#FF8A1C; --o:#10C77A; --a:#1677E8; --i:#F2B80F; --e:#A86ED8; --m:#E05A8A; --geo:#3AA8B8; --ict:#7A8AE8; --csd:#C86A9A; --navy:#0B1F5E;
+  --kai:"LXGW WenKai TC","Kaiti TC","STKaiti","KaiTi",serif;
+  --sans:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#17302A; --paper:#20403A; --ink:#EAF2EC; --sub:#A8BDB3; --line:#33554C; } }
+:root[data-theme="dark"]{ --bg:#17302A; --paper:#20403A; --ink:#EAF2EC; --sub:#A8BDB3; --line:#33554C; }
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--a);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* hero */
+.hero{padding:44px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px;align-items:end}
+.hero h1{font-family:var(--kai);font-weight:700;font-size:clamp(44px,7vw,84px);line-height:1.05;margin:0 0 14px;letter-spacing:.02em}
+.hero p{font-size:17px;color:var(--sub);max-width:30em;margin:0 0 6px}
+.cast{width:100%;height:auto;display:block;overflow:visible}
+.cast .shadow{fill:var(--ink);opacity:.08}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:14px;color:var(--sub)}
+.legend b{font-family:var(--kai);font-size:16px;color:var(--ink);margin-right:4px}
+
+/* filters */
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;border-bottom:1px solid var(--line);margin-top:12px}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar span{font-size:14px;color:var(--sub);margin-right:4px}
+.chip{font:inherit;font-size:15px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* games */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding:24px 0 8px}
+.game{background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.game[hidden]{display:none}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.game h2{font-family:var(--kai);font-weight:700;font-size:28px;line-height:1.15;margin:0}
+.who{width:46px;height:46px;flex:none}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:13px;border-radius:6px;padding:2px 8px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--ink);border-left:3px solid var(--c)}
+.mode{font-size:14px;color:var(--sub);margin:0}
+.mode b{color:var(--ink);font-weight:600}
+.game p.d{margin:0;font-size:15px}
+.learn{margin:0;padding:0;list-style:none;font-size:14px;color:var(--sub)}
+.learn li{padding-left:16px;position:relative}
+.learn li::before{content:"";position:absolute;left:2px;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--c)}
+.foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px}
+.foot small{color:var(--sub);font-size:13px}
+.play{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:15px;background:var(--c);color:#14231E;border-radius:12px;padding:9px 16px}
+.play:hover{filter:brightness(1.06)}
+.play svg{width:16px;height:16px}
+
+/* upcoming */
+.next{padding:26px 0 10px}
+.next h3,.guide h3{font-family:var(--kai);font-size:26px;margin:0 0 4px}
+.next>p,.guide>p{color:var(--sub);margin:0 0 14px}
+.soon{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.soon div{border:1.5px dashed var(--line);border-radius:14px;padding:12px 14px}
+.soon b{font-family:var(--kai);font-size:20px;display:block}
+.soon span{font-size:14px;color:var(--sub)}
+
+/* guide */
+.guide{padding:22px 0 40px}
+.tw{overflow-x:auto;border:1.5px solid var(--line);border-radius:14px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--sub);font-size:14px}
+tr:last-child td{border-bottom:0}
+footer{border-top:1px solid var(--line);padding:18px 0 28px;color:var(--sub);font-size:13px}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr;padding-top:26px;gap:8px}
+  .cast{max-width:420px;margin:0 auto}
+  .games{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="wrap hero"><a href="portal/" style="position:fixed;right:16px;bottom:16px;z-index:50;background:#FF4F5A;color:#fff;font:700 15px system-ui,sans-serif;padding:12px 18px;border-radius:999px;text-decoration:none;box-shadow:0 4px 0 #C8333D">🎮 教師平台 · Teacher Portal</a>
+  <div>
+    <h1>互動學習<br>遊戲館</h1>
+    <p>由課程教材生成的 3D 學習遊戲。用手機或電腦打開即玩，不用登入。</p>
+    <div class="legend" aria-label="角色介紹">
+      <span><b>G</b>導師，替你點破道理</span>
+      <span><b>O</b>同伴，和你一起闖關</span>
+      <span><b>A</b>搗蛋鬼，專說錯誤想法</span>
+      <span><b>I</b>守門人，最後考考你</span>
+    </div>
+  </div>
+  <svg class="cast" viewBox="0 0 520 300" role="img" aria-label="四個角色 G、O、A、I 並排站著">
+    <ellipse class="shadow" cx="75" cy="286" rx="52" ry="8"/><ellipse class="shadow" cx="200" cy="286" rx="52" ry="8"/><ellipse class="shadow" cx="322" cy="286" rx="52" ry="8"/><ellipse class="shadow" cx="445" cy="286" rx="44" ry="8"/>
+    <!-- G -->
+    <g transform="translate(20 70)">
+      <path d="M99 54 A62 62 0 1 0 104 118" stroke="#FF8A1C" stroke-width="34" fill="none"/>
+      <path d="M70 92 L118 92 L118 140" stroke="#FF8A1C" stroke-width="22" fill="none" stroke-linejoin="round"/>
+      <path d="M44 150 L40 196 M74 152 L84 196" stroke="#D9631A" stroke-width="12" stroke-linecap="round"/>
+      <ellipse cx="34" cy="200" rx="16" ry="9" fill="#FF8A1C"/><ellipse cx="92" cy="200" rx="16" ry="9" fill="#FF8A1C"/>
+      <g class="eye" data-cx="38" data-cy="20"><circle cx="38" cy="20" r="21" fill="#fff" stroke="#FF8A1C" stroke-width="4"/><circle class="p" cx="38" cy="20" r="11" fill="#0B1F5E"/></g>
+      <g class="eye" data-cx="76" data-cy="20"><circle cx="76" cy="20" r="21" fill="#fff" stroke="#FF8A1C" stroke-width="4"/><circle class="p" cx="76" cy="20" r="11" fill="#0B1F5E"/></g>
+    </g>
+    <!-- O -->
+    <g transform="translate(140 76)">
+      <circle cx="60" cy="86" r="52" stroke="#10C77A" stroke-width="34" fill="none"/>
+      <path d="M44 150 L42 200 M82 140 L108 186" stroke="#0A9E5E" stroke-width="12" stroke-linecap="round"/>
+      <ellipse cx="36" cy="204" rx="16" ry="9" fill="#10C77A"/><ellipse cx="116" cy="190" rx="16" ry="9" fill="#10C77A"/>
+      <g class="eye" data-cx="22" data-cy="34"><circle cx="22" cy="34" r="21" fill="#fff" stroke="#10C77A" stroke-width="4"/><circle class="p" cx="22" cy="34" r="11" fill="#0B1F5E"/></g>
+      <g class="eye" data-cx="58" data-cy="22"><circle cx="58" cy="22" r="21" fill="#fff" stroke="#10C77A" stroke-width="4"/><circle class="p" cx="58" cy="22" r="11" fill="#0B1F5E"/></g>
+    </g>
+    <!-- A -->
+    <g transform="translate(262 62)">
+      <path d="M60 8 L118 150 L2 150 Z" fill="#1677E8" stroke="#1677E8" stroke-width="10" stroke-linejoin="round"/>
+      <path d="M44 154 L42 206 M76 154 L78 206" stroke="#0F55B8" stroke-width="12" stroke-linecap="round"/>
+      <ellipse cx="34" cy="212" rx="16" ry="9" fill="#1677E8"/><ellipse cx="86" cy="212" rx="16" ry="9" fill="#1677E8"/>
+      <g class="eye" data-cx="44" data-cy="104"><circle cx="44" cy="104" r="19" fill="#fff"/><circle class="p" cx="44" cy="104" r="10" fill="#0B1F5E"/></g>
+      <g class="eye" data-cx="78" data-cy="104"><circle cx="78" cy="104" r="19" fill="#fff"/><circle class="p" cx="78" cy="104" r="10" fill="#0B1F5E"/></g>
+    </g>
+    <!-- I -->
+    <g transform="translate(400 46)">
+      <rect x="18" y="0" width="56" height="168" rx="6" fill="#FDD015"/>
+      <path d="M36 172 L36 226 M58 172 L58 226" stroke="#E5A80E" stroke-width="12" stroke-linecap="round"/>
+      <ellipse cx="26" cy="232" rx="16" ry="9" fill="#FDD015"/><ellipse cx="68" cy="232" rx="16" ry="9" fill="#FDD015"/>
+      <g class="eye" data-cx="28" data-cy="62"><circle cx="28" cy="62" r="22" fill="#fff" stroke="#FDD015" stroke-width="4"/><circle class="p" cx="28" cy="62" r="11" fill="#0B1F5E"/></g>
+      <g class="eye" data-cx="66" data-cy="62"><circle cx="66" cy="62" r="22" fill="#fff" stroke="#FDD015" stroke-width="4"/><circle class="p" cx="66" cy="62" r="11" fill="#0B1F5E"/></g>
+    </g>
+  </svg>
+</header>
+
+<nav class="bar" aria-label="按學科篩選">
+  <div class="wrap" id="filters">
+    <span>學科</span>
+    <button class="chip" aria-pressed="true" data-f="all">全部</button>
+    <button class="chip" aria-pressed="false" data-f="中文">中國語文</button>
+    <button class="chip" aria-pressed="false" data-f="英文">英國語文</button>
+    <button class="chip" aria-pressed="false" data-f="數學">數學</button>
+    <button class="chip" aria-pressed="false" data-f="科學">科學</button>
+    <button class="chip" aria-pressed="false" data-f="中史">中國歷史</button>
+    <button class="chip" aria-pressed="false" data-f="地理">地理</button>
+    <button class="chip" aria-pressed="false" data-f="資訊科技">資訊科技</button>
+    <button class="chip" aria-pressed="false" data-f="公社">公社／資訊素養</button>
+    <button class="chip" aria-pressed="false" data-f="經濟">經濟、人文科</button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="games" id="games" aria-label="遊戲列表"></section>
+
+  <section class="next" aria-labelledby="soonT">
+    <h3 id="soonT">即將推出</h3>
+    <p>更多玩法正在製作中，覆蓋更多學科。</p>
+    <div class="soon">
+      <div><b>普通話對話</b><span>普通話、中文說話：沿用對話闖關的玩法</span></div>
+            <div><b>音樂節奏</b><span>音樂科：節奏型與記譜，沿用節奏表演玩法</span></div>
+    </div>
+  </section>
+
+  <section class="guide" aria-labelledby="guideT">
+    <h3 id="guideT">老師怎樣用</h3>
+    <p>每款遊戲都可以按「跳過，看答案」繼續，學生不會卡關。</p>
+    <div class="tw">
+      <table>
+        <tr><th>課堂時段</th><th>建議玩法</th><th>例子</th></tr>
+        <tr><td>新課引入</td><td>RPG 冒險、探索漫遊</td><td>先玩《魚我所欲也》，再在課堂討論結局揭盅</td></tr>
+        <tr><td>理解後練習</td><td>偵探查案、模擬實驗室</td><td>課後完成《赤壁疑案》，查看學生被哪些說法騙過</td></tr>
+        <tr><td>溫習鞏固</td><td>限時搬運</td><td>考前反覆玩《論語》刷新分數</td></tr>
+        <tr><td>說話練習</td><td>對話闖關</td><td>開啟「開口說話」，讓學生跟 Sam 用英文對答</td></tr>
+        <tr><td>專題活動</td><td>經營決策</td><td>分組經營《檸檬茶小店》，比較各組的定價策略</td></tr>
+      </table>
+    </div>
+  </section>
+</main>
+<footer class="wrap">每款遊戲都是一個獨立的網頁，開啟於新分頁。</footer>
+
+<script>
+(function(){
+const SUBJ={中文:'var(--g)',英文:'var(--e)',數學:'var(--m)',地理:'var(--geo)',資訊科技:'var(--ict)',公社:'var(--csd)',科學:'var(--o)',中史:'var(--a)',經濟:'var(--i)'};
+const WHO={G:['#FF8A1C','G'],O:['#10C77A','O'],A:['#1677E8','A'],I:['#F2B80F','I']};
+const GAMES=[
+ {t:'魚我所欲也',s:'中文',lv:'中學 DSE 範文',m:'RPG 冒險',who:'G',min:'15 分鐘',u:'games/fish/',d:'陪寒門士子赴京，在市集、茶亭、饑荒村口和豪宅之間，一次次在生與義之間抉擇。',l:['舍生取義的論證層次','類比與假設推論']},
+ {t:'論語：杏壇搬運戰',s:'中文',lv:'中學 DSE 範文',m:'限時搬運',who:'I',min:'6 分鐘',u:'games/lunyu/',d:'在杏壇上限時搬運竹簡，分類語錄、配對字詞、排列次序，小人還會丟下誘餌。',l:['論仁、論孝、論君子','文言字詞的古今義']},
+ {t:'逍遙遊：大瓠與大樹',s:'中文',lv:'中學 DSE 範文',m:'RPG 冒險',who:'A',min:'18 分鐘',u:'games/xiaoyao/',d:'親眼看莊子的寓言上演：大瓠盛水爆裂、吳越冬天水戰、乘大樽浮遊江湖、狸狌落網，再代莊子回應惠子。',l:['無用之用','以寓言說理']},
+ {t:'始得西山宴遊記',s:'中文',lv:'中學 DSE 範文',m:'探索漫遊',who:'O',min:'20 分鐘',u:'games/xishan/',d:'陪柳宗元從永州城外出發，渡湘江、斬草開路、攀上西山，在山頂待到天黑。',l:['遊蹤、景物、感受','景與情一起變化']},
+ {t:'賣油翁',s:'中文',lv:'初中中文科',m:'配對（射箭、酌油）',who:'G',min:'15 分鐘',u:'games/maiyou/',d:'在陳府家圃配對字詞、人物態度和射與油的對應：選對意思，箭就正中紅心；配對正確，油就穿過錢孔。最後親手練習酌油，體會熟能生巧。',l:['文言字詞與人物描寫','對比手法與熟能生巧']},
+ {t:'山居秋暝',s:'中文',lv:'中學 DSE 範文',m:'節奏表演',who:'O',min:'12 分鐘',u:'games/shanju/',d:'跟著古琴節拍朗誦王維名作：守住二三停頓、選對韻腳、配對對仗，每唸好一句，山中的雨、月、泉、竹、蓮就活過來。',l:['五言律詩的節奏與押韻','對仗與意象']},
+ {t:'HK Buddy',s:'英文',lv:'初中英國語文',m:'對話闖關',who:'O',min:'20 分鐘',u:'games/hkbuddy/',d:'帶交換生 Sam 遊香港：在茶餐廳點餐、在港鐵站指路、在天星小輪介紹維港、在街市講價。',l:['得體的英語應對','聆聽與（可選）開口說話']},
+ {t:'地盤三視圖',s:'數學',lv:'初中數學',m:'建造工坊',who:'I',min:'20 分鐘',u:'games/site/',d:'在香港地盤操控塔式起重機，按工程師的三視圖藍圖砌出結構，再計算體積和要髹油的面積。',l:['正視圖、側視圖、俯視圖','體積與外露表面面積']},
+ {t:'翠溪考察',s:'地理',lv:'初中地理',m:'探索漫遊',who:'G',min:'25 分鐘',u:'games/river/',d:'沿一條香港河流由山走到海：辨認瀑布、壺穴、曲流和泥灘，親手量度河寬、水深、流速和石塊，再用自己的數據分析河流的變化。',l:['上游、中游、下游的特徵','實地考察與數據分析']},
+ {t:'送貨機械人',s:'資訊科技',lv:'初中資訊及通訊科技',m:'建造工坊（編程）',who:'I',min:'20 分鐘',u:'games/coding/',d:'用積木編寫程式，指揮機械人在香港街道上送貨：繞過街檔和工地、在紅綠燈前等候、修正同學寫錯的程式。',l:['順序、重複、條件','除錯與精簡程式']},
+ {t:'謠言查證',s:'公社',lv:'中學 公民與社會發展／資訊素養',m:'偵探查案',who:'A',min:'20 分鐘',u:'games/factcheck/',d:'家庭群組瘋傳「芒果被注射色素」：找出訊息的警號，以圖搜圖、追查來源、到街市實地查證，再有禮地更正謠言。',l:['查證網上資訊的方法','有根據、有禮貌地更正']},
+ {t:'實驗室安全',s:'科學',lv:'初中科學',m:'RPG 冒險',who:'G',min:'15 分鐘',u:'games/labsafety/',d:'溶液濺眼、加熱試管、打破燒杯、火警鐘響，四場實驗室意外由你判斷怎樣處理。',l:['洗眼、加熱、清理碎玻璃的正確做法','火警疏散']},
+ {t:'浮與沉',s:'科學',lv:'小學科學科',m:'模擬實驗室',who:'O',min:'20 分鐘',u:'games/floatsink/',d:'把東西放進水缸、捏泥膠船、一匙匙加鹽，先預測再動手，看看結果是否如你所想。',l:['物料、形狀、液體與浮沉','公平測試']},
+ {t:'赤壁疑案',s:'中史',lv:'初中中國歷史',m:'偵探查案',who:'A',min:'20 分鐘',u:'games/chibi/',d:'草船借箭是真的嗎？走訪茶館、藏書閣和赤壁江邊，用史料在公堂上拆穿說書人。',l:['分辨史實與小說','史料的時間、性質與立場']},
+ {t:'檸檬茶小店',s:'經濟',lv:'初中經濟、小學人文科',m:'經營決策',who:'I',min:'25 分鐘',u:'games/shop/',d:'經營一間小店八天：入貨、定價、應付天氣與隔壁的新店，從帳簿中找出規律。',l:['需求定律與需求改變','收入、成本與利潤']}
+];
+const glyph=k=>{const [c]=WHO[k];const eye=(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="5" fill="#fff"/><circle cx="'+x+'" cy="'+y+'" r="2.6" fill="#0B1F5E"/>';
+ return {G:'<path d="M31 11 A13 13 0 1 0 31 33" stroke="'+c+'" stroke-width="7" fill="none"/><path d="M23 22 L34 22 L34 33" stroke="'+c+'" stroke-width="5" fill="none"/>'+eye(15,9)+eye(24,9),
+  O:'<circle cx="22" cy="24" r="12" stroke="'+c+'" stroke-width="7" fill="none"/>'+eye(13,12)+eye(21,9),
+  A:'<path d="M22 6 L38 36 H6 Z" fill="'+c+'" stroke="'+c+'" stroke-width="3" stroke-linejoin="round"/>'+eye(17,27)+eye(27,27),
+  I:'<rect x="15" y="4" width="14" height="34" rx="2" fill="'+c+'"/>'+eye(17,14)+eye(27,14)}[k];};
+const host=document.getElementById('games');
+GAMES.forEach(g=>{const a=document.createElement('article');a.className='game';a.dataset.s=g.s;a.style.setProperty('--c',SUBJ[g.s]);
+  a.innerHTML='<div class="top"><div><h2>'+g.t+'</h2></div><svg class="who" viewBox="0 0 44 44" aria-hidden="true">'+glyph(g.who)+'</svg></div>'+
+  '<div class="tags"><span class="tag">'+g.lv+'</span></div><p class="mode">玩法：<b>'+g.m+'</b></p><p class="d">'+g.d+'</p>'+
+  '<ul class="learn" aria-label="學習重點">'+g.l.map(x=>'<li>'+x+'</li>').join('')+'</ul>'+
+  '<div class="foot"><small>約 '+g.min+'</small><a class="play" href="'+g.u+'" target="_blank" rel="noopener">開始遊戲<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3 L12 8 L5 13 Z" fill="currentColor"/></svg></a></div>';
+  host.appendChild(a);});
+document.querySelectorAll('#filters .chip').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#filters .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  const f=b.dataset.f;document.querySelectorAll('.game').forEach(g=>g.hidden=!(f==='all'||g.dataset.s===f));}));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!RM){const svg=document.querySelector('.cast'),eyes=[...svg.querySelectorAll('.eye')];
+  addEventListener('pointermove',e=>{const r=svg.getBoundingClientRect(),sx=520/r.width;
+    eyes.forEach(g=>{const p=g.querySelector('.p'),m=g.parentNode.transform.baseVal.consolidate();const ox=m?m.matrix.e:0,oy=m?m.matrix.f:0;
+      const cx=+g.dataset.cx+ox,cy=+g.dataset.cy+oy;const px=(e.clientX-r.left)*sx,py=(e.clientY-r.top)*sx;const dx=px-cx,dy=py-cy,d=Math.hypot(dx,dy)||1,k=Math.min(7,d/20);
+      p.setAttribute('cx',+g.dataset.cx+dx/d*k);p.setAttribute('cy',+g.dataset.cy+dy/d*k);});});
+  setInterval(()=>{const g=eyes[Math.floor(Math.random()*4)*2];[g,g.nextElementSibling].forEach(e=>{if(!e)return;e.style.transition='transform .08s';e.style.transformBox='fill-box';e.style.transformOrigin='center';e.style.transform='scaleY(.1)';setTimeout(()=>e.style.transform='',140);});},2600);}
+})();
+</script>
+</body>
+</html>

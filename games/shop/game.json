@@ -1,0 +1,24 @@
+{
+  "mode": "management",
+  "rounds": 8,
+  "day_sim_seconds": 14,
+  "scoring": {
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_profit": 500
+    },
+    {
+      "id": "normal",
+      "min_profit": 100
+    },
+    {
+      "id": "fail",
+      "min_profit": -99999
+    }
+  ]
+}

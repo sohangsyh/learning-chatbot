@@ -1,0 +1,49 @@
+{
+  "mode": "building",
+  "scoring": {
+    "match_first_try": 15,
+    "match_retry": 8,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2,
+    "measure_first_try": 10
+  },
+  "camera": {
+    "views": {
+      "front": [
+        0,
+        2.2,
+        10
+      ],
+      "side": [
+        10,
+        2.2,
+        0
+      ],
+      "top": [
+        0,
+        13,
+        0.01
+      ],
+      "free": [
+        7,
+        7.5,
+        9
+      ]
+    }
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_score": 110
+    },
+    {
+      "id": "normal",
+      "min_score": 60
+    },
+    {
+      "id": "fail",
+      "min_score": 0
+    }
+  ]
+}
