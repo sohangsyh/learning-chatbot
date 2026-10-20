@@ -342,14 +342,35 @@ function occlusion(dt){const F=E.fade;if(!F.on||!scene)return;const now=performa
         let rec=F.list.get(m);if(!rec){const src=m.material,cl=src.clone();cl.transparent=true;cl.depthWrite=false;rec={src,cl,base:src.transparent?src.opacity:1};cl.opacity=rec.base;m.material=cl;F.list.set(m,rec);}rec.seen=now;}}}
   F.list.forEach((rec,m)=>{const hid=now-rec.seen<450;const want=hid?Math.min(rec.base,.22):rec.base;rec.cl.opacity+=(want-rec.cl.opacity)*Math.min(1,dt*9);
     if(!hid&&Math.abs(rec.cl.opacity-rec.base)<.03){m.material=rec.src;rec.cl.dispose();F.list.delete(m);}});}
+
+/* responsive camera: fit the landscape framing on narrow screens; swipe left/right to see the rest */
+E.resp={on:true,baseFov:46,maxFov:80,keep:.85,pan:0,panLim:0,allowPan:true,off:null};
+const rv=new THREE.Vector3(),rl=new THREE.Vector3();
+function respUndo(){const R=E.resp;if(R.off){camera.position.sub(R.off);R.off=null;}}
+function respApply(){const R=E.resp;let hint=false;
+  if(!R.on){if(camera.fov!==R.baseFov){camera.fov=R.baseFov;camera.updateProjectionMatrix();}}
+  else{const a=camera.aspect,want=Math.tan(R.baseFov*Math.PI/360)*(16/9)*R.keep;const vf=Math.min(R.maxFov,Math.max(R.baseFov,2*Math.atan(want/a)*180/Math.PI));
+    if(Math.abs(camera.fov-vf)>.05){camera.fov=vf;camera.updateProjectionMatrix();}
+    const vis=Math.tan(vf*Math.PI/360)*a;R.panLim=Math.max(0,want-vis);
+    if(R.allowPan&&R.panLim>.03){hint=true;R.pan=Math.max(-R.panLim,Math.min(R.panLim,R.pan));if(Math.abs(R.pan)>1e-4){const d=camera.position.distanceTo(cam.look);rv.setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(R.pan*d);
+      camera.position.add(rv);R.off=rv.clone();camera.lookAt(rl.copy(cam.look).add(rv));camera.updateMatrixWorld();}}
+    else R.pan=0;}
+  if(R.on){const h=E.$('panHint');if(h){if(hint&&!R.hintAt)R.hintAt=performance.now();h.hidden=!(hint&&performance.now()-R.hintAt<5000);}}}
+(function(){let drag=null;const hint=document.createElement('div');hint.id='panHint';hint.hidden=true;hint.setAttribute('aria-hidden','true');hint.textContent='← 左右滑動查看 →';
+  hint.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);background:rgba(20,28,36,.78);color:#FFE08A;font:700 14px system-ui,sans-serif;padding:6px 14px;border-radius:999px;z-index:6;pointer-events:none';
+  const add=()=>{document.body.appendChild(hint);const cv=E.canvas||document.querySelector('canvas');if(!cv)return;
+    cv.addEventListener('pointerdown',e=>{if(!E.resp.allowPan||E.resp.panLim<=.03)return;drag={x:e.clientX,p:E.resp.pan};});
+    addEventListener('pointermove',e=>{if(!drag)return;const w=Math.max(1,(E.canvas||cv).clientWidth),vis=Math.tan(camera.fov*Math.PI/360)*camera.aspect;E.resp.pan=drag.p-(e.clientX-drag.x)/w*2*vis;});
+    ['pointerup','pointercancel'].forEach(k=>addEventListener(k,()=>drag=null));};
+  if(document.readyState==='loading')addEventListener('DOMContentLoaded',add);else setTimeout(add,0);})();
 /* loop */
 const clock=E.clock=new THREE.Clock();
 function frame(){
   const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
-  updateEnv(dt);updateCam(dt,t);
+  respUndo();updateEnv(dt);updateCam(dt,t);
   Object.values(E.chars).forEach(c=>updateChar(c,dt,t));
   if(E.onFrame)E.onFrame(dt,t);
-  occlusion(dt);
+  occlusion(dt);respApply();
   bubbles.forEach(b=>E.project(tv.copy(b.c.root.position).add(tv2.set(0,2.35,0)),b.el));
   E.anchors.forEach(a=>{if(!a.el.hidden)E.project(a.pos,a.el);});
   renderer.render(scene,camera);requestAnimationFrame(frame);
