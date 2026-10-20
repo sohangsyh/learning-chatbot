@@ -90,6 +90,86 @@ async function chapterCard(i,u){
   E.overlay('<div class="chapcard"><small>第'+E.NUM[i]+'章</small><h2>'+u.title+'</h2><p>'+u.key_quote+'</p></div>',true);
   await Promise.race([E.sleep(E.RM?1200:2600),new Promise(r=>$('overlay').addEventListener('click',r,{once:true}))]);E.clearOverlay();
 }
+/* ---------- topic actions: the chapter's own action from the lesson (pour, throw, weigh, stamp, steer, plant, shoot) ---------- */
+function mgLabel(text,pos,cls){const el=document.createElement('button');el.className='mglabel '+(cls||'');el.textContent=text;$('spots').appendChild(el);const a={el,pos:pos.clone()};E.anchors.push(a);return a;}
+function mgClear(list){list.forEach(a=>{a.el.remove();const k=E.anchors.indexOf(a);if(k>=0)E.anchors.splice(k,1);});list.length=0;}
+function mgTw(d,fn){return new Promise(res=>{const t0=performance.now(),D=Math.max(10,d*1000*(window.__fast?.15:1));const f=()=>{const k=Math.min(1,(performance.now()-t0)/D);fn(k);if(k<1)requestAnimationFrame(f);else res();};requestAnimationFrame(f);});}
+function mgToast(title,text,ok){E.bubble(title,text||'',ok?2400:3800);}
+const hexc=(c,d)=>{try{return c?parseInt(String(c).replace('#',''),16):d;}catch(e){return d;}};
+function actModel(model,color){const g=new THREE.Group(),c=hexc(color,null);const B=(...a)=>E.box(...a);const Ms=(geo,col,x,y,z)=>E.mesh(geo,E.M(col),x,y,z,g);
+  switch(model){
+    case 'crate':B(.6,.5,.5,c||0x9A7A4A,0,.25,0,g);B(.62,.06,.52,0x6A4A2A,0,.38,0,g);break;
+    case 'barrel':{const b=Ms(new THREE.CylinderGeometry(.26,.26,.6,14),c||0x7A5236,0,.3,0);Ms(new THREE.TorusGeometry(.27,.025,6,16),0x3A3A3A,0,.15,0).rotation.x=Math.PI/2;Ms(new THREE.TorusGeometry(.27,.025,6,16),0x3A3A3A,0,.45,0).rotation.x=Math.PI/2;break;}
+    case 'chest':B(.6,.35,.4,c||0x7A4A22,0,.18,0,g);B(.62,.12,.42,0xC8A040,0,.38,0,g);break;
+    case 'jar':Ms(new THREE.CylinderGeometry(.22,.26,.5,14),c||0xB8A07A,0,.25,0);Ms(new THREE.CylinderGeometry(.12,.14,.14,12),c||0xB8A07A,0,.56,0);break;
+    case 'bottle':Ms(new THREE.CylinderGeometry(.14,.14,.4,12),c||0x5A8A6A,0,.2,0);Ms(new THREE.CylinderGeometry(.05,.07,.18,10),c||0x5A8A6A,0,.49,0);break;
+    case 'flask':Ms(new THREE.ConeGeometry(.26,.42,16),c||0xCFEFF8,0,.21,0);Ms(new THREE.CylinderGeometry(.06,.06,.22,10),c||0xCFEFF8,0,.52,0);break;
+    case 'tube':Ms(new THREE.CylinderGeometry(.07,.07,.5,12),c||0xDCF0F6,0,.25,0);break;
+    case 'gourd':Ms(new THREE.SphereGeometry(.24,14,10),c||0xC9A050,0,.24,0);Ms(new THREE.SphereGeometry(.14,12,10),c||0xC09848,0,.54,0);break;
+    case 'scroll':{const r=Ms(new THREE.CylinderGeometry(.07,.07,.5,10),c||0xF2E8C8,0,.1,0);r.rotation.z=Math.PI/2;break;}
+    case 'ballot':case 'document':B(.42,.02,.56,c||0xF8F6EE,0,.02,0,g);B(.3,.005,.04,0x5A5A5A,0,.035,-.12,g);B(.3,.005,.04,0x5A5A5A,0,.035,0,g);break;
+    case 'bag':{const b=Ms(new THREE.SphereGeometry(.24,12,10),c||0xC8B48A,0,.22,0);b.scale.y=1.2;break;}
+    case 'seed':Ms(new THREE.SphereGeometry(.09,10,8),c||0x8A6A3A,0,.09,0);break;
+    case 'stone':Ms(new THREE.DodecahedronGeometry(.2,0),c||0x8A8A80,0,.2,0);break;
+    case 'boat':B(.9,.22,.36,c||0x6A4428,0,.11,0,g);B(.04,.7,.04,0x5A3A22,0,.55,0,g);{const s=new THREE.Mesh(new THREE.PlaneGeometry(.45,.5),new THREE.MeshLambertMaterial({color:0xF4F0E4,side:THREE.DoubleSide}));s.position.set(0,.6,0);s.rotation.y=Math.PI/2;g.add(s);}break;
+    case 'basket':Ms(new THREE.CylinderGeometry(.3,.22,.3,14,1,true),c||0xB98A4A,0,.15,0);break;
+    case 'arrow':{const sh=Ms(new THREE.CylinderGeometry(.02,.02,.8,6),0x8A6A3A,0,0,0);sh.rotation.x=Math.PI/2;Ms(new THREE.ConeGeometry(.045,.12,6),0x8A8E92,0,0,-.46).rotation.x=-Math.PI/2;break;}
+    default:B(.4,.4,.4,c||0xC8A060,0,.2,0,g);}
+  return g;}
+function actTarget(model,color){const g=new THREE.Group(),c=hexc(color,null);const T={g,entry:V(0,.5,0)};const B=(...a)=>E.box(...a);
+  switch(model){
+    case 'water':{const w=E.mesh(new THREE.CircleGeometry(.9,24),new THREE.MeshLambertMaterial({color:c||0x3E7AA8,emissive:0x0A2A48}),0,.03,0,g);w.rotation.x=-Math.PI/2;E.mesh(new THREE.TorusGeometry(.92,.08,6,24),E.M(0x8A8478),0,.04,0,g).rotation.x=Math.PI/2;T.entry=V(0,.05,0);T.splash=true;break;}
+    case 'jar':case 'gourd':case 'flask':case 'tube':case 'bin':case 'basket':case 'box':{const glass=model==='flask'||model==='tube';const r=model==='tube'?.18:.42,h=model==='tube'?.9:.8;
+      E.mesh(new THREE.CylinderGeometry(r,r*.9,h,18,1,true),glass?new THREE.MeshPhongMaterial({color:0xE8F6FF,transparent:true,opacity:.35,side:THREE.DoubleSide}):E.M(c||(model==='bin'?0x4C7BF4:0xB8A07A),{side:THREE.DoubleSide}),0,h/2,0,g);
+      E.mesh(new THREE.CylinderGeometry(r*.9,r*.9,.04,18),E.M(0x5A4A3A),0,.02,0,g);const liq=E.mesh(new THREE.CylinderGeometry(r*.86,r*.86,1,18),new THREE.MeshLambertMaterial({color:c||0x8FC8E8,transparent:true,opacity:.85}),0,.02,0,g);liq.scale.y=.01;liq.visible=false;
+      T.liq=liq;T.h=h;T.level=0;T.entry=V(0,h+.05,0);break;}
+    case 'port':B(1.4,.12,.9,0x8A6A44,0,.06,0,g);[[-.6,-.35],[.6,-.35],[-.6,.35],[.6,.35]].forEach(([x,z])=>B(.08,.4,.08,0x5A3A22,x,-.1,z,g));B(.05,1.2,.05,0xD8D8D0,.55,.6,-.3,g);B(.4,.26,.02,c||0xC8321E,.76,1.05,-.3,g);T.entry=V(-.2,.1,0);break;
+    case 'field':B(1.4,.12,1,0x6A4A2A,0,.06,0,g);for(let i=0;i<4;i++)B(1.3,.04,.08,0x5A3A22,0,.13,-.36+i*.24,g);T.entry=V(0,.14,0);T.field=true;break;
+    case 'tray':B(1,.08,.7,c||0x8A6A44,0,.3,0,g);B(1,.2,.05,c||0x8A6A44,0,.4,.35,g);B(1,.2,.05,c||0x8A6A44,0,.4,-.35,g);[[-.45,-.3],[.45,-.3],[-.45,.3],[.45,.3]].forEach(([x,z])=>B(.06,.3,.06,0x5A3A22,x,.15,z,g));T.entry=V(0,.36,0);T.tray=0;break;
+    case 'target':B(.08,1.5,.08,0x7A5A3A,-.45,.75,-.1,g);B(.08,1.5,.08,0x7A5A3A,.45,.75,-.1,g);[.62,.48,.34,.2,.08].forEach((rr,j)=>E.mesh(new THREE.CircleGeometry(rr,28),new THREE.MeshBasicMaterial({color:[0xF4F0E4,0x1E1E1E,0x3A6FC8,0xD8322A,0xF2C81A][j]}),0,1.65,.02*j,g));T.entry=V(0,1.65,.12);break;
+    default:B(.8,.4,.8,c||0x9A9488,0,.2,0,g);T.entry=V(0,.45,0);}
+  return T;}
+async function runAction(i,u){const A=u.action,base=stagePos[i].clone().add(V(0,0,1.3));const fade0=E.fade.on;E.fade.on=false;if(E.fade.list){E.fade.list.forEach((rec,m)=>{m.material=rec.src;});E.fade.list.clear();}
+  const g=new THREE.Group();g.position.copy(base);E.scene.add(g);const labels=[],tmp=[];
+  const saved={};['mentor','companion','rival','gatekeeper','player'].forEach((k,j)=>{const ch=CH[k];if(!ch)return;saved[k]=ch.root.position.clone();ch.target.copy(stagePos[i]).add(V(j%2?6.6:-6.6,0,-1.2-j*.4));ch.speed=4;});
+  const cam0=E.camera.position.clone(),look0=E.cam.look.clone();await E.camTo(base.clone().add(V(0,3.5,6.8)),base.clone().add(V(0,1.1,-.3)),1.2);
+  E.hideDialog();E.overlay('<div class="chapcard"><small>動手做</small><h2>'+A.title+'</h2></div>',true);await E.sleep(window.__fast?250:1400);E.clearOverlay();
+  const verb=A.verb,TG={};let right=0,wrong=0;const n=A.targets.length;
+  let scale=null;
+  if(verb==='weigh'){scale=new THREE.Group();g.add(scale);E.box(.14,1.6,.14,0x6A4A2A,0,.8,-.2,scale);E.box(1.2,.1,.6,0x5A3A22,0,.05,-.2,scale);const beam=new THREE.Group();beam.position.set(0,1.62,-.2);scale.add(beam);E.box(3,.08,.08,0x8A6A3A,0,0,0,beam);
+    A.targets.forEach((t,k)=>{const s=k?1:-1;const pan=new THREE.Group();g.add(pan);E.mesh(new THREE.CylinderGeometry(.42,.32,.08,18),E.M(0xC8A040),0,0,0,pan);[0,1,2].forEach(q=>{const a=q*2.1;E.box(.01,.75,.01,0x5A5A5A,Math.cos(a)*.3,.38,Math.sin(a)*.3,pan);});
+      TG[t.id]={t,pan,side:s,entry:V(0,.06,0)};const lb=mgLabel(t.name,base.clone().add(V(s*1.5,2.5,-.2)),'tgt');labels.push(lb);TG[t.id].a=lb;});
+    scale.userData.beam=beam;const place=()=>A.targets.forEach(t=>{const T=TG[t.id];const ang=beam.rotation.z;T.pan.position.set(T.side*1.5*Math.cos(ang),1.62+T.side*1.5*Math.sin(ang)-.8,-.2);});place();scale.userData.place=place;}
+  else A.targets.forEach((t,k)=>{const x=(k-(n-1)/2)*(n>2?2.3:2.8);const T=actTarget(t.model,t.color);T.g.position.set(x,0,-.3);g.add(T.g);TG[t.id]=Object.assign(T,{t});const lb=mgLabel(t.name,base.clone().add(V(x,(t.model==='target'?2.6:1.9),-.3)),'tgt');labels.push(lb);T.a=lb;});
+  const actor=verb==='weigh'?null:actModel(verb==='shoot'?'arrow':A.object.model,A.object.color);
+  const start=verb==='pour'?V(0,2.6,-.3):verb==='steer'?V(0,.05,2.2):V(0,1.2,2.4);
+  if(actor){actor.position.copy(start);g.add(actor);}
+  for(let r=0;r<A.rounds.length;r++){const R=A.rounds[r];
+    const choice=await new Promise(async res=>{E.actions([]);await E.showLine('gatekeeper',(A.prompt?A.prompt+'　':'')+'「'+R.item+'」');Object.values(TG).forEach(T=>{T.a.el.classList.add('pick');T.a.el.onclick=()=>res(T.t.id);});
+      const w=document.createElement('div');w.className='mgchips';A.targets.forEach(t=>w.appendChild(E.btn('mgchip',t.name,()=>res(t.id))));E.actions([w]);
+      if(window.__auto)setTimeout(()=>{const w=!A._triedWrong&&n>1;if(w)A._triedWrong=true;res(w?A.targets.find(t=>t.id!==R.target).id:R.target);},80);});
+    Object.values(TG).forEach(T=>{T.a.el.classList.remove('pick');T.a.el.onclick=null;});E.actions([]);const T=TG[choice],ok=choice===R.target;
+    if(verb==='weigh'){const beam=scale.userData.beam,goal=T.side*-.32;await mgTw(.8,k=>{beam.rotation.z=goal*k;scale.userData.place();});await E.sleep(window.__fast?100:500);}
+    else{const proj=verb==='pour'?null:actModel(verb==='shoot'?'arrow':A.object.model,R.color||A.object.color);const tgtW=T.g.position.clone().add(T.entry);
+      if(verb==='pour'){await mgTw(.5,k=>{actor.position.x=start.x+(tgtW.x-start.x)*k;actor.rotation.z=-1.1*k;});
+        for(let q=0;q<14;q++){const d=E.mesh(new THREE.SphereGeometry(.05,6,4),new THREE.MeshBasicMaterial({color:hexc(R.color,0x8FC8E8)}),actor.position.x+.2,actor.position.y-.1,actor.position.z,g);tmp.push(d);const y0=d.position.y;mgTw(.45,k=>{d.position.y=y0-(y0-tgtW.y)*k;}).then(()=>{g.remove(d);});await E.sleep(window.__fast?8:40);}
+        await E.sleep(window.__fast?60:400);if(T.liq){T.liq.visible=true;T.level=Math.min(T.h*.9,T.level+T.h*.3);T.liq.scale.y=T.level;T.liq.position.y=.02+T.level/2;if(R.color)T.liq.material.color.setHex(hexc(R.color,0x8FC8E8));}
+        await mgTw(.4,k=>{actor.rotation.z=-1.1*(1-k);actor.position.x=tgtW.x*(1-k);});}
+      else{g.add(proj);const from=start.clone(),to=ok||verb==='steer'?tgtW:tgtW.clone().lerp(from,.35).setY(.1);
+        await mgTw(verb==='steer'?1.4:.8,k=>{proj.position.lerpVectors(from,to,k);if(verb!=='steer')proj.position.y+=Math.sin(k*Math.PI)*(verb==='shoot'?.6:1.4);else{proj.position.x=from.x+(to.x-from.x)*(1-Math.cos(k*Math.PI))/2;proj.position.y=.05+Math.sin(k*20)*.02;}
+          if(verb==='shoot')proj.lookAt(g.localToWorld(to.clone()));else if(verb!=='steer')proj.rotation.x+=.08;});tmp.push(proj);
+        if(T.splash&&ok){for(let q=0;q<12;q++){const d=E.mesh(new THREE.SphereGeometry(.05,6,4),new THREE.MeshBasicMaterial({color:0xBFE8FA}),to.x,.1,to.z,g);tmp.push(d);const vx=(Math.random()-.5)*1.2,vz=(Math.random()-.5)*1.2;mgTw(.6,k=>{d.position.set(to.x+vx*k,.1+Math.sin(k*Math.PI)*.6,to.z+vz*k);});}await mgTw(.6,k=>{proj.position.y=to.y-.4*k;});}
+        if(T.field&&ok){const sp=E.mesh(new THREE.ConeGeometry(.08,.4,6),E.M(0x5E9A3E),to.x+(Math.random()-.5)*.6,.14,to.z+(Math.random()-.5)*.4,g);tmp.push(sp);sp.scale.setScalar(.01);await mgTw(.6,k=>sp.scale.setScalar(Math.max(.01,k)));}
+        if(T.tray!=null&&ok){proj.position.y=to.y+T.tray*.02;T.tray++;const st=E.mesh(new THREE.CircleGeometry(.1,16),new THREE.MeshBasicMaterial({color:0xC8321E}),0,.03,.15,proj);st.rotation.x=-Math.PI/2;}
+        if(!ok&&verb!=='steer')setTimeout(()=>g.remove(proj),900);}}
+    if(ok){right++;addScore(6);setMeter(game.meter+2);T.a.el.classList.add('ok');mgToast('✓ '+(R.result?'':'正確'),R.result||('「'+R.item+'」→「'+T.t.name+'」'),true);}
+    else{wrong++;setMeter(game.meter-2);E.emote(CH.rival,'hop');mgToast('✕ 再想想',R.why||('「'+R.item+'」不應該去「'+T.t.name+'」'),false);r--;
+      if(verb==='weigh')await mgTw(.5,k=>{scale.userData.beam.rotation.z*=(1-k);scale.userData.place();});if(verb==='steer'&&tmp.length){g.remove(tmp.pop());}}
+    if(verb==='weigh'&&ok){await E.sleep(window.__fast?100:700);await mgTw(.5,k=>{scale.userData.beam.rotation.z*=(1-k);scale.userData.place();});}
+    await E.sleep(window.__fast?80:500);Object.values(TG).forEach(T2=>T2.a.el.classList.remove('ok'));}
+  mgClear(labels);E.scene.remove(g);await E.say('gatekeeper','完成！'+A.rounds.length+' 項全部處理好'+(wrong?'（中途錯了 '+wrong+' 次）':'')+'。');
+  Object.entries(saved).forEach(([k,p])=>{CH[k].target.copy(p);});await E.camTo(cam0,look0,1);E.fade.on=fade0;}
+window.__rpgTest={runAction:(i)=>runAction(i,C.units[i]),units:()=>C.units.length};
 async function playChapter(i){
   const u=C.units[i],ch=GM.chapters[i],st=W.stages[i];
   E.hideDialog();setHint(null);E.hideBubble();
@@ -117,6 +197,7 @@ async function playChapter(i){
   await E.say('rival',good?u.reactions.rival_on_correct:u.reactions.rival_on_wrong);
   rv.target.copy(slotPos(i,'rival'));if(!good)E.emote(CH.mentor,'shake');
   await E.say('mentor',choice.feedback);
+  if(u.action)await runAction(i,u);
   await gate(i,u);
 }
 async function gate(i,u){
