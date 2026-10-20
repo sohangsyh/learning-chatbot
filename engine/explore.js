@@ -7,7 +7,7 @@ const T=W.terrain,Z=W.zones,CARD=C.cards;
 const st={zone:-1,mood:0,shown:0,score:0,hints:0,notes:[],cam:'idle',yaw:0,pitch:0,drag:null,busy:true,roam:null,clickHandlers:[],sortWrong:0,gateWrong:0};
 window.__ex=st;
 E.init({canvas:$('scene'),onResize:()=>{},onFrame});
-E.bindDialog();E.parallax=0;
+E.bindDialog();E.resp.allowPan=false;E.parallax=0;
 E.ENV.west_gray={sky:0xA9B1B4,hs:0xD9DCDA,hg:0x5E6658,hi:.8,sc:0xD8DCDC,si:.4,sp:[6,20,8]};
 E.ENV.west_day={sky:0xA8D2EC,hs:0xF6F2E6,hg:0x6A7A54,hi:.72,sc:0xFFF0D4,si:.72,sp:[14,22,6]};
 E.ENV.west_afternoon={sky:0xBFD4E2,hs:0xFFE8C8,hg:0x6A6A50,hi:.72,sc:0xFFD49A,si:.72,sp:[-14,14,4]};

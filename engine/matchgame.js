@@ -6,7 +6,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const SC=GM.scoring,K=E.ancientKit;
 const st={r:-1,score:0,hints:0,hint:null,cam:'idle',results:[],fx:[]};
 window.__mg=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.05;E.setEnv('anc_morning',true);
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.on=false;E.parallax=.05;E.setEnv('anc_morning',true);
 E.SPK={narrator:{name:'你',col:'#F4EBD6'},oilman:{name:'賣油翁',col:'#C8A060'}};
 Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
 const M=(h,o)=>E.M(h,o),mesh=(...a)=>E.mesh(...a),box=(...a)=>E.box(...a);const FONT='"Noto Serif TC","Songti TC",serif';
@@ -43,11 +43,21 @@ const CH=E.chars;E.lampValue=()=>Math.min(1,.2+st.score/150);
 
 /* camera */
 const CAMS={idle:[V(0,5,13),V(0,1.5,-4)],archery:[V(0,4.4,9.8),V(0,1.6,-6.5)],oil:[V(0,3.4,5.6),V(0,.6,-.2)],parallel:[V(0,6.4,12),V(0,1,-3.5)],practice:[V(.1,1.55,1.9),V(0,.85,.2)]};
-E.cam.idle=t=>{const c=CAMS[st.cam];E.camera.position.lerp(c[0],.08);E.cam.look.lerp(c[1],.1);};
-E.camera.position.copy(CAMS.idle[0]);E.cam.look.copy(CAMS.idle[1]);
+/* responsive framing: pull back on narrow screens; swipe left/right to pan */
+const HALF={idle:7.6,archery:7.4,oil:5.4,parallel:7.4,practice:1};const EXTRA={idle:4,archery:2.5,oil:.3,parallel:5.5,practice:0};st.panX=0;st.panLim=0;
+function frame(){const k=st.cam,c=CAMS[k],cam=E.camera,tanH=Math.tan(cam.fov*Math.PI/360)*cam.aspect,dir=c[0].clone().sub(c[1]),d=dir.length();
+  const f=Math.min(k==='oil'?4.2:2.3,Math.max(1,HALF[k]/(tanH*(d+EXTRA[k]))));const vis=tanH*(d*f+EXTRA[k]);st.panLim=k==='practice'?0:Math.max(0,HALF[k]-vis+.6);st.panX=Math.max(-st.panLim,Math.min(st.panLim,st.panX));
+  const pos=c[1].clone().add(dir.multiplyScalar(f));pos.x+=st.panX;const look=c[1].clone();look.x+=st.panX;{const ph=$('panHint');if(ph){const on=st.panLim>.3;if(on&&st.hintCam!==st.cam){st.hintCam=st.cam;st.hintAt=performance.now();}ph.hidden=!(on&&performance.now()-(st.hintAt||0)<5000);}}st.vis=vis;return [pos,look];}
+E.cam.idle=t=>{const [p,l]=frame();E.camera.position.lerp(p,.08);E.cam.look.lerp(l,.1);};
+(function(){const cv=E.canvas;let drag=null;cv.style.touchAction='pan-y';
+  cv.addEventListener('pointerdown',e=>{if(st.panLim<=0)return;drag={x:e.clientX,p:st.panX};});
+  addEventListener('pointermove',e=>{if(!drag)return;const per=(st.vis*2)/Math.max(1,cv.clientWidth);st.panX=Math.max(-st.panLim,Math.min(st.panLim,drag.p-(e.clientX-drag.x)*per));});
+  ['pointerup','pointercancel'].forEach(k=>addEventListener(k,()=>drag=null));
+  })();
+{const [p0,l0]=frame();E.camera.position.copy(p0);E.cam.look.copy(l0);}
 const HOME={};function stage(k){const near=k==='oil'||k==='practice';const pos={player:near?[-4.8,0,3.2]:W.npc_layout.player,rival:near?[-6,0,1.8]:W.npc_layout.rival,companion:near?[5.6,0,3.4]:W.npc_layout.companion,mentor:W.npc_layout.mentor};
   Object.entries(pos).forEach(([s2,p])=>{const c=CH[s2];if(!c)return;c.target.set(...p);c.speed=4;});S.oilman.position.set(...(near?[6.2,0,1.2]:W.npc_layout.oilman));}
-function camTo(k){st.cam=k;stage(k);return E.sleep(window.__fast?200:1100);}
+function camTo(k){st.cam=k;st.panX=0;stage(k);return E.sleep(window.__fast?200:1100);}
 
 /* frame & fx */
 const tw=[];function tween(d,fn){return new Promise(res=>tw.push({t:0,d:Math.max(.01,d*(window.__fast?.15:1)),fn,res}));}

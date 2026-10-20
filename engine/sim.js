@@ -7,7 +7,7 @@ const KIT=E.kits[W.scene_kit],OB=C.objects,PH=GM.physics;
 const st={stage:-1,score:0,pn:0,ph:0,hints:0,records:[],hint:null,busy:false,yaw:0,drag:null,view:null};
 window.__sim=st;
 E.init({canvas:$('scene'),onResize:()=>{if(st.stage>=0){placeParty(st.stage,true);setView(st.stage,true);}},onFrame});
-E.bindDialog();E.setEnv(W.stages[0].environment.time,true);E.parallax=.12;
+E.bindDialog();E.resp.allowPan=false;E.setEnv(W.stages[0].environment.time,true);E.parallax=.12;
 E.SPK={narrator:{name:'你',col:'#F4EBD6'}};
 Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
 const stagePos=W.stages.map(s=>V(...s.position));

@@ -154,7 +154,9 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .pchip.sel{border-color:var(--gold);background:rgba(224,176,75,.2)}.pchip.done{opacity:.4;border-color:#5FB49C}
 .tries{font-size:20px;letter-spacing:.3em;margin:0;color:var(--paper)}
 .orig{background:#FBF7EC;border-radius:10px;padding:10px 14px;margin:8px 0}.orig p{font-family:var(--serif);font-size:16px;line-height:1.9;margin:0}
-@media (max-width:560px){.tlabel{font-size:15px;padding:3px 8px}.glabel2{font-size:12px}.pairs2{flex-direction:column}}
+@media (max-width:560px){.tlabel{font-size:15px;padding:3px 8px}.glabel2{font-size:12px;max-width:4.6em;padding:3px 6px}.pairs2{flex-direction:column}}
+#panHint{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);background:rgba(20,28,36,.78);color:#FFE08A;font-size:14px;font-weight:700;padding:6px 14px;border-radius:999px;z-index:6;pointer-events:none;animation:ph 2.4s ease-in-out infinite}#panHint[hidden]{display:none}
+@keyframes ph{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 8px))}75%{transform:translateX(calc(-50% + 8px))}}@media (prefers-reduced-motion:reduce){#panHint{animation:none}}
 </style>
 </head>
 <body>

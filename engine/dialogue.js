@@ -7,7 +7,7 @@ const qs=new URLSearchParams(location.search);
 const REC=window.SpeechRecognition||window.webkitSpeechRecognition;
 const st={scene:-1,score:0,hints:0,phrases:[],tts:GM.tts.enabled_default,speak:qs.get(GM.speaking.url_param)==='1',yaw:0,drag:null,spoken:0,wrongs:0};
 window.__dlg=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.08;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.allowPan=false;E.parallax=.08;
 E.SPK={narrator:{name:'你',col:'#F4EBD6'}};
 Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
 const M=(h,o)=>E.M(h,o),mesh=(...a)=>E.mesh(...a),box=(...a)=>E.box(...a);const LP={};Object.entries(W.locations).forEach(([k,v])=>LP[k]=V(...v));

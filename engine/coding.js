@@ -6,7 +6,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const SC=GM.scoring,BL=C.blocks,CELL=W.cell,DIRS=[[0,1],[1,0],[0,-1],[-1,0]];
 const st={lv:-1,score:0,hints:0,hintLv:0,prog:[],target:null,sel:null,running:false,results:[],yaw:W.camera.yaw,pitch:W.camera.pitch,drag:null,tick:0};
 window.__code=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=0;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.allowPan=false;E.resp.on=false;E.parallax=0;
 E.ENV.street={sky:0xA8D0EC,hs:0xF6F2EA,hg:0x6A6A62,hi:.76,sc:0xFFF2DC,si:.8,sp:[12,24,14]};E.setEnv('street',true);
 E.SPK={narrator:{name:'你',col:'#F4EBD6'}};
 Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});

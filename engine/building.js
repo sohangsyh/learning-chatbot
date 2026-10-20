@@ -6,7 +6,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const N=W.grid.size,MAXH=W.grid.max_height,VN=C.views;
 const st={lv:-1,score:0,hints:0,mode:'add',busy:false,yaw:.65,pitch:.55,tYaw:.65,tPitch:.55,dist:14,drag:null,h:[],blocks:[],hint:null,hintLv:0,attempts:0,results:[],anims:[]};
 window.__bld=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.fade.on=false;E.bindDialog();E.parallax=0;E.setEnv('site_day',true);
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.fade.on=false;E.bindDialog();E.resp.allowPan=false;E.parallax=0;E.setEnv('site_day',true);
 E.SPK={narrator:{name:'你',col:'#F4EBD6'}};
 Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
 const S=E.kits.construction_site.build(W);

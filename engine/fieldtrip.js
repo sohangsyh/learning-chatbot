@@ -6,7 +6,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const SC=GM.scoring;
 const st={site:-1,score:0,hints:0,rec:{},preds:{},cam:'idle',yaw:Math.PI,busy:false,clicks:[],fx:[],notes:[]};
 window.__ft=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=0;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.allowPan=false;E.parallax=0;
 E.ENV.hk_day={sky:0xA6D2EE,hs:0xF6F4EA,hg:0x5E6E4A,hi:.74,sc:0xFFF2DC,si:.82,sp:[16,26,-10]};
 E.setEnv('hk_day',true);E.scene.fog.near=70;E.scene.fog.far=300;
 E.SPK={narrator:{name:'你',col:'#F4EBD6'},card:{name:'考察筆記',col:'#F2C14E'}};

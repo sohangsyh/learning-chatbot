@@ -386,14 +386,35 @@ function occlusion(dt){const F=E.fade;if(!F.on||!scene)return;const now=performa
         let rec=F.list.get(m);if(!rec){const src=m.material,cl=src.clone();cl.transparent=true;cl.depthWrite=false;rec={src,cl,base:src.transparent?src.opacity:1};cl.opacity=rec.base;m.material=cl;F.list.set(m,rec);}rec.seen=now;}}}
   F.list.forEach((rec,m)=>{const hid=now-rec.seen<450;const want=hid?Math.min(rec.base,.22):rec.base;rec.cl.opacity+=(want-rec.cl.opacity)*Math.min(1,dt*9);
     if(!hid&&Math.abs(rec.cl.opacity-rec.base)<.03){m.material=rec.src;rec.cl.dispose();F.list.delete(m);}});}
+
+/* responsive camera: fit the landscape framing on narrow screens; swipe left/right to see the rest */
+E.resp={on:true,baseFov:46,maxFov:80,keep:.85,pan:0,panLim:0,allowPan:true,off:null};
+const rv=new THREE.Vector3(),rl=new THREE.Vector3();
+function respUndo(){const R=E.resp;if(R.off){camera.position.sub(R.off);R.off=null;}}
+function respApply(){const R=E.resp;let hint=false;
+  if(!R.on){if(camera.fov!==R.baseFov){camera.fov=R.baseFov;camera.updateProjectionMatrix();}}
+  else{const a=camera.aspect,want=Math.tan(R.baseFov*Math.PI/360)*(16/9)*R.keep;const vf=Math.min(R.maxFov,Math.max(R.baseFov,2*Math.atan(want/a)*180/Math.PI));
+    if(Math.abs(camera.fov-vf)>.05){camera.fov=vf;camera.updateProjectionMatrix();}
+    const vis=Math.tan(vf*Math.PI/360)*a;R.panLim=Math.max(0,want-vis);
+    if(R.allowPan&&R.panLim>.03){hint=true;R.pan=Math.max(-R.panLim,Math.min(R.panLim,R.pan));if(Math.abs(R.pan)>1e-4){const d=camera.position.distanceTo(cam.look);rv.setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(R.pan*d);
+      camera.position.add(rv);R.off=rv.clone();camera.lookAt(rl.copy(cam.look).add(rv));camera.updateMatrixWorld();}}
+    else R.pan=0;}
+  if(R.on){const h=E.$('panHint');if(h){if(hint&&!R.hintAt)R.hintAt=performance.now();h.hidden=!(hint&&performance.now()-R.hintAt<5000);}}}
+(function(){let drag=null;const hint=document.createElement('div');hint.id='panHint';hint.hidden=true;hint.setAttribute('aria-hidden','true');hint.textContent='← 左右滑動查看 →';
+  hint.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);background:rgba(20,28,36,.78);color:#FFE08A;font:700 14px system-ui,sans-serif;padding:6px 14px;border-radius:999px;z-index:6;pointer-events:none';
+  const add=()=>{document.body.appendChild(hint);const cv=E.canvas||document.querySelector('canvas');if(!cv)return;
+    cv.addEventListener('pointerdown',e=>{if(!E.resp.allowPan||E.resp.panLim<=.03)return;drag={x:e.clientX,p:E.resp.pan};});
+    addEventListener('pointermove',e=>{if(!drag)return;const w=Math.max(1,(E.canvas||cv).clientWidth),vis=Math.tan(camera.fov*Math.PI/360)*camera.aspect;E.resp.pan=drag.p-(e.clientX-drag.x)/w*2*vis;});
+    ['pointerup','pointercancel'].forEach(k=>addEventListener(k,()=>drag=null));};
+  if(document.readyState==='loading')addEventListener('DOMContentLoaded',add);else setTimeout(add,0);})();
 /* loop */
 const clock=E.clock=new THREE.Clock();
 function frame(){
   const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
-  updateEnv(dt);updateCam(dt,t);
+  respUndo();updateEnv(dt);updateCam(dt,t);
   Object.values(E.chars).forEach(c=>updateChar(c,dt,t));
   if(E.onFrame)E.onFrame(dt,t);
-  occlusion(dt);
+  occlusion(dt);respApply();
   bubbles.forEach(b=>E.project(tv.copy(b.c.root.position).add(tv2.set(0,2.35,0)),b.el));
   E.anchors.forEach(a=>{if(!a.el.hidden)E.project(a.pos,a.el);});
   renderer.render(scene,camera);requestAnimationFrame(frame);
@@ -452,7 +473,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const EC=C.economy,D=C.days;
 const st={day:-1,cash:EC.start_cash,ledger:[],score:0,hints:0,price:EC.price_default,stock:EC.stock_default,unit:EC.unit_cost,yaw:0,drag:null,people:[],running:false,hint:null,comp:null,fx:[]};
 window.__shop=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.08;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.allowPan=false;E.parallax=.08;
 E.ENV.st_sunny={sky:0xA8D4EE,hs:0xF6F2E6,hg:0x707A70,hi:.72,sc:0xFFF0D4,si:.72,sp:[12,22,10]};
 E.ENV.st_hot={sky:0xF2D8A0,hs:0xFFF0D0,hg:0x8A7A60,hi:.8,sc:0xFFD890,si:.95,sp:[6,26,8]};
 E.ENV.st_rain={sky:0x8A949C,hs:0xC8CED2,hg:0x4A5058,hi:.75,sc:0xC8D0D8,si:.3,sp:[4,20,6]};

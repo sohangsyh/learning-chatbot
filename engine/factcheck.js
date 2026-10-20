@@ -6,7 +6,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const SC=GM.scoring,EV=C.evidence;
 const st={ch:-1,meter:C.meter.start,shown:C.meter.start,score:0,hints:0,cards:[],wrongs:0,hint:null,yaw:0,drag:null};
 window.__fc=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.06;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.allowPan=false;E.parallax=.06;
 E.SPK={narrator:{name:'你',col:'#F4EBD6'},card:{name:'證物',col:'#F2C14E'}};
 Object.entries(C.npc_slots).forEach(([s,d])=>E.SPK[s]={name:d.display_name,col:E.hex(E.PAL[d.character_id][0])});
 const LP={};Object.entries(W.locations).forEach(([k,v])=>LP[k]=V(...v));

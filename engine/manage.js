@@ -6,7 +6,7 @@ const C=JSON.parse($('d-content').textContent),W=JSON.parse($('d-world').textCon
 const EC=C.economy,D=C.days;
 const st={day:-1,cash:EC.start_cash,ledger:[],score:0,hints:0,price:EC.price_default,stock:EC.stock_default,unit:EC.unit_cost,yaw:0,drag:null,people:[],running:false,hint:null,comp:null,fx:[]};
 window.__shop=st;
-E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.parallax=.08;
+E.init({canvas:$('scene'),onResize:()=>{},onFrame});E.bindDialog();E.resp.allowPan=false;E.parallax=.08;
 E.ENV.st_sunny={sky:0xA8D4EE,hs:0xF6F2E6,hg:0x707A70,hi:.72,sc:0xFFF0D4,si:.72,sp:[12,22,10]};
 E.ENV.st_hot={sky:0xF2D8A0,hs:0xFFF0D0,hg:0x8A7A60,hi:.8,sc:0xFFD890,si:.95,sp:[6,26,8]};
 E.ENV.st_rain={sky:0x8A949C,hs:0xC8CED2,hg:0x4A5058,hi:.75,sc:0xC8D0D8,si:.3,sp:[4,20,6]};
