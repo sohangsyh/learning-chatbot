@@ -17,7 +17,7 @@ b = importlib.util.module_from_spec(spec); spec.loader.exec_module(b)
 SRC = {
     'engine': rd('engine/engine.js'),
     'modes': {'rpg': rd('engine/rpg.js'), 'carry2': rd('engine/carry2.js'), 'dialogue': rd('engine/dialogue.js')},
-    'kits': {'kit_ancient': rd('engine/kit_ancient.js'), 'kit_campus': rd('engine/kit_campus.js'), 'kit_hk': rd('engine/kit_hk.js'), 'kit_world': rd('engine/kit_world.js')},
+    'kits': {'kit_ancient': rd('engine/kit_ancient.js'), 'kit_campus': rd('engine/kit_campus.js'), 'kit_hk': rd('engine/kit_hk.js'), 'kit_world': rd('engine/kit_world.js'), 'kit_mix': rd('engine/kit_mix.js')},
     'shells': {'rpg': rd('shells/rpg_shell.html'), 'carry': rd('shells/carry_shell.html'), 'dialogue': rd('shells/dialogue_shell.html')},
     'icons': b.ICONS,
     'templates': {'carry_world': json.loads(rd('games/lunyu/world.json')),

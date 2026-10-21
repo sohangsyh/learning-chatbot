@@ -85,6 +85,16 @@ const CAMPUS_TPL=['science_lab','prep_room','corridor'],CAMPUS_PROPS=['poster','
 const ANCIENT_TPL=['market','pavilion','village','mansion','gourd_garden','winter_river','great_lake','roadside_tree'],ANCIENT_PROPS=['slips','letter','tablet','rock_slips','crate_slips','chest','scale','fish_basket','bear_paw','rice_basket','soup_bowl','seed_sack','silk_frame','salve_jar','gold_bag','reed_clump','stele_lake','axe_stump','friend_letter'];
 const WORLD_TPL=['town_square','great_hall','village','harbor'],WORLD_PROPS=['scroll','book','map','chest','crate','statue','flag','lantern','sign','cart','letter'];
 const WORLD_THEMES=['europe','america','japan','korea'];
+const STAGE_CAT=(()=>{const L=[];const add=(id,kit,template,style,label,props,env)=>L.push({id,kit,template,style,label,props,env});
+  const AN={market:['古代市集','anc_morning'],pavilion:['山中涼亭','anc_dusk'],village:['古代鄉村','anc_bleak'],mansion:['古代府第（夜）','anc_night'],gourd_garden:['古代庭園','anc_morning'],winter_river:['冬日河邊','anc_winter'],great_lake:['湖邊','anc_dusk'],roadside_tree:['路邊大樹','anc_morning']};
+  Object.entries(AN).forEach(([t,[l,e]])=>add('china_ancient.'+t,'ancient_town',t,null,'中國古代・'+l,ANCIENT_PROPS,e));
+  [['science_lab','學校・科學實驗室','campus_morning'],['prep_room','學校・實驗準備室','campus_afternoon'],['corridor','學校・走廊','campus_noon']].forEach(([t,l,e])=>add('school.'+t,'school_campus',t,null,l,CAMPUS_PROPS,e));
+  const CN={europe:'歐洲',america:'美洲',japan:'日本',korea:'韓國',china:'中國'};
+  const AW={town_square:['市鎮廣場','world_morning'],great_hall:['宮殿／城堡／會堂','world_day'],village:['鄉村','world_morning'],harbor:['港口','world_dusk']};
+  const MW={city_street:['城市街道','world_day'],civic_hall:['政府大樓','world_day'],residential:['住宅區','world_morning'],port:['貨櫃碼頭','world_dusk']};
+  ['europe','america','japan','korea'].forEach(c=>Object.entries(AW).forEach(([t,[l,e]])=>add(c+'_ancient.'+t,'world',t,c,CN[c]+'古代・'+l,WORLD_PROPS,e)));
+  ['china','europe','america','japan','korea'].forEach(c=>Object.entries(MW).forEach(([t,[l,e]])=>add(c+'_modern.'+t,'world',t,c,CN[c]+'現代・'+l,WORLD_PROPS,e)));return L;})();
+const STAGE_BY=Object.fromEntries(STAGE_CAT.map(x=>[x.id,x]));
 const ACT_VERBS=['pour','throw','weigh','stamp','steer','plant','shoot'],ACT_OBJ=['crate','barrel','chest','jar','bottle','flask','tube','gourd','scroll','document','bag','seed','stone','boat','basket','arrow'],ACT_TGT=['water','jar','gourd','flask','tube','bin','basket','box','port','field','tray','target','pan'];
 const ACT_NAMES={pour:'倒',throw:'擲',weigh:'秤',stamp:'蓋印',steer:'航行',plant:'種植',shoot:'射箭'};
 const THEME_SET=t=>WORLD_THEMES.includes(t)?{tpl:WORLD_TPL,props:WORLD_PROPS}:t==='ancient'?{tpl:ANCIENT_TPL,props:ANCIENT_PROPS}:{tpl:CAMPUS_TPL,props:CAMPUS_PROPS};
@@ -102,18 +112,19 @@ function ctx(a){return `課題資料（由分析步驟得出）：
 """${state.chat.filter(m=>m.role==='user').map(m=>m.text).join('\n')}"""`;}
 const COMMON_TPL=`規則：只輸出一個 JSON 物件，不要任何說明或 Markdown。%%LANG%%（對話闖關的英語／普通話對白除外）。內容必須準確，符合香港課程；不可虛構史實、數據或引文；不確定的事實寧可不寫。四個固定角色：mentor（導師，講解）、companion（同伴）、rival（對手，負責說出常見錯誤想法，是搗蛋鬼而非壞人）、gatekeeper（守門人，負責考問）；只可為他們改名和寫人設。`;
 function common(){return COMMON_TPL.replace('%%LANG%%',state.gameLang==='en'?'全部文字用英文（英式英文，程度適合香港學生；角色名字可以用英文）':'全部文字用香港繁體中文書面語');}
-function rpgPrompt(a,theme){const {tpl,props}=THEME_SET(theme);
+function rpgPrompt(a){
   return `你是教育遊戲編劇。請為以下課題寫一個「RPG 冒險」遊戲的內容。學生在 4 章故事中探索線索、聽導師講解，然後面對對手提出的兩難，三選一作答，最後回答守門題。
 ${ctx(a)}
 ${common()}
-場景主題：${THEME_LABEL[theme]||'現代校園'}。每章的 scene 只可從以下選擇：${tpl.map(x=>x+'（'+TPL_DESC[x]+'）').join('、')}。
-每個線索的 prop（場景道具）只可從以下選擇：${props.map(x=>x+'（'+PROP_DESC[x]+'）').join('、')}。
+場景：每一章按該章內容，從以下場景目錄中選一個最合適的 stage（可以每章不同，例如講述不同地方或年代時就用不同場景；課題的主要文化是 ${a.culture}，時代是 ${a.era}，請優先選相配的場景）：
+${STAGE_CAT.map(x=>x.id+'（'+x.label+'）').join('、')}
+每個線索的 prop（場景道具）必須屬於該章 stage 的道具：中國古代場景用 ${ANCIENT_PROPS.join('、')}；學校場景用 ${CAMPUS_PROPS.join('、')}；其他（歐洲、美洲、日本、韓國及各地現代）場景用 ${WORLD_PROPS.join('、')}。
 輸出格式：
 {"meta":{"topic":"課題","short_title":"遊戲名（2至8字）","author":"作者或學科","title_lines":["標題頁第一行","第二行"],"meter_label":"狀態值名稱（2至4字，例如 理解、本心、安全指數）","central_thesis":"一句中心思想"},
  "player_roles":[{"role_id":"r1","display_name":"身份名稱","blurb":"一句介紹","address":"同伴對玩家的稱呼","start_value":55},{"role_id":"r2","display_name":"…","blurb":"…","address":"…","start_value":45}],
  "npc_slots":{"mentor":{"display_name":"名字","persona":"一句人設"},"companion":{…},"rival":{…},"gatekeeper":{…}},
  "units":[ 4 個章節，每個：
-  {"unit_id":"u1","title":"章名（2至8字）","scene":"場景","key_quote":"本章金句（可為課文引句）","concept":"本章知識點（一至兩句）","misconceptions":["本章針對的錯誤理解"],
+  {"unit_id":"u1","title":"章名（2至8字）","stage":"場景目錄中的 id","key_quote":"本章金句（可為課文引句）","concept":"本章知識點（一至兩句）","misconceptions":["本章針對的錯誤理解"],
    "lines":{"enter":"同伴進場台詞，可用 {address} 稱呼玩家","guide":"導師講解（兩至三句，必須正確講解知識點）","dilemma":"對手說出錯誤想法，製造兩難","prompt":"向玩家提問，例如：你會怎樣回應？"},
    "hotspots":[3 個，每個 {"id":"英文小寫識別碼","label":"線索名稱（2至6字）","text":"線索內容（一至兩句，提供判斷所需的資料）","prop":"道具"}],
    "choices":[剛好 3 個，type 各一：{"type":"correct","text":"正確做法","feedback":"為何正確"},{"type":"misconception","text":"對應常見錯誤理解","feedback":"錯在哪裡"},{"type":"suboptimal","text":"不完全錯但不夠好","feedback":"不足之處"}],
@@ -179,12 +190,12 @@ function vAction(a,w,e){if(!a)return;if(!ACT_VERBS.includes(a.verb)){e.push(w+'.
   const ids=T.map(t=>t.id);if(new Set(ids).size!==ids.length)e.push(w+'.action.targets id 重複');const Rr=Array.isArray(a.rounds)?a.rounds:[];if(Rr.length<1||Rr.length>4)e.push(w+'.action.rounds 必須 1 至 4 回合');
   Rr.forEach((r,j)=>{if(!isStr(r.item,16))e.push(w+'.action.rounds['+j+'].item 缺少或過長');if(!ids.includes(r.target))e.push(w+'.action.rounds['+j+'].target 無效');});
   if(a.verb==='shoot'&&!/射|箭|弓|arrow|archer|bow/i.test(a.evidence||''))e.push(w+'.action 的 shoot 只限內容真的涉及射箭');}
-function validateRPG(c,theme){const e=[];vCommon(c,e);const {tpl,props}=THEME_SET(theme);
+function validateRPG(c){const e=[];vCommon(c,e);
   if(!Array.isArray(c.player_roles)||c.player_roles.length!==2)e.push('player_roles 必須剛好 2 個');else c.player_roles.forEach((r,i)=>{if(!isStr(r.display_name,10)||!isStr(r.address,8))e.push('player_roles['+i+'] 名稱或稱呼缺少');r.start_value=Math.max(35,Math.min(65,+r.start_value||50));r.role_id=r.role_id||('r'+(i+1));});
   if(!Array.isArray(c.units)||c.units.length!==4)e.push('units 必須剛好 4 章');else c.units.forEach((u,i)=>{const w='units['+i+']';u.unit_id='u'+(i+1);
-    if(!isStr(u.title,10))e.push(w+'.title 缺少或超過 10 字');if(!tpl.includes(u.scene))e.push(w+'.scene 必須是 '+tpl.join('/'));if(!isStr(u.concept))e.push(w+'.concept 缺少');if(!isStr(u.key_quote))u.key_quote=u.title;
+    if(!isStr(u.title,10))e.push(w+'.title 缺少或超過 10 字');const SG=STAGE_BY[u.stage];if(!SG)e.push(w+'.stage 必須是場景目錄中的 id');const props=SG?SG.props:[];if(!isStr(u.concept))e.push(w+'.concept 缺少');if(!isStr(u.key_quote))u.key_quote=u.title;
     if(!u.lines||!['enter','guide','dilemma','prompt'].every(k=>isStr(u.lines[k])))e.push(w+'.lines 必須有 enter、guide、dilemma、prompt');
-    if(!Array.isArray(u.hotspots)||u.hotspots.length!==3)e.push(w+'.hotspots 必須剛好 3 個');else u.hotspots.forEach((h,j)=>{h.id=String(h.id||('h'+j)).toLowerCase().replace(/[^a-z0-9_]/g,'')||('h'+i+j);if(!isStr(h.label,8))e.push(w+'.hotspots['+j+'].label 缺少或超過 8 字');if(!isStr(h.text))e.push(w+'.hotspots['+j+'].text 缺少');if(!props.includes(h.prop))e.push(w+'.hotspots['+j+'].prop 必須是 '+props.join('/'));});
+    if(!Array.isArray(u.hotspots)||u.hotspots.length!==3)e.push(w+'.hotspots 必須剛好 3 個');else u.hotspots.forEach((h,j)=>{h.id=String(h.id||('h'+j)).toLowerCase().replace(/[^a-z0-9_]/g,'')||('h'+i+j);if(!isStr(h.label,8))e.push(w+'.hotspots['+j+'].label 缺少或超過 8 字');if(!isStr(h.text))e.push(w+'.hotspots['+j+'].text 缺少');if(SG&&!props.includes(h.prop))e.push(w+'.hotspots['+j+'].prop 必須是 '+u.stage+' 的道具之一：'+props.join('/'));});
     if(u.hotspots&&new Set(u.hotspots.map(h=>h.id)).size!==u.hotspots.length)u.hotspots.forEach((h,j)=>h.id=h.id+'_'+i+j);
     if(!Array.isArray(u.choices)||u.choices.length!==3)e.push(w+'.choices 必須剛好 3 個');else{const ty=u.choices.map(x=>x.type).sort().join();if(ty!=='correct,misconception,suboptimal')e.push(w+'.choices 的 type 必須各一：correct、misconception、suboptimal');u.choices.forEach((x,j)=>{if(!isStr(x.text)||!isStr(x.feedback))e.push(w+'.choices['+j+'] text 或 feedback 缺少');});}
     if(!u.reactions)u.reactions={rival_on_correct:'哼……',rival_on_wrong:'看吧！',companion_on_correct:'原來如此！',companion_on_wrong:'好像不太對……'};
@@ -214,18 +225,21 @@ function validateDialogue(c){const e=[];vCommon(c,e);if(!['en-GB','zh-CN'].inclu
 /* ======================= 5. Assembly from fixed templates ======================= */
 const ROLES_FIXED={mentor:'G',companion:'O',rival:'A',gatekeeper:'I'};
 function fixSlots(c,costumes){Object.keys(ROLES_FIXED).forEach(k=>{const s=c.npc_slots[k]||{};c.npc_slots[k]={character_id:ROLES_FIXED[k],display_name:s.display_name||k,persona:s.persona||'',costume:costumes[k]||[]};});}
-function assembleRPG(c,theme){const anc=theme==='ancient',wld=WORLD_THEMES.includes(theme);fixSlots(c,anc?{mentor:['ru_hat'],companion:[],rival:[],gatekeeper:['lantern']}:wld?{mentor:[],companion:[],rival:[],gatekeeper:['lantern']}:{mentor:['tie'],companion:['cap'],rival:[],gatekeeper:['beacon']});
-  c.meta.meter={label:c.meta.meter_label||'理解',icon:anc||wld?'lantern':'flask'};c.meta.language='zh-Hant';
-  const POS=wld?[[0,0,0],[34,0,-20],[2,0,-46],[-34,0,-70]]:anc?[[0,0,0],[30,0,-22],[2,0,-48],[-48,0,-80]]:[[0,0,0],[22,0,-14],[2,0,-32],[-20,0,-50]];
-  const ENV=wld?{town_square:'world_morning',great_hall:'world_day',village:'world_morning',harbor:'world_dusk'}:anc?{market:'anc_morning',pavilion:'anc_dusk',village:'anc_bleak',mansion:'anc_night',gourd_garden:'anc_morning',winter_river:'anc_winter',great_lake:'anc_dusk',roadside_tree:'anc_morning'}:{science_lab:'campus_morning',prep_room:'campus_afternoon',corridor:'campus_noon'};
-  const OFF=[[-2.6,0,-1.0],[0.3,0,-1.4],[2.7,0,-1.0]];
-  const world={scene_kit:wld?'world':anc?'ancient_town':'school_campus',style:wld?theme:undefined,player_avatar:true,npc_layout:{mentor:[-3.4,0,1.0],companion:[3.4,0,1.6],rival:[3.2,0,-2.4],gatekeeper:[-3.4,0,-2.6],player:[0,0,2.6]},
-    stages:c.units.map((u,i)=>({unit_id:u.unit_id,template:u.scene,position:POS[i],environment:{time:ENV[u.scene]},hotspots:u.hotspots.map((h,j)=>({id:h.id,prop:h.prop,offset:OFF[j]}))}))};
+function assembleRPG(c){const stages=c.units.map(u=>STAGE_BY[u.stage]);const kits=[...new Set(stages.map(x=>x.kit))];const main=kits.length===1?kits[0]:null;
+  const anc=stages.every(x=>x.kit==='ancient_town'),sch=stages.every(x=>x.kit==='school_campus');
+  fixSlots(c,anc?{mentor:['ru_hat'],companion:[],rival:[],gatekeeper:['lantern']}:sch?{mentor:['tie'],companion:['cap'],rival:[],gatekeeper:['beacon']}:{mentor:[],companion:[],rival:[],gatekeeper:['lantern']});
+  c.meta.meter={label:c.meta.meter_label||'理解',icon:sch?'flask':'lantern'};c.meta.language=state.gameLang==='en'?'en':'zh-Hant';
+  const LOCAL={ancient_town:[[0,0,0],[30,0,-22],[2,0,-48],[-48,0,-80]],school_campus:[[0,0,0],[22,0,-14],[2,0,-32],[-20,0,-50]],world:[[0,0,0],[34,0,-20],[2,0,-46],[-34,0,-70]]};
+  const REGION={ancient_town:0,school_campus:700,world:1400};const used={};const OFF=[[-2.6,0,-1.0],[0.3,0,-1.4],[2.7,0,-1.0]];
+  const world={scene_kit:main||'mix',player_avatar:true,npc_layout:{mentor:[-3.4,0,1.0],companion:[3.4,0,1.6],rival:[3.2,0,-2.4],gatekeeper:[-3.4,0,-2.6],player:[0,0,2.6]},
+    stages:c.units.map((u,i)=>{const S=stages[i],n=used[S.kit]=(used[S.kit]||0);used[S.kit]++;const lp=LOCAL[S.kit][n%4];const x=(main?0:REGION[S.kit])+lp[0];
+      return {unit_id:u.unit_id,kit:S.kit,template:S.template,style:S.style||undefined,position:[x,0,lp[2]],environment:{time:S.env},hotspots:u.hotspots.map((h,j)=>({id:h.id,prop:h.prop,offset:OFF[j]}))};})};
   const delta={correct:15,misconception:-20,suboptimal:-8},sc={correct:10,misconception:0,suboptimal:5};
   const game={mode:'rpg',state:{meter:{label:c.meta.meter.label,min:0,max:100,start_from:'player_role.start_value'}},scoring:{gate_first_try:10,gate_wrong_penalty:3,hint_penalty:2,gate_min:2},wrong_flash:'0x2A2440',
     chapters:c.units.map(u=>({unit_id:u.unit_id,beats:{enter:{speaker:'companion'},explore:{hotspots:u.hotspots.map(h=>h.id),require_all:true,idle_hint_sec:25},guide:{speaker:'mentor'},dilemma:{speaker:'rival'},choices:u.choices.map(ch=>({type:ch.type,meter:delta[ch.type],score:sc[ch.type]})),gate:{speaker:'gatekeeper',mastery:true}}})),
     endings:[{id:'best',min_meter:80},{id:'normal',min_meter:50},{id:'fail',min_meter:0}]};
-  return {content:c,world,game,shell:'rpg',kit:wld?'kit_world':anc?'kit_ancient':'kit_campus',mode:'rpg',icon:c.meta.meter.icon};}
+  const KF={ancient_town:'kit_ancient',school_campus:'kit_campus',world:'kit_world'};
+  return {content:c,world,game,shell:'rpg',kit:main?KF[main]:kits.map(k=>KF[k]).concat(['kit_mix']),mode:'rpg',icon:c.meta.meter.icon,stageLabels:stages.map(x=>x.label)};}
 function assembleCarry(c){fixSlots(c,{mentor:['ru_hat'],companion:[],rival:[],gatekeeper:['lantern']});c.player={display_name:'你',color:'#E8577E'};
   const W=JSON.parse(JSON.stringify(SRC.templates.carry_world));W.rounds=W.rounds.slice(0,c.units.length);
   const DUR={sort:75,pair:60,sequence:60,single:40},INIT={sort:0,pair:1,sequence:0,single:2};
@@ -239,7 +253,7 @@ function assembleDialogue(c){fixSlots(c,{mentor:['tie'],companion:['cap'],rival:
 function buildHTML(spec){let s=SRC.shells[spec.shell];const J=o=>JSON.stringify(o).replace(/<\//g,'<\\/');
   s=s.split('%%CONTENT%%').join(J(spec.content)).split('%%WORLD%%').join(J(spec.world)).split('%%GAME%%').join(J(spec.game));
   s=s.split('%%TITLE%%').join(esc(spec.content.meta.short_title)).split('%%ICON%%').join(SRC.icons[spec.icon]||'');
-  s=s.replace('<script>%%KIT%%<\/script>',()=>'<script>'+SRC.kits[spec.kit]+'<\/script>');s=s.replace('%%ENGINE%%',()=>SRC.engine).replace('%%MODE%%',()=>SRC.modes[spec.mode]);return s;}
+  s=s.replace('<script>%%KIT%%<\/script>',()=>'<script>'+[].concat(spec.kit).map(k=>SRC.kits[k]).join('\n;\n')+'<\/script>');s=s.replace('%%ENGINE%%',()=>SRC.engine).replace('%%MODE%%',()=>SRC.modes[spec.mode]);return s;}
 function testHarness(html){const probe='<script>(function(){var errs=[];window.addEventListener("error",function(e){errs.push(String(e.message||e));});setTimeout(function(){var ok=!!(window.ENG&&document.querySelector("canvas"))&&!errs.length,cover=null;try{if(ok&&ENG.renderer){ENG.renderer.render(ENG.scene,ENG.camera);var c=ENG.renderer.domElement,t=document.createElement("canvas");t.width=480;t.height=270;var x=t.getContext("2d"),r=c.width/c.height,sw=c.width,sh=c.height;if(r>16/9){sw=c.height*16/9;}else{sh=c.width*9/16;}x.drawImage(c,(c.width-sw)/2,(c.height-sh)/2,sw,sh,0,0,480,270);cover=t.toDataURL("image/jpeg",.74);}}catch(e){}parent.postMessage({gpTest:1,ok:ok,errs:errs,cover:cover},"*");},6500);})();<\/script>';
   return html.replace('<head>','<head>'+probe);}
 function autoTest(html){return new Promise(res=>{const f=document.createElement('iframe');f.style.cssText='position:fixed;left:-2000px;top:0;width:960px;height:540px;opacity:0;pointer-events:none';f.setAttribute('aria-hidden','true');f.setAttribute('tabindex','-1');
@@ -359,20 +373,18 @@ function showAnalysis(a){const r=recommend(a);state.recs=r;setStep('recommend','
     b.innerHTML='<span class="art" style="background:'+art[0]+'">'+art[1]+(i===0?'<span class="badge">★ '+T('best')+'</span>':'')+'</span><span class="tb"><span class="tn">'+modeName(g.k)+'</span><span class="tw">'+esc(reasonText(g.k,a))+'</span><span class="xp"><i style="--w:'+Math.round(g.score*100)+'%"></i></span><span class="xpl">'+T('match')+' '+Math.round(g.score*100)+'%</span></span>';
     b.onclick=()=>chooseMode(g.k);box.appendChild(b);});}
 function chooseMode(k){if(state.busy)return;const a=state.analysis;state.mode=k;
-  if(k==='rpg'){const m=botSay('<b class="h">'+T('stage')+'</b><div class="recs"></div>','O');const box=m.querySelector('.recs');const want={chinese_ancient:'ancient',modern:'modern'}[a.culture]||a.culture;
-    [['modern','#20A4F3',MODE_ART.simulation[1]],['ancient','#FF9F1C',MODE_ART.exploration[1]],['europe','#B8322A',STAGE_ART.europe],['america','#2A4A8A',STAGE_ART.america],['japan','#C8321E',STAGE_ART.japan],['korea','#2E8A6A',STAGE_ART.korea]].forEach(([t,bg,art],i)=>{const b=document.createElement('button');b.className='tile';b.style.setProperty('--i',i);
-      b.innerHTML='<span class="art" style="background:'+bg+'">'+art+(want===t?'<span class="badge">★ '+T('suggest')+'</span>':'')+'</span><span class="tb"><span class="tn">'+T('th_'+t)+'</span><span class="tw">'+T('th_'+t+'D')+'</span></span>';b.onclick=()=>{state.theme=t;generate();};box.appendChild(b);});return;}
+  if(k==='rpg'){state.theme='auto';generate();return;}
   if(k==='carry'&&a.era==='modern')botSay(T('carryNote'),'O');if(k==='dialogue'&&a.language_target==='none')a.language_target='en';
   state.theme=k==='carry'?'ancient':'hk';generate();}
 async function generate(feedback){if(state.busy)return;state.busy=true;lock(true);const a=state.analysis,k=state.mode;resetSteps('generate');setStep('generate','run');
-  const p=k==='rpg'?rpgPrompt(a,state.theme):k==='carry'?carryPrompt(a):dialoguePrompt(a);const V=c=>k==='rpg'?validateRPG(c,state.theme):k==='carry'?validateCarry(c):validateDialogue(c);
+  const p=k==='rpg'?rpgPrompt(a):k==='carry'?carryPrompt(a):dialoguePrompt(a);const V=c=>k==='rpg'?validateRPG(c):k==='carry'?validateCarry(c):validateDialogue(c);
   const prog=typing(T('writing',{m:modeName(k)}),'O');let prog2=null;
   try{let prompt=p;if(feedback&&state.spec)prompt+='\n\n老師對上一版的修改要求：'+feedback+'\n上一版內容（請在此基礎上修改，輸出完整 JSON）：\n'+JSON.stringify(state.spec.content);
     let c=await llmJSON(prompt);setStep('generate','done');setStep('validate','run');let errs=V(c),round=0;
     while(errs.length&&round<2){round++;setTyping(prog,T('caught',{n:errs.length,r:round}),'A');c=await llmJSON(p+'\n\n你上一次的輸出有以下問題，請全部修正，並輸出完整的 JSON：\n- '+errs.slice(0,25).join('\n- ')+'\n\n上一次的輸出：\n'+JSON.stringify(c));errs=V(c);}
     if(errs.length){setStep('validate','fail');throw new Error(errs.slice(0,6).join('；'));}
     setStep('validate','done');if(k==='rpg'&&c.units.some(u=>u.action)){checkEvidence(c);prog.remove();await approvePlan(c);prog2=typing(T('building'),'O');}else setTyping(prog,T('building'),'O');setStep('assemble','run');
-    const spec=k==='rpg'?assembleRPG(c,state.theme):k==='carry'?assembleCarry(c):assembleDialogue(c);spec.meta={subject:a.subject,level:a.level,topic:a.topic,modeName:MODES[k].name,modeKey:k,theme:state.theme,model:state.lastModel,created:Date.now()};
+    const spec=k==='rpg'?assembleRPG(c):k==='carry'?assembleCarry(c):assembleDialogue(c);spec.meta={subject:a.subject,level:a.level,topic:a.topic,modeName:MODES[k].name,modeKey:k,theme:state.theme,model:state.lastModel,created:Date.now()};
     const html=buildHTML(spec);setStep('assemble','done');setStep('test','run');setTyping(prog,T('testing'),'I');const t=await autoTest(html);
     if(!t.ok){setStep('test','fail');throw new Error((t.errs||[]).join('；'));}setStep('test','done');spec.cover=t.cover||null;prog.remove();if(prog2)prog2.remove();state.spec=spec;state.html=html;showResult(spec);confetti();}
   catch(err){prog.remove();if(prog2)prog2.remove();failMsg(err,()=>generate());}finally{state.busy=false;lock(false);}}
@@ -386,7 +398,7 @@ function approvePlan(c){return new Promise(res=>{const rows=c.units.map((u,i)=>{
   m.querySelector('.buildBtn').onclick=()=>{m.querySelectorAll('input[type=checkbox]').forEach(cb=>{if(!cb.checked)delete c.units[+cb.dataset.i].action;});c.units.forEach(u=>{if(u.action)delete u.action._status;});m.querySelectorAll('input,button').forEach(x=>x.disabled=true);res();};
   if(window.__autoApprove)setTimeout(()=>m.querySelector('.buildBtn').click(),300);});}
 function showResult(spec){const c=spec.content,mk=spec.meta.modeKey;
-  const parts=mk==='dialogue'?c.scenes.map(s=>s.title+'（'+s.turns.length+' '+T('turns')+'）'):c.units.map(u=>u.title+(u.round_type?'（'+T('rt')[u.round_type]+'）':''));
+  const parts=mk==='rpg'&&spec.stageLabels?c.units.map((u,i)=>u.title+'（'+spec.stageLabels[i]+'）'):mk==='dialogue'?c.scenes.map(s=>s.title+'（'+s.turns.length+' '+T('turns')+'）'):c.units.map(u=>u.title+(u.round_type?'（'+T('rt')[u.round_type]+'）':''));
   const m=botSay('<b class="h big">🎉 '+T('done',{t:esc(c.meta.short_title)})+'</b><div class="cart">'+coverHTML(spec.cover,c.meta.short_title,MODE_ART[mk])+'<div><div class="chips"><span class="chip" style="background:'+MODE_ART[mk][0]+'">'+modeName(mk)+'</span><span class="chip" style="background:'+subjColor(spec.meta.subject)+'">'+esc(spec.meta.subject)+'</span><span class="chip soft">'+esc(spec.meta.level)+'</span></div><ol class="parts">'+parts.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ol><p class="sub">'+T('reviewNote')+'</p><div class="acts"></div></div></div>','I');
   m.classList.add('result');m.querySelector('.cover').onclick=()=>play(state.html,c.meta.short_title);const acts=m.querySelector('.acts');
   [['▶ '+T('play'),'gbtn go',()=>play(state.html,c.meta.short_title)],['★ '+T('save'),'gbtn',()=>saveGame(spec)],['⬇ '+T('dl'),'gbtn alt',()=>download(state.html,c.meta.short_title)],['↻ '+T('regen'),'gbtn alt',()=>generate()]].forEach(([t,cl,fn])=>{const b=document.createElement('button');b.className=cl;b.textContent=t;b.onclick=fn;acts.appendChild(b);});}
