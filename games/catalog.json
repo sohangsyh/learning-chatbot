@@ -133,5 +133,14 @@
   "d": "經營一間小店八天：入貨、定價、應付天氣與隔壁的新店，從帳簿中找出規律。",
   "path": "games/shop/",
   "u": "https://claude.ai/artifact/BXTgtDm8L6RD6oNTgQXadN"
+ },
+ {
+  "t": "AI 訓練營",
+  "s": "資訊科技",
+  "lv": "初中 · 人工智能",
+  "m": "模擬實驗室",
+  "d": "訓練回收站的 AI 鏡頭：改變數據、演算法和運算能力，找出影響 AI 表現的三大要素，最後在預算內平衡三者。",
+  "path": "games/aitrain/",
+  "u": "https://claude.ai/artifact/VQND8RVm1WpuYYMYN2fDfw"
  }
 ]

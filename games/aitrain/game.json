@@ -1,0 +1,68 @@
+{
+  "mode": "aitrain",
+  "model": {
+    "chance": 0.333,
+    "algs": {
+      "rule": {
+        "name": "簡單規則",
+        "cap": 0.55,
+        "need": 20,
+        "cost": 0.0,
+        "noise_sens": 0.3
+      },
+      "tree": {
+        "name": "決策樹",
+        "cap": 0.82,
+        "need": 200,
+        "cost": 0.004,
+        "noise_sens": 0.6
+      },
+      "nn": {
+        "name": "神經網絡",
+        "cap": 0.97,
+        "need": 1500,
+        "cost": 0.05,
+        "noise_sens": 0.7
+      }
+    },
+    "hw": {
+      "laptop": {
+        "name": "手提電腦",
+        "speed": 1
+      },
+      "gpu": {
+        "name": "遊戲電腦（GPU）",
+        "speed": 10
+      },
+      "cloud": {
+        "name": "雲端 GPU 叢集",
+        "speed": 60
+      }
+    },
+    "time_limit": 30,
+    "raw_noise": 0.2,
+    "night_without": 0.12
+  },
+  "scoring": {
+    "run": 3,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "fix_label": 3,
+    "mission": 20,
+    "hint_penalty": 2
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_score": 110
+    },
+    {
+      "id": "normal",
+      "min_score": 70
+    },
+    {
+      "id": "fail",
+      "min_score": 0
+    }
+  ]
+}
