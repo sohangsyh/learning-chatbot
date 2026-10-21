@@ -625,7 +625,7 @@ const stagePos=W.stages.map(s=>V(...s.position));
 KIT.build(W,stagePos);
 const hotspots=[];
 W.stages.forEach((s,si)=>s.hotspots.forEach(h=>{
-  const pos=stagePos[si].clone().add(V(...h.offset));const {g,h:ht}=KIT.prop(h.prop);g.position.copy(pos);
+  const pos=stagePos[si].clone().add(V(...h.offset));const {g,h:ht}=KIT.prop(h.prop,si);g.position.copy(pos);
   const toCenter=stagePos[si].clone().add(V(0,0,4)).sub(pos);g.rotation.y=Math.atan2(toCenter.x,toCenter.z);E.scene.add(g);
   const ring=E.mesh(new THREE.TorusGeometry(.2,.04,8,24),new THREE.MeshBasicMaterial({color:0xF2C14E}),pos.x,ht+.55,pos.z,E.scene);ring.visible=false;
   const hit=E.mesh(new THREE.SphereGeometry(.7,8,6),new THREE.MeshBasicMaterial({visible:false}),pos.x,ht*.6,pos.z,E.scene);
