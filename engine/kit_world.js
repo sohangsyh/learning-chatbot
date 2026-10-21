@@ -36,7 +36,8 @@ function tree(g,x,z,s){const t=new THREE.Group();t.position.set(x,0,z);t.scale.s
   if(ST.tree==='persimmon')for(let i=0;i<8;i++)mesh(new THREE.SphereGeometry(.09,6,5),M(0xF27A1A),(R()-.5)*1.4,1.7+R()*.9,(R()-.5)*1.4,t);return t;}
 function person(g,x,z,col,path,speed){const p=new THREE.Group();p.position.set(x,0,z);g.add(p);const legs=[-1,1].map(s=>{const l=new THREE.Group();l.position.set(s*.1,.55,0);p.add(l);box(.12,.55,.12,0x3A3A40,0,-.27,0,l);return l;});
   mesh(new THREE.CylinderGeometry(.2,.26,.75,10),M(col),0,.93,0,p);mesh(new THREE.SphereGeometry(.17,12,10),M(0xF0CDA8),0,1.45,0,p);
-  if(styleName==='europe')mesh(new THREE.CylinderGeometry(.19,.2,.08,12),M(0x3A3A40),0,1.6,0,p);
+  if(modernMode){mesh(new THREE.SphereGeometry(.175,12,8,0,Math.PI*2,0,Math.PI/2),M([0x1A1612,0x4A3020,0x2A2A2A][Math.floor(R()*3)]),0,1.49,0,p);if(R()<.35){const cp=mesh(new THREE.SphereGeometry(.18,12,8,0,Math.PI*2,0,Math.PI/2),M([0x1E6AA8,0xC8322A,0x2E8A4A][Math.floor(R()*3)]),0,1.52,0,p);box(.2,.03,.16,0x1E1E1E,0,1.53,.16,p);}}
+  else if(styleName==='europe')mesh(new THREE.CylinderGeometry(.19,.2,.08,12),M(0x3A3A40),0,1.6,0,p);
   else if(styleName==='america'){const h=mesh(new THREE.CylinderGeometry(.3,.3,.06,3),M(0x2A2A2E),0,1.6,0,p);mesh(new THREE.CylinderGeometry(.13,.16,.14,10),M(0x2A2A2E),0,1.68,0,p);}
   else if(styleName==='japan')mesh(new THREE.ConeGeometry(.42,.22,14),M(0xC8A868),0,1.68,0,p);
   else{mesh(new THREE.CylinderGeometry(.42,.42,.02,16),M(0x1A1A1A),0,1.6,0,p);mesh(new THREE.CylinderGeometry(.12,.14,.24,10),M(0x1A1A1A),0,1.73,0,p);}
@@ -97,7 +98,7 @@ const MOD={
   america:{ground:'#7E8086',walls:[0xB8B8B0,0x9AA8B8,0xC8B898,0xA8A098],glass:'#3E5E7E',signs:['DINER','PHARMACY','HARDWARE','BANK'],signBg:['#C8221A','#1E6AA8','#E89A1A','#2E5A3A'],tall:[26,44],flag:'us',car:[0xF2C81A,0x2A2A2E,0xE8E8E8]},
   japan:{ground:'#8A8C90',walls:[0xF0EEE8,0xD8DCE0,0xE8E0D0,0xC8CCD0],glass:'#4A6A8A',signs:['ラーメン','薬','コンビニ','本屋'],signBg:['#C8221A','#1A4AA8','#1E8A4A','#E8A01A'],tall:[14,28],flag:'jp',car:[0xF4F4F0,0x2A2A2E,0x8AB8D8]},
   korea:{ground:'#8C8E92',walls:[0xF0ECE4,0xD0D8E0,0xE0D8D0,0xC8D0D8],glass:'#4A6A8A',signs:['카페','편의점','약국','서점'],signBg:['#1E6AA8','#2E8A4A','#C8221A','#8A3AA8'],tall:[22,38],flag:'kr',car:[0xF4F4F0,0x2A2A2E,0xC8C8C8]}};
-let MS=MOD.china,mstyle='china';
+let MS=MOD.china,mstyle='china',modernMode=false;
 function winTex(base,glass){return tex(64,128,(c,w,h)=>{c.fillStyle='#'+base.toString(16).padStart(6,'0');c.fillRect(0,0,w,h);for(let i=0;i<3;i++)for(let j=0;j<7;j++){c.fillStyle=R()<.25?'#9AB8D0':glass;c.fillRect(6+i*20,6+j*17,13,11);}});}
 function tower(g,x,z,w,d,h,col){const t=winTex(col,MS.glass);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(Math.max(1,Math.round(w/2.4)),Math.max(1,Math.round(h/3.2)));const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({map:t}));b.position.set(x,h/2,z);g.add(b);box(w+.2,.3,d+.2,0x6A6E74,x,h+.15,z,g);return b;}
 function shop(g,x,z,w,i,ry){const s=new THREE.Group();s.position.set(x,0,z);s.rotation.y=ry||0;g.add(s);const h=4.2+R()*2;tower(s,0,0,w,3.2,h,MS.walls[i%4]);box(w,2.4,.12,0x2A3038,0,1.2,1.62,s);
@@ -156,7 +157,7 @@ const P={
   letter(g){box(.9,.75,.6,0x6A4428,0,.375,0,g);box(.35,.01,.25,0xF4F0E4,0,.76,0,g);mesh(new THREE.CylinderGeometry(.06,.06,.02,10),M(0xB8322A),.08,.77,.05,g);return .9;}};
 E.kits.world={
   build(W,stagePos){W.stages.forEach((s,i)=>{const st=s.style||W.style||'europe';const g=new THREE.Group();g.position.copy(stagePos[i]);E.scene.add(g);
-      if(MTPL[s.template]){mstyle=MOD[st]?st:'china';MS=MOD[mstyle];styleName=STYLE[mstyle]?mstyle:'europe';ST=STYLE[styleName];MTPL[s.template](g);}
+      if(MTPL[s.template]){mstyle=MOD[st]?st:'china';MS=MOD[mstyle];styleName=STYLE[mstyle]?mstyle:'europe';ST=STYLE[styleName];modernMode=true;MTPL[s.template](g);modernMode=false;}
       else{styleName=STYLE[st]?st:'europe';ST=STYLE[styleName];(TPL[s.template]||TPL.town_square)(g);}});},
   prop(type){const g=new THREE.Group();const h=(P[type]||P.scroll)(g);return {g,h};},
   onFrame(dt,t){WALK.forEach(w=>{const tgt=w.path[w.i],p=w.p.position,d=V(tgt.x,0,tgt.z).add(w.p.parent.position.clone().multiplyScalar(0)).sub(p);const dist=Math.hypot(d.x,d.z);if(dist<.2){w.i=(w.i+1)%w.path.length;return;}

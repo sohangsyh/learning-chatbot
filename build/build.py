@@ -26,6 +26,7 @@ GAMES = {
     "coding":    ("coding_shell.html",     "coding.js",    None),
     "factcheck": ("factcheck_shell.html",  "factcheck.js", "kit_hk.js"),
     "maiyou":    ("match_shell.html",      "matchgame.js", "kit_ancient.js"),
+    "aitrain":   ("aitrain_shell.html",    "aitrain.js",   "kit_world.js"),
 }
 ICONS = {
     "lantern": '<svg viewBox="0 0 40 52" aria-hidden="true"><rect x="15" y="1" width="10" height="5" rx="1" fill="#B9862A"/><rect x="9" y="6" width="22" height="4" rx="2" fill="#E0B04B"/><ellipse cx="20" cy="27" rx="15" ry="17" fill="#7A2A20"/><ellipse id="mGlow" cx="20" cy="27" rx="15" ry="17" fill="#FFB347" opacity=".5"/><rect x="9" y="43" width="22" height="4" rx="2" fill="#E0B04B"/></svg>',

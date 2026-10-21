@@ -1,4 +1,4 @@
-"""Build the OpenMAIC-GamePlay teacher portal as the site's main page (index.html).
+"""Build the CUHK GamePlay teacher portal as the site's main page (index.html).
 
 Run from anywhere:  python3 portal/src/build_portal.py
 Inputs : engine/, shells/, games/catalog.json, games/*/world.json + game.json, portal/covers/*.jpg, portal/src/*
@@ -35,5 +35,5 @@ J = lambda o: json.dumps(o, ensure_ascii=False).replace('<', '\\u003c')
 page = (SRC_DIR / 'portal_shell.html').read_text(encoding='utf-8')
 page = page.replace('%%SRC%%', J(SRC)).replace('%%DEMOS%%', J(DEMOS)).replace('%%APP%%', (SRC_DIR / 'portal_app.js').read_text(encoding='utf-8'))
 (ROOT / 'index.html').write_text(page, encoding='utf-8')
-(ROOT / 'portal' / 'index.html').write_text('<!DOCTYPE html><meta charset="utf-8"><title>OpenMAIC-GamePlay</title><meta http-equiv="refresh" content="0; url=../"><a href="../">OpenMAIC-GamePlay</a>\n', encoding='utf-8')
+(ROOT / 'portal' / 'index.html').write_text('<!DOCTYPE html><meta charset="utf-8"><title>CUHK GamePlay</title><meta http-equiv="refresh" content="0; url=../"><a href="../">CUHK GamePlay</a>\n', encoding='utf-8')
 print('index.html (portal)', len(page) // 1024, 'KB |', len(DEMOS), 'demo games |', sum(1 for d in DEMOS if d['cover']), 'covers')

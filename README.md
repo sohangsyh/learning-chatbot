@@ -1,11 +1,11 @@
-# OpenMAIC-GamePlay
+# CUHK GamePlay
 
 把課程教材轉化為 3D 網頁學習遊戲，對象為香港中小學生，配合教育局課程。
 每款遊戲都是一個獨立的 HTML 檔，用手機或電腦瀏覽器打開即玩，無需登入或安裝。
 
 ## 快速開始（本機預覽）
 
-根目錄的 `index.html` 就是 OpenMAIC-GamePlay 教師平台（遊戲工作室＋遊戲庫）。
+根目錄的 `index.html` 就是 CUHK GamePlay 教師平台（遊戲工作室＋遊戲庫）。
 
 建議用本機伺服器預覽，避免部分瀏覽器限制本機檔案：
 
@@ -47,7 +47,7 @@ python3 -m http.server 8000
 1. 在 GitHub 建立一個新的 repository，把這個資料夾內的**所有檔案**上傳（`index.html` 要在最上層）。
 2. 到 **Settings → Pages**：Source 選 **Deploy from a branch**，Branch 選 **main**、資料夾選 **/ (root)**，按 Save。
 3. 約一至兩分鐘後，網站會在以下網址上線（把名稱換成你的）：
-   - OpenMAIC-GamePlay 教師平台（網站首頁）：`https://<帳號>.github.io/<repo>/`
+   - CUHK GamePlay 教師平台（網站首頁）：`https://<帳號>.github.io/<repo>/`
    - 單一遊戲（給學生的連結）：`https://<帳號>.github.io/<repo>/games/<遊戲>/`
 
 ## 教師平台（portal/）
@@ -69,7 +69,7 @@ python3 -m http.server 8000
 | 日本 | 町家與鳥居、天守閣、稻田、港口 | 城市街道、政府大樓、住宅區、貨櫃碼頭 |
 | 韓國 | 韓屋、宮殿、村落、港口 | 城市街道、政府大樓、住宅區、貨櫃碼頭 |
 
-共 47 種場景。現代場景的招牌使用當地語言（例如 ラーメン、편의점、DINER）。`engine/kit_mix.js` 讓同一個遊戲混合使用不同的場景套件。
+共 47 種場景。打開 `scenes/` 可以實時預覽五種文化的現代場景（城市街道、政府大樓、住宅區、貨櫃碼頭）。現代場景的招牌使用當地語言（例如 ラーメン、편의점、DINER）。`engine/kit_mix.js` 讓同一個遊戲混合使用不同的場景套件。
 
 ### 按課題內容配對的互動（Topic actions）
 
@@ -139,7 +139,7 @@ python3 portal/src/build_portal.py     # 重建教師平台（輸出到根目錄
 ## 專案結構
 
 ```
-index.html              OpenMAIC-GamePlay 教師平台（網站首頁，由 portal/src/build_portal.py 生成）
+index.html              CUHK GamePlay 教師平台（網站首頁，由 portal/src/build_portal.py 生成）
 games/<遊戲>/
   content.json          內容層：知識單元、盲點、台詞、提示、題目
   world.json            世界層：場景、地點、角色站位
@@ -173,6 +173,7 @@ build/build.py          建置腳本
 games/catalog.json      遊戲庫示範遊戲清單（標題、科目、說明、路徑）
 portal/                 教師平台的原始碼（src/）、封面圖（covers/）
 proxy/                  可選的 AI 代理伺服器（Cloudflare Worker）
+scenes/                 現代場景預覽頁（實時 3D）
 docs/                   項目說明書
 ```
 

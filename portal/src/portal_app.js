@@ -1,4 +1,4 @@
-/* OpenMAIC-GamePlay teacher portal: chat-driven game generation + game library */
+/* CUHK GamePlay teacher portal: chat-driven game generation + game library */
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
@@ -262,7 +262,7 @@ function autoTest(html){return new Promise(res=>{const f=document.createElement(
 
 /* ======================= 6. Language ======================= */
 const I18N={
- zh:{title:'OpenMAIC-GamePlay',tag:'一課書，變成一個 3D 學習遊戲',tabStudio:'遊戲工作室',tabLib:'遊戲庫',engine:'AI 引擎',newChat:'新課題',
+ zh:{title:'CUHK GamePlay',tag:'一課書，變成一個 3D 學習遊戲',tabStudio:'遊戲工作室',tabLib:'遊戲庫',engine:'AI 引擎',newChat:'新課題',
   greet:'嗨！我是 <b>G 老師</b>。今天想教哪一課？告訴我<b>學科、級別、課題和學習目標</b>，再貼上教材就更好了。我和小 O、阿 A、I 隊長會一起把它變成遊戲！',
   placeholder:'今天想教甚麼？例如：中二科學，酸和鹼……（Ctrl＋Enter 送出）',send:'出發！',gameLang:'遊戲語言',
   ex1:'中文《木蘭辭》',ex1t:'中一中文科，課題是《木蘭辭》。學習目標：理解木蘭的形象、文中的互文和誇張手法、忠孝兩全的主題。',ex2:'科學：酸和鹼',ex2t:'中二科學，課題是酸和鹼。學習目標：認識常見酸鹼的性質、用指示劑分辨酸鹼、中和作用在日常生活的應用，以及處理酸鹼的安全守則。',ex3:'英文：問路',ex3t:'小五英文，課題是 asking for and giving directions。學生要學會問路和指路的句式，例如 Excuse me, how do I get to…? Go straight… Turn left at…，以及禮貌用語。',
@@ -279,7 +279,7 @@ const I18N={
   sandbox:'在 claude.ai 內，瀏覽器安全設定只允許內建的 Claude。GPT、Gemini、Qwen 請在學校自行架設的版本使用（例如 GitHub Pages）。',keyNote:'金鑰只保存在你的瀏覽器，不會上傳到我們的伺服器。學校正式使用時，建議經學校伺服器轉發。',qwenNote:'通義千問的 API 未必接受瀏覽器直接連線；如未能連接，請經學校伺服器轉發。',
   errNoBuiltin:'未能連接內建的 Claude（可能未獲授權）。',errTrunc:'模型輸出被截斷，請改用較強的模型或縮短教材。',errSandbox:'在 claude.ai 內不能直接連接 {p}，請改用 Claude，或在自行架設的版本使用。',errNoKey:'請先在「AI 引擎」貼上 {p} 的 API 金鑰。',errNoJson:'模型沒有輸出 JSON',errNet:'瀏覽器未能連接 {p}。可能是網絡封鎖或該服務不接受瀏覽器直接連線：請在「進階設定」填寫代理網址（說明見 README）。',test:'測試連線',testing2:'連線中……',testOk:'已連接！{m} 可以使用。',testFail:'未能連接：{e}',adv:'進階設定',proxy:'代理網址（可選）',proxyPh:'例如 https://my-proxy.workers.dev',proxyNote:'填寫後，所有 AI 請求會經這個網址轉發。設定方法見 README 的「代理伺服器」。',
   parts:{dialogue:'個場景',rpg:'章',carry:'個回合'},rt:{sort:'分類',pair:'配對',sequence:'排序',single:'單選'},turns:'段對話',confirmDel:'刪除《{t}》？',you:'你'},
- en:{title:'OpenMAIC-GamePlay',tag:'Turn any lesson into a 3D learning game',tabStudio:'Game Studio',tabLib:'Game Library',engine:'AI Engine',newChat:'New lesson',
+ en:{title:'CUHK GamePlay',tag:'Turn any lesson into a 3D learning game',tabStudio:'Game Studio',tabLib:'Game Library',engine:'AI Engine',newChat:'New lesson',
   greet:"Hi! I'm <b>Teacher G</b>. What are we teaching today? Tell me the <b>subject, level, topic and learning goals</b>, and paste in your materials if you can. O, A, Captain I and I will turn it into a game!",
   placeholder:'What are you teaching today? e.g. S2 Science, acids and alkalis… (Ctrl+Enter to send)',send:"Let's go!",gameLang:'Game language',
   ex1:'Chinese: Mulan',ex1t:'S1 Chinese Language. Topic: the Ballad of Mulan (木蘭辭). Goals: understand Mulan as a character, the use of hyperbole and parallel phrasing, and the theme of loyalty and filial piety.',ex2:'Science: acids & alkalis',ex2t:'S2 Science. Topic: acids and alkalis. Goals: properties of common acids and alkalis, using indicators, neutralisation in daily life, and safety when handling acids and alkalis.',ex3:'English: directions',ex3t:'P5 English. Topic: asking for and giving directions. Students learn phrases like "Excuse me, how do I get to…?", "Go straight…", "Turn left at…", and polite expressions.',
@@ -305,7 +305,7 @@ const DEMO_EN={'魚我所欲也':['Fish or Bear’s Paw','A poor scholar’s jou
  '逍遙遊：大瓠與大樹':['The Gourd and the Tree','Watch Zhuangzi’s parables come alive, then answer Huizi for him.'],'始得西山宴遊記':['Discovering West Hill','Travel with Liu Zongyuan from Yongzhou to the summit of West Hill.'],'賣油翁':['The Old Oil Seller','Match by archery and oil-pouring, then practise until practice makes perfect.'],
  '山居秋暝':['Autumn Evening in the Hills','Recite Wang Wei’s poem on the beat and bring the mountain to life line by line.'],'HK Buddy':['HK Buddy','Show exchange student Sam around Hong Kong in English.'],'地盤三視圖':['Site Views','Operate a tower crane to build structures that match the engineer’s three views.'],
  '翠溪考察':['River Field Trip','Walk a Hong Kong river from source to sea, measure it, and analyse your own data.'],'送貨機械人':['Delivery Robot','Program a robot with blocks to deliver parcels through a Hong Kong street.'],'謠言查證':['Rumour Check','Verify a viral family-chat rumour, then correct it kindly.'],
- '實驗室安全':['Lab Safety','Handle four lab accidents the safe way, hands-on.'],'浮與沉':['Float or Sink','Test what floats, change one variable at a time, and float an egg in salt water.'],'赤壁疑案':['The Red Cliffs Case','Cross-examine sources to separate history from legend.'],'檸檬茶小店':['Lemon Tea Stall','Run a drinks stall for a week: prices, stock and the weather.']};
+ '實驗室安全':['Lab Safety','Handle four lab accidents the safe way, hands-on.'],'浮與沉':['Float or Sink','Test what floats, change one variable at a time, and float an egg in salt water.'],'赤壁疑案':['The Red Cliffs Case','Cross-examine sources to separate history from legend.'],'檸檬茶小店':['Lemon Tea Stall','Run a drinks stall for a week: prices, stock and the weather.'],'AI 訓練營':['AI Training Camp','Train a recycling AI camera: change the data, algorithm and computing power, then balance all three on a budget.']};
 const subjLabel=s=>state.lang==='en'?(SUBJ_EN[s]||s):s;
 
 /* ======================= 7. Art ======================= */

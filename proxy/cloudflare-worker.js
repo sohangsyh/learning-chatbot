@@ -1,4 +1,4 @@
-/* OpenMAIC-GamePlay AI proxy for Cloudflare Workers.
+/* CUHK GamePlay AI proxy for Cloudflare Workers.
  *
  * Forwards the teacher portal's AI requests to Anthropic, OpenAI, Google Gemini or Alibaba Qwen,
  * adding the browser permission (CORS) headers that some providers do not send.

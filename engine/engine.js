@@ -1,4 +1,4 @@
-/* OpenMAIC-GamePlay shared engine v0.2
+/* CUHK GamePlay shared engine v0.2
    Renderer, toon materials, scene-kit helpers, environment presets,
    character factory with procedural animation, camera, 3D-anchored UI,
    dialog, assistant bubble and overlays. Game modes build on window.ENG. */
