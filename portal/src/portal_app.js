@@ -263,7 +263,7 @@ function autoTest(html){return new Promise(res=>{const f=document.createElement(
 /* ======================= 6. Language ======================= */
 const I18N={
  zh:{title:'CUHK GamePlay',tag:'一課書，變成一個 3D 學習遊戲',tabStudio:'遊戲工作室',tabLib:'遊戲庫',engine:'AI 引擎',newChat:'新課題',
-  greet:'嗨！我是 <b>G 老師</b>。今天想教哪一課？告訴我<b>學科、級別、課題和學習目標</b>，再貼上教材就更好了。我和小 O、阿 A、I 隊長會一起把它變成遊戲！',
+  greet:'嗨！我是 <b>{me}</b>。今天想教哪一課？告訴我<b>學科、級別、課題和學習目標</b>，再貼上教材就更好了。{team}會一起把它變成遊戲！',
   placeholder:'今天想教甚麼？例如：中二科學，酸和鹼……（Ctrl＋Enter 送出）',send:'出發！',gameLang:'遊戲語言',
   ex1:'中文《木蘭辭》',ex1t:'中一中文科，課題是《木蘭辭》。學習目標：理解木蘭的形象、文中的互文和誇張手法、忠孝兩全的主題。',ex2:'科學：酸和鹼',ex2t:'中二科學，課題是酸和鹼。學習目標：認識常見酸鹼的性質、用指示劑分辨酸鹼、中和作用在日常生活的應用，以及處理酸鹼的安全守則。',ex3:'英文：問路',ex3t:'小五英文，課題是 asking for and giving directions。學生要學會問路和指路的句式，例如 Excuse me, how do I get to…? Go straight… Turn left at…，以及禮貌用語。',
   steps:['讀課題','揀玩法','寫劇本','捉錯處','搭場景','試玩'],thinking:'讓我讀一讀這一課',understood:'這一課我讀懂了！',subject:'學科',topic:'課題',summary:'概要',keypoints:'知識點',mis:'常見錯誤',
@@ -280,7 +280,7 @@ const I18N={
   errNoBuiltin:'未能連接內建的 Claude（可能未獲授權）。',errTrunc:'模型輸出被截斷，請改用較強的模型或縮短教材。',errSandbox:'在 claude.ai 內不能直接連接 {p}，請改用 Claude，或在自行架設的版本使用。',errNoKey:'請先在「AI 引擎」貼上 {p} 的 API 金鑰。',errNoJson:'模型沒有輸出 JSON',errNet:'瀏覽器未能連接 {p}。可能是網絡封鎖或該服務不接受瀏覽器直接連線：請在「進階設定」填寫代理網址（說明見 README）。',test:'測試連線',testing2:'連線中……',testOk:'已連接！{m} 可以使用。',testFail:'未能連接：{e}',adv:'進階設定',proxy:'代理網址（可選）',proxyPh:'例如 https://my-proxy.workers.dev',proxyNote:'填寫後，所有 AI 請求會經這個網址轉發。設定方法見 README 的「代理伺服器」。',
   parts:{dialogue:'個場景',rpg:'章',carry:'個回合'},rt:{sort:'分類',pair:'配對',sequence:'排序',single:'單選'},turns:'段對話',confirmDel:'刪除《{t}》？',you:'你'},
  en:{title:'CUHK GamePlay',tag:'Turn any lesson into a 3D learning game',tabStudio:'Game Studio',tabLib:'Game Library',engine:'AI Engine',newChat:'New lesson',
-  greet:"Hi! I'm <b>Teacher G</b>. What are we teaching today? Tell me the <b>subject, level, topic and learning goals</b>, and paste in your materials if you can. O, A, Captain I and I will turn it into a game!",
+  greet:"Hi! I'm <b>{me}</b>. What are we teaching today? Tell me the <b>subject, level, topic and learning goals</b>, and paste in your materials if you can. {team} will turn it into a game!",
   placeholder:'What are you teaching today? e.g. S2 Science, acids and alkalis… (Ctrl+Enter to send)',send:"Let's go!",gameLang:'Game language',
   ex1:'Chinese: Mulan',ex1t:'S1 Chinese Language. Topic: the Ballad of Mulan (木蘭辭). Goals: understand Mulan as a character, the use of hyperbole and parallel phrasing, and the theme of loyalty and filial piety.',ex2:'Science: acids & alkalis',ex2t:'S2 Science. Topic: acids and alkalis. Goals: properties of common acids and alkalis, using indicators, neutralisation in daily life, and safety when handling acids and alkalis.',ex3:'English: directions',ex3t:'P5 English. Topic: asking for and giving directions. Students learn phrases like "Excuse me, how do I get to…?", "Go straight…", "Turn left at…", and polite expressions.',
   steps:['Read','Pick','Write','Check','Build','Test'],thinking:'Let me read this lesson',understood:'Got it! Here is your lesson',subject:'Subject',topic:'Topic',summary:'Summary',keypoints:'Key points',mis:'Misconceptions',
@@ -296,7 +296,7 @@ const I18N={
   sandbox:'Inside claude.ai, browser security only allows the built-in Claude. Use GPT, Gemini or Qwen in a self-hosted copy (e.g. GitHub Pages).',keyNote:'Your key stays in your browser and is never sent to our servers. For school-wide use, route requests through a school server.',qwenNote:'Qwen’s API may not accept direct browser connections; if it fails, route requests through a school server.',
   errNoBuiltin:'Could not reach the built-in Claude (permission may be needed).',errTrunc:'The model output was cut off. Try a stronger model or shorter materials.',errSandbox:'{p} cannot be reached from inside claude.ai. Use Claude here, or a self-hosted copy.',errNoKey:'Paste your {p} API key in the AI Engine panel first.',errNoJson:'The model did not return JSON',errNet:'Your browser could not reach {p}. The network may block it, or the service may not accept direct browser calls: set a proxy URL under Advanced (see the README).',test:'Test connection',testing2:'Connecting…',testOk:'Connected! {m} is ready.',testFail:'Could not connect: {e}',adv:'Advanced',proxy:'Proxy URL (optional)',proxyPh:'e.g. https://my-proxy.workers.dev',proxyNote:'When set, all AI requests go through this address. See “Proxy server” in the README.',
   parts:{dialogue:'scenes',rpg:'chapters',carry:'rounds'},rt:{sort:'sort',pair:'match',sequence:'order',single:'pick one'},turns:'dialogues',confirmDel:'Delete “{t}”?',you:'You'}};
-const T=(k,v)=>{let s=(I18N[state.lang][k]!=null?I18N[state.lang][k]:I18N.zh[k]);if(typeof s==='string'&&v)Object.keys(v).forEach(x=>s=s.split('{'+x+'}').join(v[x]));return s;};
+const T=(k,v)=>{if(k==='greet')v=Object.assign({me:whoName('G'),team:isProf()?(state.lang==='en'?'Prof. Meng and I':'我和蒙教授'):isStu()?(state.lang==='en'?'Senior, Classmate, Prefect and I':'我和學長、同學、風紀'):(state.lang==='en'?'O, A, Captain I and I':'我和小 O、阿 A、I 隊長')},v||{});let s=(I18N[state.lang][k]!=null?I18N[state.lang][k]:I18N.zh[k]);if(typeof s==='string'&&v)Object.keys(v).forEach(x=>s=s.split('{'+x+'}').join(v[x]));return s;};
 const MODE_EN={rpg:['RPG Adventure','Make choices inside a story and see the consequences'],carry:['Timed Relay','Sort, match and order answers against the clock'],dialogue:['Dialogue Quest','Hold real conversations in English or Putonghua around Hong Kong'],escape:['Escape Room','Collect clues and crack puzzles'],simulation:['Sim Lab','Change variables and watch what happens'],exploration:['Exploration','Walk into the scene on a field trip'],detective:['Detective','Compare sources and present evidence'],management:['Management','Allocate resources over several rounds'],building:['Builder Workshop','Build, code and design'],rhythm:['Rhythm Stage','Perform on the beat']};
 const modeName=k=>state.lang==='en'?MODE_EN[k][0]:MODES[k].name,modeWhat=k=>state.lang==='en'?MODE_EN[k][1]:MODES[k].what;
 function reasonText(k,a){if(state.lang!=='en')return reasonFor(k,a);const t=a.tags;return {rpg:(t.has_dilemma?'Judgement calls become choices inside a story.':'Common mistakes become choices in the story.'),carry:'Key points fit on short slips'+(t.has_categories?' and sort into groups':'')+', great for quick revision.',dialogue:'The goal is real conversation, so students practise it in everyday scenes.'}[k]||MODE_EN[k][1];}
@@ -305,13 +305,22 @@ const DEMO_EN={'魚我所欲也':['Fish or Bear’s Paw','A poor scholar’s jou
  '逍遙遊：大瓠與大樹':['The Gourd and the Tree','Watch Zhuangzi’s parables come alive, then answer Huizi for him.'],'始得西山宴遊記':['Discovering West Hill','Travel with Liu Zongyuan from Yongzhou to the summit of West Hill.'],'賣油翁':['The Old Oil Seller','Match by archery and oil-pouring, then practise until practice makes perfect.'],
  '山居秋暝':['Autumn Evening in the Hills','Recite Wang Wei’s poem on the beat and bring the mountain to life line by line.'],'HK Buddy':['HK Buddy','Show exchange student Sam around Hong Kong in English.'],'地盤三視圖':['Site Views','Operate a tower crane to build structures that match the engineer’s three views.'],
  '翠溪考察':['River Field Trip','Walk a Hong Kong river from source to sea, measure it, and analyse your own data.'],'送貨機械人':['Delivery Robot','Program a robot with blocks to deliver parcels through a Hong Kong street.'],'謠言查證':['Rumour Check','Verify a viral family-chat rumour, then correct it kindly.'],
- '實驗室安全':['Lab Safety','Handle four lab accidents the safe way, hands-on.'],'浮與沉':['Float or Sink','Test what floats, change one variable at a time, and float an egg in salt water.'],'赤壁疑案':['The Red Cliffs Case','Cross-examine sources to separate history from legend.'],'檸檬茶小店':['Lemon Tea Stall','Run a drinks stall for a week: prices, stock and the weather.'],'AI 訓練營':['AI Training Camp','Train a recycling AI camera: change the data, algorithm and computing power, then balance all three on a budget.']};
+ '實驗室安全':['Lab Safety','Handle four lab accidents the safe way, hands-on.'],'浮與沉':['Float or Sink','Test what floats, change one variable at a time, and float an egg in salt water.'],'赤壁疑案':['The Red Cliffs Case','Cross-examine sources to separate history from legend.'],'檸檬茶小店':['Lemon Tea Stall','Run a drinks stall for a week: prices, stock and the weather.'],'AI 科技公司':['AI Start-up','Run an AI start-up for six months: each client project has a different bottleneck across data, algorithms and computing power.']};
 const subjLabel=s=>state.lang==='en'?(SUBJ_EN[s]||s):s;
 
 /* ======================= 7. Art ======================= */
 const PAL={G:'#FF8A1C',O:'#10C77A',A:'#1677E8',I:'#F5B800'};
 const WHO={zh:{G:'G 老師',O:'小 O',A:'阿 A',I:'I 隊長'},en:{G:'Teacher G',O:'O',A:'A',I:'Captain I'}};
-function mascot(id,cls){const c=PAL[id],eye=(x,y)=>'<g class="eye"><circle cx="'+x+'" cy="'+y+'" r="4.2" fill="#fff"/><circle cx="'+x+'" cy="'+y+'" r="2.3" fill="#1B2A4A"/></g>';
+const PROFIMG=(()=>{const m=[...SRC.engine.matchAll(/img:"(data:image\/(?:png|jpeg);base64,[^"]+)"/g)].map(x=>x[1]);return {yam:m[0]||'',meng:m[1]||''};})();
+try{const s=localStorage.getItem('gp_cast');state.cast=(s==='prof'||s==='student')?s:'goai';}catch(e){state.cast='goai';}
+const isProf=()=>state.cast==='prof',isStu=()=>state.cast==='student';const profOf=id=>id==='G'?'yam':'meng';
+const STU={zh:{G:'班長',O:'學長',A:'同學',I:'風紀'},en:{G:'Monitor',O:'Senior',A:'Classmate',I:'Prefect'}};
+const pal=w=>isProf()?(w==='G'?'#2B385C':'#2E6A5C'):PAL[w];
+const whoName=w=>isProf()?(state.lang==='en'?(w==='G'?'Prof. Yam':'Prof. Meng'):(w==='G'?'任教授':'蒙教授')):isStu()?(STU[state.lang][w]||STU.zh[w]):WHO[state.lang][w];
+function stuMascot(id,cls){const c=PAL[id],hair=id==='O'?'#6B3E2E':'#241C16';
+  const cap=id==='I'?'<path d="M8 13 Q17 6 26 13 L28 15 H6 Z" fill="#1B2A4A"/>':'<path d="M10 14 Q17 7 24 14 Q22 11 17 11 Q12 11 10 14Z" fill="'+hair+'"/>';
+  return '<svg class="mascot stu '+(cls||'')+'" viewBox="0 0 34 42" aria-hidden="true"><g class="legs"><rect x="12" y="30" width="3.2" height="8" rx="1.4" fill="#2B385C"/><rect x="18.8" y="30" width="3.2" height="8" rx="1.4" fill="#2B385C"/><ellipse cx="13.4" cy="39" rx="2.6" ry="1.6" fill="#241C16"/><ellipse cx="20.6" cy="39" rx="2.6" ry="1.6" fill="#241C16"/></g><rect x="9" y="18" width="16" height="13" rx="3" fill="'+c+'"/><path d="M15 18 H19 L17 24 Z" fill="#F7F4EE"/><rect x="22" y="20" width="5" height="7" rx="1.2" fill="#2B385C"/><circle cx="17" cy="12" r="6" fill="#F6D3B0"/>'+cap+'<g class="eye"><circle cx="14.5" cy="12.2" r="1.25" fill="#1B2A4A"/><circle cx="19.5" cy="12.2" r="1.25" fill="#1B2A4A"/></g></svg>';}
+function mascot(id,cls){if(isProf())return '<img class="mascot prof '+(cls||'')+'" src="'+PROFIMG[profOf(id)]+'" alt="">';if(isStu())return stuMascot(id,cls);const c=PAL[id],eye=(x,y)=>'<g class="eye"><circle cx="'+x+'" cy="'+y+'" r="4.2" fill="#fff"/><circle cx="'+x+'" cy="'+y+'" r="2.3" fill="#1B2A4A"/></g>';
   const body={A:'<path d="M17 3 L31 27 H3 Z" fill="'+c+'" stroke="'+c+'" stroke-width="2" stroke-linejoin="round"/>'+eye(13,19)+eye(21,19),I:'<rect x="11" y="2" width="12" height="27" rx="3" fill="'+c+'"/>'+eye(13,11)+eye(21,11),
     G:'<path d="M26 9 A11 11 0 1 0 26 25" stroke="'+c+'" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M20 17 L29 17 L29 26" stroke="'+c+'" stroke-width="4" fill="none" stroke-linecap="round"/>'+eye(12,7)+eye(19,7),
     O:'<circle cx="17" cy="17" r="10" stroke="'+c+'" stroke-width="6" fill="none"/>'+eye(10,8)+eye(17,6)}[id];
@@ -351,11 +360,11 @@ function setStep(id,status){const el=document.querySelector('.stop[data-id="'+id
 function resetSteps(from){let on=false;STEP_IDS.forEach(id=>{if(id===from)on=true;if(on)setStep(id,'idle');});runAt=Math.max(0,STEP_IDS.indexOf(from));moveRunner();}
 addEventListener('resize',moveRunner);
 function addMsg(role,html,cls,who){const m=document.createElement('div');m.className='msg '+role+(cls?' '+cls:'');const w=who||'G';
-  m.innerHTML='<span class="av" aria-hidden="true">'+(role==='user'?TEACHER:mascot(w,'talk'))+'</span><div class="bub"'+(role==='user'?'':' style="--c:'+PAL[w]+'"')+'>'+(role==='user'?'':'<span class="who">'+WHO[state.lang][w]+'</span>')+html+'</div>';
+  m.innerHTML='<span class="av" aria-hidden="true">'+(role==='user'?TEACHER:mascot(w,'talk'))+'</span><div class="bub"'+(role==='user'?'':' style="--c:'+pal(w)+'"')+'>'+(role==='user'?'':'<span class="who">'+whoName(w)+'</span>')+html+'</div>';
   $('msgs').appendChild(m);requestAnimationFrame(()=>m.classList.add('in'));$('msgs').scrollTop=1e9;return m;}
 const botSay=(html,who)=>addMsg('bot',html,'',who);
 function typing(text,who){return addMsg('bot','<span class="typing"><i></i><i></i><i></i></span> <span class="tt">'+text+'</span>','pending',who);}
-function setTyping(m,text,who){m.querySelector('.av').innerHTML=mascot(who,'talk');const b=m.querySelector('.bub');b.style.setProperty('--c',PAL[who]);b.querySelector('.who').textContent=WHO[state.lang][who];b.querySelector('.tt').textContent=text;}
+function setTyping(m,text,who){m.querySelector('.av').innerHTML=mascot(who,'talk');const b=m.querySelector('.bub');b.style.setProperty('--c',pal(who));b.querySelector('.who').textContent=whoName(who);b.querySelector('.tt').textContent=text;}
 
 /* ======================= 9. Pipeline ======================= */
 async function analyse(){const text=state.chat.filter(m=>m.role==='user').map(m=>m.text).join('\n');resetSteps('analyse');setStep('analyse','run');
@@ -405,10 +414,11 @@ function showResult(spec){const c=spec.content,mk=spec.meta.modeKey;
 function lock(on){$('send').disabled=on;$('input').disabled=on;document.querySelectorAll('.tile').forEach(b=>b.disabled=on);}
 
 /* ======================= 10. Play, download, library ======================= */
-function play(html,title){$('playTitle').textContent=title||T('play');$('player').srcdoc=html;$('playModal').hidden=false;$('closePlay').focus();}
+function castHTML(html){return state.cast==='goai'?html:html.replace('<head>','<head><script>window.__cast="'+state.cast+'"<\/script>');}
+function play(html,title){html=castHTML(html);$('playTitle').textContent=title||T('play');$('player').srcdoc=html;$('playModal').hidden=false;$('closePlay').focus();}
 $('closePlay').onclick=()=>{$('playModal').hidden=true;$('player').srcdoc='';};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('playModal').hidden)$('closePlay').click();});
-async function download(html,title){const name=(title||'game').replace(/[\\/:*?"<>|\s]+/g,'_')+'.html';
+async function download(html,title){html=castHTML(html);const name=(title||'game').replace(/[\\/:*?"<>|\s]+/g,'_')+'.html';
   if(IN_CLAUDE){const d=await window.claude.use('downloads');if(d){try{await d.save({filename:name,data:html});}catch(e){if(e&&e.code!=='declined')toast((e.message||e.code));}return;}}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}
 let db=null,me=null,dbTried=false;const LS='gp_library_v1';
@@ -431,7 +441,7 @@ async function renderLibrary(force){const kind=await store();const box=$('mine')
   if(kind==='db'){if(unsub){if(force)draw(lastRows);return;}unsub=db.collection('games').orderBy('created','desc').limit(60).onSnapshot(s=>draw(s.docs.map(d=>Object.assign({id:d.id},d.data()))),e=>{box.innerHTML='<div class="empty"><p>'+esc(e.code)+'</p></div>';});}else draw(localList());}
 let subj='';function renderDemos(){const box=$('demos');box.innerHTML='';const local=!IN_CLAUDE,chips=$('subjChips');chips.innerHTML='';
   ['',...new Set(DEMOS.map(d=>d.s))].forEach(s=>{const b=document.createElement('button');b.className='fchip';b.textContent=s?subjLabel(s):T('all');b.setAttribute('aria-pressed',String(s===subj));if(s)b.style.setProperty('--c',subjColor(s));b.onclick=()=>{subj=s;renderDemos();};chips.appendChild(b);});
-  DEMOS.filter(d=>!subj||d.s===subj).forEach((d,i)=>{const href=local?d.path:d.u,en=state.lang==='en'&&DEMO_EN[d.t],mk=modeKeyFromLabel(d.m);
+  DEMOS.filter(d=>!subj||d.s===subj).forEach((d,i)=>{const href=(local?d.path:d.u)+(state.cast==='goai'?'':'#'+state.cast),en=state.lang==='en'&&DEMO_EN[d.t],mk=modeKeyFromLabel(d.m);
     box.appendChild(gameCard({title:en?en[0]:d.t,subject:d.s,subjectLabel:subjLabel(d.s),level:state.lang==='en'?'':d.lv,mode:modeName(mk),modeKey:mk,desc:en?en[1]:d.d,cover:d.cover,play:()=>window.open(href,'_blank','noopener'),actions:[['▶ '+T('start'),'gbtn go',{href}]]},i));});}
 
 /* ======================= 11. AI engine panel ======================= */
@@ -460,7 +470,7 @@ $('engChip').onclick=()=>{document.body.classList.toggle('engopen');};
 function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,3200);}
 function applyLang(){document.documentElement.lang=state.lang==='en'?'en':'zh-Hant-HK';document.querySelectorAll('[data-t]').forEach(el=>el.textContent=T(el.dataset.t));$('input').placeholder=T('placeholder');
   document.querySelectorAll('.ex').forEach((b,i)=>{b.querySelector('span').textContent=T('ex'+(i+1));b.dataset.text=T('ex'+(i+1)+'t');});
-  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===state.lang)));$('attachBtn').title=T('attHint');$('attachBtn').setAttribute('aria-label',T('attach'));$('clearBtn').setAttribute('aria-label',T('clear'));$('clearLbl').textContent=T('clear');$('gl').value=state.gameLang||state.lang;
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===state.lang)));syncCastLabels();$('attachBtn').title=T('attHint');$('attachBtn').setAttribute('aria-label',T('attach'));$('clearBtn').setAttribute('aria-label',T('clear'));$('clearLbl').textContent=T('clear');$('gl').value=state.gameLang||state.lang;
   if(!state.chat.length&&!state.busy){$('msgs').innerHTML='';botSay(T('greet'),'G');}const step=document.querySelectorAll('#track .lab');step.forEach((l,i)=>l.textContent=T('steps')[i]);renderEngine();updateChip();if(!$('lib').hidden)renderDemos(),renderLibrary(true);}
 document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{state.lang=b.dataset.l;if(!state.gameLangSet)state.gameLang=state.lang;try{localStorage.setItem('gp_lang',state.lang);}catch(e){}applyLang();});
 $('gl').onchange=e=>{state.gameLang=e.target.value;state.gameLangSet=true;};
@@ -496,7 +506,13 @@ $('send').onclick=send;$('input').addEventListener('keydown',e=>{if(e.key==='Ent
 document.querySelectorAll('.ex').forEach(b=>b.onclick=()=>{$('input').value=b.dataset.text;$('input').focus();});
 $('newChat').onclick=clearAll;
 try{const l=localStorage.getItem('gp_lang');if(l)state.lang=l;state.proxy=localStorage.getItem('gp_proxy')||'';}catch(e){}state.gameLang=state.lang;
-['G','O','A','I'].forEach((id,i)=>{$('crew').insertAdjacentHTML('beforeend',mascot(id,'bob b'+i));$('crew2').insertAdjacentHTML('beforeend',mascot(id,'bob b'+i));});
+function syncCastLabels(){document.querySelectorAll('.castsw button').forEach(b=>{if(b.dataset.c==='student')b.textContent=state.lang==='en'?'Student':'學生';b.setAttribute('aria-pressed',String(b.dataset.c===state.cast));});}
+function castToast(){return isProf()?(state.lang==='en'?'Professor characters: Prof. Yam (任教授) and Prof. Meng (蒙教授)':'已切換為教授角色：任教授、蒙教授'):isStu()?(state.lang==='en'?'Student characters: Monitor, Senior, Classmate and Prefect':'已切換為學生角色：班長、學長、同學、風紀'):(state.lang==='en'?'GOAI characters':'已切換為 GOAI 角色');}
+function drawCrew(){['crew','crew2'].forEach(k=>{$(k).innerHTML='';(isProf()?['G','I']:['G','O','A','I']).forEach((id,i)=>$(k).insertAdjacentHTML('beforeend',mascot(id,'bob b'+i)));});}drawCrew();
+document.querySelectorAll('.castsw button').forEach(b=>b.onclick=()=>{state.cast=b.dataset.c;try{localStorage.setItem('gp_cast',state.cast);}catch(e){}
+  syncCastLabels();drawCrew();moveRunner();
+  if(!state.chat.length&&!state.busy){$('msgs').innerHTML='';botSay(T('greet'),'G');}if(!$('lib').hidden){renderDemos();renderLibrary(true);}toast(castToast());});
+document.querySelectorAll('.castsw button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.c===state.cast)));
 drawTrack();applyLang();setTimeout(moveRunner,80);
 window.__portal={state,vChallenge,validateRPG,validateCarry,validateDialogue,assembleRPG,assembleCarry,assembleDialogue,buildHTML,autoTest,recommend,setLLM:f=>{llm=f;}};
 })();

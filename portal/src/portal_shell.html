@@ -150,6 +150,8 @@ select,input[type=password],input[type=text]{width:100%;font-size:14px;padding:9
 .chat.drop{outline:4px dashed var(--grape);outline-offset:-8px}
 ol.plan{list-style:none;margin:8px 0;padding:0;display:flex;flex-direction:column;gap:8px}.pl{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 12px}.pl.none{opacity:.7}.pl label{display:flex;gap:8px;align-items:center;flex-wrap:wrap;cursor:pointer}.pl small{display:block;color:var(--muted);margin-top:3px}
 .pl .vb{font-size:12px;background:var(--grape);color:#fff;border-radius:999px;padding:1px 9px}.pl em{font-style:normal;font-weight:700}.pl em.ok{color:var(--mint2)}.pl em.unk{color:#B08000}.pl em.bad{color:var(--coral2)}.pl input{width:18px;height:18px}
+.castsw{display:flex;background:var(--soft);border-radius:999px;padding:3px;flex:none}.castsw button{border:0;background:none;font:700 13px var(--round);color:var(--muted);padding:6px 9px;border-radius:999px;cursor:pointer}.castsw button[aria-pressed="true"]{background:#2B385C;color:#fff}
+img.mascot.prof{width:44px;height:44px;object-fit:contain;background:none;border-radius:0}.crew img.mascot.prof{width:40px;height:40px}.banner .crew img.mascot.prof{width:56px;height:56px}.av img.mascot.prof{width:42px;height:42px}
 </style>
 </head>
 <body>
@@ -158,7 +160,7 @@ ol.plan{list-style:none;margin:8px 0;padding:0;display:flex;flex-direction:colum
   <div class="brand"><div class="logo"><span>G</span></div><div><h1 data-t="title">CUHK GamePlay</h1><p data-t="tag"></p></div></div>
   <div class="crew" id="crew" aria-hidden="true"></div>
   <nav class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true" data-p="gen" data-t="tabStudio"></button><button class="tab" role="tab" aria-selected="false" data-p="lib" data-t="tabLib"></button></nav>
-  <div class="tools"><button id="engChip" aria-label="AI"></button><div class="lang" role="group" aria-label="Language"><button data-l="zh" aria-pressed="true">中</button><button data-l="en" aria-pressed="false">EN</button></div></div>
+  <div class="tools"><button id="engChip" aria-label="AI"></button><div class="castsw" role="group" aria-label="角色 Characters"><button data-c="goai" aria-pressed="true">GOAI</button><button data-c="prof" aria-pressed="false">教授</button><button data-c="student" aria-pressed="false">學生</button></div><div class="lang" role="group" aria-label="Language"><button data-l="zh" aria-pressed="true">中</button><button data-l="en" aria-pressed="false">EN</button></div></div>
 </header>
 <main>
   <section id="gen" class="panel">
