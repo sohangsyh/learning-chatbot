@@ -1,0 +1,34 @@
+{
+  "mode": "rhythm",
+  "judge": {
+    "perfect": 0.11,
+    "good": 0.22
+  },
+  "scoring": {
+    "perfect": 10,
+    "good": 6,
+    "pause_bonus": 5,
+    "rush_penalty": -4,
+    "rhyme_bonus": 10,
+    "cloze": 10,
+    "pair": 4,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3
+  },
+  "alive_threshold": 0.6,
+  "retry_allowed": true,
+  "endings": [
+    {
+      "id": "best",
+      "min_acc": 0.85
+    },
+    {
+      "id": "normal",
+      "min_acc": 0.6
+    },
+    {
+      "id": "fail",
+      "min_acc": 0
+    }
+  ]
+}

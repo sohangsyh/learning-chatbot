@@ -1,0 +1,35 @@
+{
+  "scene_kit": "construction_site",
+  "grid": {
+    "size": 5,
+    "cell": 1.0,
+    "max_height": 4,
+    "origin": [
+      0,
+      0,
+      0
+    ]
+  },
+  "npc_layout": {
+    "mentor": [
+      -4.2,
+      0,
+      1.8
+    ],
+    "companion": [
+      -1.6,
+      0,
+      -4.8
+    ],
+    "rival": [
+      4.6,
+      0,
+      -1.6
+    ],
+    "gatekeeper": [
+      -4.6,
+      0,
+      -1.4
+    ]
+  }
+}

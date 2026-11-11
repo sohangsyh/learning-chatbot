@@ -1,0 +1,15 @@
+{
+  "inputs": {
+    "subject": "中國語文（指定範文）",
+    "text_type": "寓言、辯論",
+    "has_dilemma": true,
+    "has_perspectives": true,
+    "has_imagery": true
+  },
+  "recommendation": {
+    "primary": "rpg",
+    "reason": "全文是莊子與惠子的兩場辯論，每個論點都靠寓言支持。讓學生親眼看見寓言發生，再代莊子回應惠子，最貼近原文的結構。",
+    "note": "上一版用密室逃脫，但「被鎖在庫房」並非原文情節，已改為依原文寓言推進的 RPG。"
+  },
+  "teacher_confirmed": "rpg"
+}
