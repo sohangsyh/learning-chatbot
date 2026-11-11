@@ -1,0 +1,12 @@
+{
+  "inputs": {
+    "subject": "資訊及通訊科技／人工智能",
+    "has_variables": true,
+    "has_tradeoffs": true
+  },
+  "recommendation": {
+    "primary": "simulation",
+    "reason": "三大要素都是可以操控的變數：學生親手收集數據、選擇演算法和電腦，每次改變一個因素並觀察結果，最後在預算限制下平衡三者。"
+  },
+  "teacher_confirmed": "simulation"
+}

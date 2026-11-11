@@ -1,0 +1,25 @@
+{
+  "mode": "coding",
+  "step_sec": 0.5,
+  "scoring": {
+    "clear": 10,
+    "star": 5,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_score": 140
+    },
+    {
+      "id": "normal",
+      "min_score": 80
+    },
+    {
+      "id": "fail",
+      "min_score": 0
+    }
+  ]
+}

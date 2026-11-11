@@ -1,0 +1,76 @@
+{
+  "scene_kit": "ancient_sets",
+  "layout": "locations_on_line",
+  "spacing": 42,
+  "locations": {
+    "teahouse": [
+      0,
+      0,
+      0
+    ],
+    "library": [
+      42,
+      0,
+      0
+    ],
+    "ruxu": [
+      84,
+      0,
+      0
+    ],
+    "chibi": [
+      126,
+      0,
+      0
+    ],
+    "court": [
+      168,
+      0,
+      0
+    ]
+  },
+  "npc_layout": {
+    "mentor": [
+      -3.2,
+      0,
+      0.8
+    ],
+    "companion": [
+      3.2,
+      0,
+      1.4
+    ],
+    "rival": [
+      2.4,
+      0,
+      -1.8
+    ],
+    "gatekeeper": [
+      -2.6,
+      0,
+      -2.2
+    ]
+  },
+  "court_layout": {
+    "gatekeeper": [
+      0,
+      0,
+      -3.4
+    ],
+    "rival": [
+      2.6,
+      0,
+      -0.6
+    ],
+    "mentor": [
+      -3,
+      0,
+      0.6
+    ],
+    "companion": [
+      3.4,
+      0,
+      1.6
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "mode": "detective",
+  "meter": {
+    "label": "真相值",
+    "start": 40
+  },
+  "scoring": {
+    "present_right": 15,
+    "present_wrong": -8,
+    "timeline_first_try": 10,
+    "deduction_first_try": 10,
+    "gate_first_try": 10,
+    "wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "camera": {
+    "user_orbit_deg": 32
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_meter": 85
+    },
+    {
+      "id": "normal",
+      "min_meter": 55
+    },
+    {
+      "id": "fail",
+      "min_meter": 0
+    }
+  ]
+}

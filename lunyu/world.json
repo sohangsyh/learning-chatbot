@@ -1,0 +1,112 @@
+{
+  "scene_kit": "ancient_town",
+  "art_style": "warm low-poly, flat-shaded",
+  "navigation": "tap_to_move",
+  "arena": {
+    "spawn_area": {
+      "center": [
+        0,
+        0,
+        0.6
+      ],
+      "size": [
+        10,
+        4.6
+      ]
+    },
+    "zone_row_z": -4.2,
+    "zone_spacing": 3.2,
+    "player_start": [
+      0,
+      0,
+      3.6
+    ],
+    "player_start_portrait": [
+      0,
+      0,
+      5.4
+    ]
+  },
+  "npc_layout": {
+    "mentor": [
+      -6.2,
+      0,
+      -5.6
+    ],
+    "companion": [
+      6.2,
+      0,
+      2.6
+    ],
+    "rival": [
+      5.6,
+      0,
+      0.4
+    ],
+    "gatekeeper": [
+      0,
+      0,
+      -6.4
+    ]
+  },
+  "environment": {
+    "time": "morning"
+  },
+  "rounds": [
+    {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "template": "apricot_court",
+      "zone_style": "pad",
+      "env": "anc_morning",
+      "place": "杏壇"
+    },
+    {
+      "position": [
+        48,
+        0,
+        -14
+      ],
+      "template": "academy",
+      "zone_style": "lectern",
+      "env": "anc_morning",
+      "place": "書院講堂"
+    },
+    {
+      "position": [
+        96,
+        0,
+        0
+      ],
+      "template": "stele_yard",
+      "zone_style": "stele",
+      "env": "anc_bleak",
+      "place": "碑林"
+    },
+    {
+      "position": [
+        144,
+        0,
+        -14
+      ],
+      "template": "riverside",
+      "zone_style": "stepstone",
+      "env": "anc_dusk",
+      "place": "川上"
+    },
+    {
+      "position": [
+        192,
+        0,
+        0
+      ],
+      "template": "ancestral_hall",
+      "zone_style": "altar",
+      "env": "anc_night",
+      "place": "祠堂"
+    }
+  ]
+}

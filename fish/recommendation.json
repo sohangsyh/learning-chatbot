@@ -1,0 +1,45 @@
+{
+  "inputs": {
+    "units": 4,
+    "has_dilemma": 4,
+    "has_evidence": 2,
+    "has_perspectives": 1,
+    "teacher_context": "未提供（只計內容因素）"
+  },
+  "feasibility": {
+    "rpg": {
+      "pass": true,
+      "rule": "≥3 單元且大部分有 has_dilemma"
+    },
+    "escape": {
+      "pass": false,
+      "rule": "≥3 單元有 has_evidence",
+      "actual": 2
+    },
+    "carry": {
+      "pass": false,
+      "rule": "需分類/排序/配對結構",
+      "actual": "論證層層推進，缺乏可分類的物件"
+    }
+  },
+  "scores": {
+    "rpg": 0.86,
+    "escape": 0.0,
+    "carry": 0.0
+  },
+  "recommendation": {
+    "primary": "rpg",
+    "reason": "4 個單元全部含兩難抉擇（生與義、受與不受），論點層層遞進，適合章節式 RPG",
+    "excluded": [
+      {
+        "mode": "escape",
+        "why": "只有 2 個單元具備證據推理結構"
+      },
+      {
+        "mode": "carry",
+        "why": "沒有可分類、排序或配對的知識結構"
+      }
+    ]
+  },
+  "teacher_confirmed": "rpg"
+}

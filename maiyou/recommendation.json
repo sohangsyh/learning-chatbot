@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "subject": "中國語文",
+    "text_type": "寓言式故事",
+    "has_pairs": true,
+    "has_perspectives": true
+  },
+  "recommendation": {
+    "primary": "matching",
+    "reason": "全文以射箭和酌油兩件事對照，人物一驕一謙互相對比；用配對的方式最能讓學生看見這種對應關係。"
+  },
+  "teacher_confirmed": "matching"
+}

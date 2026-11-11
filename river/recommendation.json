@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "subject": "地理",
+    "has_imagery": true,
+    "has_variables": true,
+    "has_sequence": true
+  },
+  "recommendation": {
+    "primary": "exploration",
+    "reason": "河流特徵要在不同河段比較，學生沿河走一遍、親手量度，才能從數據看出由上游到下游的變化。"
+  },
+  "teacher_confirmed": "exploration"
+}

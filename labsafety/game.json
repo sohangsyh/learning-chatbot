@@ -1,0 +1,211 @@
+{
+  "mode": "rpg",
+  "session_minutes": 15,
+  "state": {
+    "meter": {
+      "label": "安全指數",
+      "min": 0,
+      "max": 100,
+      "start_from": "player_role.start_value"
+    }
+  },
+  "scoring": {
+    "gate_first_try": 10,
+    "gate_wrong_penalty": 3,
+    "hint_penalty": 2,
+    "gate_min": 2
+  },
+  "wrong_flash": "0x8A3A1E",
+  "chapters": [
+    {
+      "unit_id": "u1",
+      "beats": {
+        "enter": {
+          "speaker": "companion"
+        },
+        "explore": {
+          "hotspots": [
+            "eyewash",
+            "bottle",
+            "rules"
+          ],
+          "require_all": true,
+          "idle_hint_sec": 25
+        },
+        "guide": {
+          "speaker": "mentor"
+        },
+        "dilemma": {
+          "speaker": "rival"
+        },
+        "choices": [
+          {
+            "type": "correct",
+            "meter": 15,
+            "score": 10
+          },
+          {
+            "type": "misconception",
+            "meter": -20,
+            "score": 0
+          },
+          {
+            "type": "suboptimal",
+            "meter": -8,
+            "score": 5
+          }
+        ],
+        "gate": {
+          "speaker": "gatekeeper",
+          "mastery": true
+        }
+      }
+    },
+    {
+      "unit_id": "u2",
+      "beats": {
+        "enter": {
+          "speaker": "companion"
+        },
+        "explore": {
+          "hotspots": [
+            "burner",
+            "clamp",
+            "card"
+          ],
+          "require_all": true,
+          "idle_hint_sec": 25
+        },
+        "guide": {
+          "speaker": "mentor"
+        },
+        "dilemma": {
+          "speaker": "rival"
+        },
+        "choices": [
+          {
+            "type": "correct",
+            "meter": 15,
+            "score": 10
+          },
+          {
+            "type": "misconception",
+            "meter": -20,
+            "score": 0
+          },
+          {
+            "type": "suboptimal",
+            "meter": -8,
+            "score": 5
+          }
+        ],
+        "gate": {
+          "speaker": "gatekeeper",
+          "mastery": true
+        }
+      }
+    },
+    {
+      "unit_id": "u3",
+      "beats": {
+        "enter": {
+          "speaker": "companion"
+        },
+        "explore": {
+          "hotspots": [
+            "shards",
+            "bin",
+            "broom"
+          ],
+          "require_all": true,
+          "idle_hint_sec": 25
+        },
+        "guide": {
+          "speaker": "mentor"
+        },
+        "dilemma": {
+          "speaker": "rival"
+        },
+        "choices": [
+          {
+            "type": "correct",
+            "meter": 15,
+            "score": 10
+          },
+          {
+            "type": "misconception",
+            "meter": -20,
+            "score": 0
+          },
+          {
+            "type": "suboptimal",
+            "meter": -8,
+            "score": 5
+          }
+        ],
+        "gate": {
+          "speaker": "gatekeeper",
+          "mastery": true
+        }
+      }
+    },
+    {
+      "unit_id": "u4",
+      "beats": {
+        "enter": {
+          "speaker": "companion"
+        },
+        "explore": {
+          "hotspots": [
+            "alarm",
+            "exit",
+            "lift"
+          ],
+          "require_all": true,
+          "idle_hint_sec": 25
+        },
+        "guide": {
+          "speaker": "mentor"
+        },
+        "dilemma": {
+          "speaker": "rival"
+        },
+        "choices": [
+          {
+            "type": "correct",
+            "meter": 15,
+            "score": 10
+          },
+          {
+            "type": "misconception",
+            "meter": -20,
+            "score": 0
+          },
+          {
+            "type": "suboptimal",
+            "meter": -8,
+            "score": 5
+          }
+        ],
+        "gate": {
+          "speaker": "gatekeeper",
+          "mastery": true
+        }
+      }
+    }
+  ],
+  "endings": [
+    {
+      "id": "best",
+      "min_meter": 80
+    },
+    {
+      "id": "normal",
+      "min_meter": 50
+    },
+    {
+      "id": "fail",
+      "min_meter": 0
+    }
+  ]
+}

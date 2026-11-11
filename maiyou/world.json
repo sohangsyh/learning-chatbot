@@ -1,0 +1,35 @@
+{
+  "scene_kit": "ancient_town",
+  "npc_layout": {
+    "mentor": [
+      -4.2,
+      0,
+      3.2
+    ],
+    "companion": [
+      4.4,
+      0,
+      3.6
+    ],
+    "rival": [
+      -1.8,
+      0,
+      3.0
+    ],
+    "gatekeeper": [
+      5.4,
+      0,
+      1.0
+    ],
+    "player": [
+      0,
+      0,
+      3.4
+    ],
+    "oilman": [
+      2.2,
+      0,
+      2.6
+    ]
+  }
+}

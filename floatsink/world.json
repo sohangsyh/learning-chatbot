@@ -1,0 +1,98 @@
+{
+  "scene_kit": "school_campus",
+  "art_style": "bright low-poly, flat-shaded",
+  "navigation": "station_closeup",
+  "apparatus_library": "buoyancy",
+  "npc_layout": {
+    "mentor": [
+      -3.7,
+      0,
+      -2.6
+    ],
+    "companion": [
+      3.1,
+      0,
+      -2.2
+    ],
+    "rival": [
+      2.6,
+      0,
+      -3.6
+    ],
+    "gatekeeper": [
+      -2.5,
+      0,
+      -3.7
+    ]
+  },
+  "stages": [
+    {
+      "unit_id": "u1",
+      "template": "science_lab",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "environment": {
+        "time": "campus_morning"
+      },
+      "apparatus": [
+        "bench",
+        "tank",
+        "tray"
+      ]
+    },
+    {
+      "unit_id": "u2",
+      "template": "science_lab",
+      "position": [
+        20,
+        0,
+        -14
+      ],
+      "environment": {
+        "time": "campus_noon"
+      },
+      "apparatus": [
+        "bench",
+        "tank",
+        "tray"
+      ]
+    },
+    {
+      "unit_id": "u3",
+      "template": "prep_room",
+      "position": [
+        2,
+        0,
+        -30
+      ],
+      "environment": {
+        "time": "campus_noon"
+      },
+      "apparatus": [
+        "bench",
+        "tank",
+        "clay"
+      ]
+    },
+    {
+      "unit_id": "u4",
+      "template": "science_lab",
+      "position": [
+        -18,
+        0,
+        -46
+      ],
+      "environment": {
+        "time": "campus_afternoon"
+      },
+      "apparatus": [
+        "bench",
+        "beaker",
+        "salt_jar"
+      ]
+    }
+  ]
+}

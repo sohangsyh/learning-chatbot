@@ -1,0 +1,25 @@
+{
+  "mode": "fieldtrip",
+  "scoring": {
+    "landform_first_try": 5,
+    "measure": 5,
+    "predict_bonus": 5,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_score": 150
+    },
+    {
+      "id": "normal",
+      "min_score": 90
+    },
+    {
+      "id": "fail",
+      "min_score": 0
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "subject": "資訊及通訊科技",
+    "has_construction": true,
+    "has_sequence": true
+  },
+  "recommendation": {
+    "primary": "building",
+    "variant": "coding",
+    "reason": "編程概念要透過「寫程式、執行、觀察、修正」的循環掌握，積木編程讓學生專注在順序、重複、條件和除錯。"
+  },
+  "teacher_confirmed": "building"
+}
