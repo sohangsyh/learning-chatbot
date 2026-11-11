@@ -296,7 +296,7 @@ const I18N={
   sandbox:'Inside claude.ai, browser security only allows the built-in Claude. Use GPT, Gemini or Qwen in a self-hosted copy (e.g. GitHub Pages).',keyNote:'Your key stays in your browser and is never sent to our servers. For school-wide use, route requests through a school server.',qwenNote:'Qwen’s API may not accept direct browser connections; if it fails, route requests through a school server.',
   errNoBuiltin:'Could not reach the built-in Claude (permission may be needed).',errTrunc:'The model output was cut off. Try a stronger model or shorter materials.',errSandbox:'{p} cannot be reached from inside claude.ai. Use Claude here, or a self-hosted copy.',errNoKey:'Paste your {p} API key in the AI Engine panel first.',errNoJson:'The model did not return JSON',errNet:'Your browser could not reach {p}. The network may block it, or the service may not accept direct browser calls: set a proxy URL under Advanced (see the README).',test:'Test connection',testing2:'Connecting…',testOk:'Connected! {m} is ready.',testFail:'Could not connect: {e}',adv:'Advanced',proxy:'Proxy URL (optional)',proxyPh:'e.g. https://my-proxy.workers.dev',proxyNote:'When set, all AI requests go through this address. See “Proxy server” in the README.',
   parts:{dialogue:'scenes',rpg:'chapters',carry:'rounds'},rt:{sort:'sort',pair:'match',sequence:'order',single:'pick one'},turns:'dialogues',confirmDel:'Delete “{t}”?',you:'You'}};
-const T=(k,v)=>{if(k==='greet')v=Object.assign({me:whoName('G'),team:isProf()?(state.lang==='en'?'Prof. Meng and I':'我和蒙教授'):(state.lang==='en'?'O, A, Captain I and I':'我和小 O、阿 A、I 隊長')},v||{});let s=(I18N[state.lang][k]!=null?I18N[state.lang][k]:I18N.zh[k]);if(typeof s==='string'&&v)Object.keys(v).forEach(x=>s=s.split('{'+x+'}').join(v[x]));return s;};
+const T=(k,v)=>{if(k==='greet')v=Object.assign({me:whoName('G'),team:isProf()?(state.lang==='en'?'Prof. Meng and I':'我和蒙教授'):isToy()?(state.lang==='en'?'Rou, Lan, Dan and I':'我和小柔、小藍、小丹'):(state.lang==='en'?'O, A, Captain I and I':'我和小 O、阿 A、I 隊長')},v||{});let s=(I18N[state.lang][k]!=null?I18N[state.lang][k]:I18N.zh[k]);if(typeof s==='string'&&v)Object.keys(v).forEach(x=>s=s.split('{'+x+'}').join(v[x]));return s;};
 const MODE_EN={rpg:['RPG Adventure','Make choices inside a story and see the consequences'],carry:['Timed Relay','Sort, match and order answers against the clock'],dialogue:['Dialogue Quest','Hold real conversations in English or Putonghua around Hong Kong'],escape:['Escape Room','Collect clues and crack puzzles'],simulation:['Sim Lab','Change variables and watch what happens'],exploration:['Exploration','Walk into the scene on a field trip'],detective:['Detective','Compare sources and present evidence'],management:['Management','Allocate resources over several rounds'],building:['Builder Workshop','Build, code and design'],rhythm:['Rhythm Stage','Perform on the beat']};
 const modeName=k=>state.lang==='en'?MODE_EN[k][0]:MODES[k].name,modeWhat=k=>state.lang==='en'?MODE_EN[k][1]:MODES[k].what;
 function reasonText(k,a){if(state.lang!=='en')return reasonFor(k,a);const t=a.tags;return {rpg:(t.has_dilemma?'Judgement calls become choices inside a story.':'Common mistakes become choices in the story.'),carry:'Key points fit on short slips'+(t.has_categories?' and sort into groups':'')+', great for quick revision.',dialogue:'The goal is real conversation, so students practise it in everyday scenes.'}[k]||MODE_EN[k][1];}
@@ -311,12 +311,13 @@ const subjLabel=s=>state.lang==='en'?(SUBJ_EN[s]||s):s;
 /* ======================= 7. Art ======================= */
 const PAL={G:'#FF8A1C',O:'#10C77A',A:'#1677E8',I:'#F5B800'};
 const WHO={zh:{G:'G 老師',O:'小 O',A:'阿 A',I:'I 隊長'},en:{G:'Teacher G',O:'O',A:'A',I:'Captain I'}};
-const PROFIMG=(()=>{const m=[...SRC.engine.matchAll(/img:"(data:image\/(?:png|jpeg);base64,[^"]+)"/g)].map(x=>x[1]);return {yam:m[0]||'',meng:m[1]||''};})();
-try{state.cast=localStorage.getItem('gp_cast')==='prof'?'prof':'goai';}catch(e){state.cast='goai';}
-const isProf=()=>state.cast==='prof';const profOf=id=>id==='G'?'yam':'meng';
-const pal=w=>isProf()?(w==='G'?'#2B385C':'#2E6A5C'):PAL[w];
-const whoName=w=>isProf()?(state.lang==='en'?(w==='G'?'Prof. Yam':'Prof. Meng'):(w==='G'?'任教授':'蒙教授')):WHO[state.lang][w];
-function mascot(id,cls){if(isProf())return '<img class="mascot prof '+(cls||'')+'" src="'+PROFIMG[profOf(id)]+'" alt="">';const c=PAL[id],eye=(x,y)=>'<g class="eye"><circle cx="'+x+'" cy="'+y+'" r="4.2" fill="#fff"/><circle cx="'+x+'" cy="'+y+'" r="2.3" fill="#1B2A4A"/></g>';
+const FIG=(()=>{const m=[...SRC.engine.matchAll(/img:"(data:image\/(?:png|jpeg);base64,[^"]+)"/g)].map(x=>x[1]);return {yam:m[0]||'',meng:m[1]||'',G:m[2]||'',O:m[3]||'',A:m[4]||'',I:m[5]||''};})();
+const TOY={G:{zh:'阿深',en:'Shen',col:'#2C4C7A'},O:{zh:'小柔',en:'Rou',col:'#E38B2B'},A:{zh:'小藍',en:'Lan',col:'#1C8AD6'},I:{zh:'小丹',en:'Dan',col:'#6B4A38'}};
+try{const s=localStorage.getItem('gp_cast');state.cast=(s==='prof'||s==='toy')?s:'goai';}catch(e){state.cast='goai';}
+const isProf=()=>state.cast==='prof',isToy=()=>state.cast==='toy';const profOf=id=>id==='G'?'yam':'meng';
+const pal=w=>isProf()?(w==='G'?'#2B385C':'#2E6A5C'):isToy()&&TOY[w]?TOY[w].col:PAL[w];
+const whoName=w=>isProf()?(state.lang==='en'?(w==='G'?'Prof. Yam':'Prof. Meng'):(w==='G'?'任教授':'蒙教授')):isToy()&&TOY[w]?(state.lang==='en'?TOY[w].en:TOY[w].zh):WHO[state.lang][w];
+function mascot(id,cls){if(isProf())return '<img class="mascot prof '+(cls||'')+'" src="'+FIG[profOf(id)]+'" alt="">';if(isToy()&&FIG[id])return '<img class="mascot toy '+(cls||'')+'" src="'+FIG[id]+'" alt="">';const c=PAL[id],eye=(x,y)=>'<g class="eye"><circle cx="'+x+'" cy="'+y+'" r="4.2" fill="#fff"/><circle cx="'+x+'" cy="'+y+'" r="2.3" fill="#1B2A4A"/></g>';
   const body={A:'<path d="M17 3 L31 27 H3 Z" fill="'+c+'" stroke="'+c+'" stroke-width="2" stroke-linejoin="round"/>'+eye(13,19)+eye(21,19),I:'<rect x="11" y="2" width="12" height="27" rx="3" fill="'+c+'"/>'+eye(13,11)+eye(21,11),
     G:'<path d="M26 9 A11 11 0 1 0 26 25" stroke="'+c+'" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M20 17 L29 17 L29 26" stroke="'+c+'" stroke-width="4" fill="none" stroke-linecap="round"/>'+eye(12,7)+eye(19,7),
     O:'<circle cx="17" cy="17" r="10" stroke="'+c+'" stroke-width="6" fill="none"/>'+eye(10,8)+eye(17,6)}[id];
@@ -410,7 +411,7 @@ function showResult(spec){const c=spec.content,mk=spec.meta.modeKey;
 function lock(on){$('send').disabled=on;$('input').disabled=on;document.querySelectorAll('.tile').forEach(b=>b.disabled=on);}
 
 /* ======================= 10. Play, download, library ======================= */
-function castHTML(html){return isProf()?html.replace('<head>','<head><script>window.__cast="prof"<\/script>'):html;}
+function castHTML(html){return state.cast==='goai'?html:html.replace('<head>','<head><script>window.__cast="'+state.cast+'"<\/script>');}
 function play(html,title){html=castHTML(html);$('playTitle').textContent=title||T('play');$('player').srcdoc=html;$('playModal').hidden=false;$('closePlay').focus();}
 $('closePlay').onclick=()=>{$('playModal').hidden=true;$('player').srcdoc='';};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('playModal').hidden)$('closePlay').click();});
@@ -437,7 +438,7 @@ async function renderLibrary(force){const kind=await store();const box=$('mine')
   if(kind==='db'){if(unsub){if(force)draw(lastRows);return;}unsub=db.collection('games').orderBy('created','desc').limit(60).onSnapshot(s=>draw(s.docs.map(d=>Object.assign({id:d.id},d.data()))),e=>{box.innerHTML='<div class="empty"><p>'+esc(e.code)+'</p></div>';});}else draw(localList());}
 let subj='';function renderDemos(){const box=$('demos');box.innerHTML='';const local=!IN_CLAUDE,chips=$('subjChips');chips.innerHTML='';
   ['',...new Set(DEMOS.map(d=>d.s))].forEach(s=>{const b=document.createElement('button');b.className='fchip';b.textContent=s?subjLabel(s):T('all');b.setAttribute('aria-pressed',String(s===subj));if(s)b.style.setProperty('--c',subjColor(s));b.onclick=()=>{subj=s;renderDemos();};chips.appendChild(b);});
-  DEMOS.filter(d=>!subj||d.s===subj).forEach((d,i)=>{const href=(local?d.path:d.u)+(isProf()?'#prof':''),en=state.lang==='en'&&DEMO_EN[d.t],mk=modeKeyFromLabel(d.m);
+  DEMOS.filter(d=>!subj||d.s===subj).forEach((d,i)=>{const href=(local?d.path:d.u)+(state.cast==='goai'?'':'#'+state.cast),en=state.lang==='en'&&DEMO_EN[d.t],mk=modeKeyFromLabel(d.m);
     box.appendChild(gameCard({title:en?en[0]:d.t,subject:d.s,subjectLabel:subjLabel(d.s),level:state.lang==='en'?'':d.lv,mode:modeName(mk),modeKey:mk,desc:en?en[1]:d.d,cover:d.cover,play:()=>window.open(href,'_blank','noopener'),actions:[['▶ '+T('start'),'gbtn go',{href}]]},i));});}
 
 /* ======================= 11. AI engine panel ======================= */
@@ -505,7 +506,7 @@ try{const l=localStorage.getItem('gp_lang');if(l)state.lang=l;state.proxy=localS
 function drawCrew(){['crew','crew2'].forEach(k=>{$(k).innerHTML='';(isProf()?['G','I']:['G','O','A','I']).forEach((id,i)=>$(k).insertAdjacentHTML('beforeend',mascot(id,'bob b'+i)));});}drawCrew();
 document.querySelectorAll('.castsw button').forEach(b=>b.onclick=()=>{state.cast=b.dataset.c;try{localStorage.setItem('gp_cast',state.cast);}catch(e){}
   document.querySelectorAll('.castsw button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.c===state.cast)));drawCrew();moveRunner();
-  if(!state.chat.length&&!state.busy){$('msgs').innerHTML='';botSay(T('greet'),'G');}if(!$('lib').hidden){renderDemos();renderLibrary(true);}toast(isProf()?(state.lang==='en'?'Professor characters: Prof. Yam (任教授) and Prof. Meng (蒙教授)':'已切換為教授角色：任教授、蒙教授'):(state.lang==='en'?'GOAI characters':'已切換為 GOAI 角色'));});
+  if(!state.chat.length&&!state.busy){$('msgs').innerHTML='';botSay(T('greet'),'G');}if(!$('lib').hidden){renderDemos();renderLibrary(true);}toast(isProf()?(state.lang==='en'?'Professor characters: Prof. Yam (任教授) and Prof. Meng (蒙教授)':'已切換為教授角色：任教授、蒙教授'):isToy()?(state.lang==='en'?'Figurine characters: Shen, Rou, Lan and Dan':'已切換為公仔角色：阿深、小柔、小藍、小丹'):(state.lang==='en'?'GOAI characters':'已切換為 GOAI 角色'));});
 document.querySelectorAll('.castsw button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.c===state.cast)));
 drawTrack();applyLang();setTimeout(moveRunner,80);
 window.__portal={state,vChallenge,validateRPG,validateCarry,validateDialogue,assembleRPG,assembleCarry,assembleDialogue,buildHTML,autoTest,recommend,setLLM:f=>{llm=f;}};
