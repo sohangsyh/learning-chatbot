@@ -1,0 +1,30 @@
+{
+  "river": {
+    "z0": -95,
+    "z1": 74,
+    "waterfall_z": -62
+  },
+  "npc_follow": {
+    "mentor": [
+      0,
+      0,
+      2.4
+    ],
+    "companion": [
+      0,
+      0,
+      -1.9
+    ],
+    "rival": [
+      0,
+      0,
+      -3.7
+    ]
+  },
+  "camera": {
+    "follow_dist": 10,
+    "follow_height": 6.5,
+    "follow_dist_portrait": 14,
+    "follow_height_portrait": 9
+  }
+}

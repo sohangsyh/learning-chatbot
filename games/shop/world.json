@@ -1,0 +1,79 @@
+{
+  "scene_kit": "town_street",
+  "locations": {
+    "street": [
+      0,
+      0,
+      0
+    ],
+    "market": [
+      46,
+      0,
+      0
+    ]
+  },
+  "street": {
+    "length": 44,
+    "shop": [
+      0,
+      0,
+      -4
+    ],
+    "competitor": [
+      8.6,
+      0,
+      -4.2
+    ],
+    "queue_from": [
+      0,
+      0,
+      -1.6
+    ]
+  },
+  "npc_layout": {
+    "street": {
+      "mentor": [
+        -3.4,
+        0,
+        -3.2
+      ],
+      "companion": [
+        1.2,
+        0,
+        -4.4
+      ],
+      "rival": [
+        3.6,
+        0,
+        -3
+      ],
+      "gatekeeper": [
+        -5.5,
+        0,
+        -1.5
+      ]
+    },
+    "market": {
+      "mentor": [
+        -2.6,
+        0,
+        1
+      ],
+      "companion": [
+        2.4,
+        0,
+        1.2
+      ],
+      "rival": [
+        3.2,
+        0,
+        -1.5
+      ],
+      "gatekeeper": [
+        -4,
+        0,
+        -2
+      ]
+    }
+  }
+}

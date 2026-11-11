@@ -1,0 +1,28 @@
+{
+  "mode": "factcheck",
+  "scoring": {
+    "flag_right": 4,
+    "tool": 5,
+    "field": 5,
+    "present_right": 15,
+    "present_wrong": -8,
+    "reply_best": 15,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    {
+      "id": "best",
+      "min_meter": 85
+    },
+    {
+      "id": "normal",
+      "min_meter": 55
+    },
+    {
+      "id": "fail",
+      "min_meter": 0
+    }
+  ]
+}

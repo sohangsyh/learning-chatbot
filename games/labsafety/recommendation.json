@@ -1,0 +1,39 @@
+{
+  "inputs": {
+    "units": 4,
+    "has_dilemma": 4,
+    "has_evidence": 4,
+    "has_perspectives": 2,
+    "teacher_context": "中一科學科新課引入、約 15 分鐘（測試假設）"
+  },
+  "feasibility": {
+    "rpg": {
+      "pass": true
+    },
+    "escape": {
+      "pass": true
+    },
+    "carry": {
+      "pass": true,
+      "why": "安全規則可做分類或排序回合，適合溫習"
+    }
+  },
+  "scores": {
+    "rpg": 0.86,
+    "escape": 0.72,
+    "carry": 0.64
+  },
+  "recommendation": {
+    "primary": "rpg",
+    "reason": "四個單元都是「意外發生時當下怎麼做」的抉擇，用途為新課引入；組長與記錄員兩種身份提供不同視角。溫習時可改用 3D 搬運，把安全規則做成分類回合。",
+    "alternatives": [
+      "carry",
+      "escape"
+    ],
+    "learning_path": [
+      "rpg",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "rpg"
+}

@@ -1,0 +1,42 @@
+{
+  "inputs": {
+    "subject": "中國歷史",
+    "has_sources": true,
+    "has_evidence": true,
+    "has_sequence": true,
+    "has_dilemma": false
+  },
+  "subject_candidates": [
+    "detective",
+    "rpg",
+    "exploration"
+  ],
+  "feasibility": {
+    "detective": {
+      "pass": true,
+      "why": "多份立場不同的史料，加上一位說法與史料矛盾的「證人」"
+    },
+    "rpg": {
+      "pass": false,
+      "why": "學習重點是史料比對，不是個人抉擇"
+    },
+    "escape": {
+      "pass": true,
+      "why": "有證據推理結構，但無法表現史料立場的比較"
+    }
+  },
+  "scores": {
+    "detective": 0.92,
+    "escape": 0.61,
+    "exploration": 0.4
+  },
+  "recommendation": {
+    "primary": "detective",
+    "reason": "課題核心是分辨小說與史實、比較不同立場的史料，正是偵探查案的「搜證、比對、對質」流程。",
+    "learning_path": [
+      "detective",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "detective"
+}
