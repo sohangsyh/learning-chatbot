@@ -1,0 +1,22 @@
+{
+  "mode": "milktea",
+  "tolerance": { "cup_perfect": 0.03, "cup_ok": 0.065, "ml_perfect": 0.025, "ml_ok": 0.06 },
+  "scoring": {
+    "pour_perfect": 10,
+    "pour_good": 6,
+    "redo_penalty": 2,
+    "share_first_try": 12,
+    "share_retry": 6,
+    "rush_perfect": 8,
+    "rush_good": 5,
+    "rush_seconds_per_bonus": 5,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    { "id": "best", "min_score": 170 },
+    { "id": "normal", "min_score": 100 },
+    { "id": "fail", "min_score": 0 }
+  ]
+}

@@ -1,0 +1,611 @@
+{
+  "meta": {
+    "topic": "分數、等值分數、乘法和除法、百分數",
+    "short_title": "奶茶師傅",
+    "short_title_en": "Milk Tea Master",
+    "author": "小學數學（P4–P6）",
+    "author_en": "Primary Maths (P4–P6)",
+    "language": "zh-Hant",
+    "audience": "小四至小六學生",
+    "central_thesis": "分數表示一個整體的幾份；不同的分數可以表示同一個份量（等值分數）；一個配方乘以杯數就是大訂單的份量；百分數是以 100 為整體的分數。",
+    "title_lines": {
+      "zh": [
+        "金華冰室招學徒。",
+        "按住就倒，倒得準先叫師傅。"
+      ],
+      "en": [
+        "Kam Wah Café is hiring an apprentice.",
+        "Hold to pour. Pour it right and you're a master."
+      ]
+    },
+    "unit": {
+      "zh": "按住按鈕就會倒，放手就停；輕輕一按只會倒一點點。杯上的線把一杯平均分成幾份。",
+      "en": "Hold a button to pour and let go to stop. A quick tap pours just a little. The lines on the glass split one cup into equal parts."
+    },
+    "objectives": {
+      "zh": [
+        "看杯上的線，用分數（例如 3/4 杯）倒出準確的份量。",
+        "認識三份、八份；知道 1/2 = 2/4 = 4/8，在沒有對應刻度時估計份量。",
+        "把一杯的配方乘以杯數；用除法計算一定份量可以分成多少杯。",
+        "把百分數變成份量：正常甜的 50%、75%、25% 是多少 mL。",
+        "在時限內混合運用分數，又快又準地完成訂單。"
+      ],
+      "en": [
+        "Read the lines on a glass and pour an exact fraction, such as 3/4 cup.",
+        "Work with thirds and eighths, see that 1/2 = 2/4 = 4/8, and estimate between marks.",
+        "Multiply a one-cup recipe by the number of cups, and divide to find how many cups an amount makes.",
+        "Turn a percentage into an amount: 50%, 75% or 25% of the normal syrup in mL.",
+        "Use fractions quickly and accurately to finish orders against the clock."
+      ]
+    }
+  },
+  "npc_slots": {
+    "mentor": {
+      "character_id": "G",
+      "display_name": {
+        "zh": "黃師傅",
+        "en": "Master Wong"
+      },
+      "persona": {
+        "zh": "冰室老師傅，沖了四十年奶茶",
+        "en": "Has been making milk tea at the café for forty years"
+      },
+      "costume": []
+    },
+    "companion": {
+      "character_id": "O",
+      "display_name": {
+        "zh": "阿詩",
+        "en": "Sze"
+      },
+      "persona": {
+        "zh": "樓面姐姐，負責落單和送餐",
+        "en": "Takes the orders and carries the drinks"
+      },
+      "costume": []
+    },
+    "rival": {
+      "character_id": "A",
+      "display_name": {
+        "zh": "大頭蝦",
+        "en": "Scatterbrain"
+      },
+      "persona": {
+        "zh": "另一個學徒，經常憑感覺亂倒",
+        "en": "Another apprentice who pours by guesswork"
+      },
+      "costume": []
+    },
+    "gatekeeper": {
+      "character_id": "I",
+      "display_name": {
+        "zh": "陳太",
+        "en": "Mrs Chan"
+      },
+      "persona": {
+        "zh": "每日來飲奶茶的熟客，一試就知道",
+        "en": "A regular who can taste any mistake"
+      },
+      "costume": []
+    }
+  },
+  "ingredients": {
+    "tea": {
+      "zh": "茶",
+      "en": "tea",
+      "hex": "#A0521E",
+      "src": "pot"
+    },
+    "milk": {
+      "zh": "淡奶",
+      "en": "evaporated milk",
+      "hex": "#F3EBD6",
+      "src": "can"
+    },
+    "coffee": {
+      "zh": "咖啡",
+      "en": "coffee",
+      "hex": "#3A2112",
+      "src": "coffee"
+    },
+    "syrup": {
+      "zh": "糖水",
+      "en": "syrup",
+      "hex": "#F1D88A",
+      "src": "bottle"
+    }
+  },
+  "levels": [
+    {
+      "id": "L1",
+      "type": "cup",
+      "title": {
+        "zh": "第一杯港式奶茶",
+        "en": "Your First Milk Tea"
+      },
+      "brief": {
+        "zh": "杯上的線把一杯分成 4 份，每一份是 1/4 杯。看清楚單上要幾多份，按住按鈕倒到那條線。",
+        "en": "The lines split the glass into 4 equal parts, so each part is 1/4 cup. Read the order, then hold the button and pour up to the right line."
+      },
+      "rival": {
+        "zh": "1/2 杯？杯上面只有 1/4 的線，沒有 1/2 那條線，倒不到啦！",
+        "en": "1/2 a cup? The glass only has quarter lines. There's no line for 1/2, so you can't pour it!"
+      },
+      "orders": [
+        {
+          "name": {
+            "zh": "港式奶茶",
+            "en": "Hong Kong milk tea"
+          },
+          "den": 4,
+          "want": {
+            "tea": "3/4",
+            "milk": "1/4"
+          }
+        },
+        {
+          "name": {
+            "zh": "奶茶（多奶）",
+            "en": "Milk tea, extra milk"
+          },
+          "den": 4,
+          "want": {
+            "tea": "1/2",
+            "milk": "1/2"
+          },
+          "say": {
+            "zh": "陳太要多奶：茶和淡奶各一半。杯上沒有 1/2 的線，你要自己想想是第幾條線。",
+            "en": "Mrs Chan wants extra milk: half tea, half milk. There's no 1/2 line, so work out which quarter line it is."
+          }
+        },
+        {
+          "name": {
+            "zh": "鴛鴦",
+            "en": "Yuenyeung (coffee with tea)"
+          },
+          "den": 4,
+          "want": {
+            "coffee": "1/4",
+            "tea": "1/2",
+            "milk": "1/4"
+          }
+        }
+      ],
+      "hint": {
+        "zh": [
+          "由杯底數上去：第 1 條線是 1/4，第 2 條是 2/4，第 3 條是 3/4，杯口是 4/4，即是 1 杯。",
+          "1/2 和 2/4 是同一個份量，所以 1/2 杯就倒到第 2 條線。",
+          "倒第二樣材料時，要把兩樣加起來：先倒了 3/4 杯茶，再加 1/4 杯奶，就到杯口了。"
+        ],
+        "en": [
+          "Count up from the bottom: line 1 is 1/4, line 2 is 2/4, line 3 is 3/4, and the rim is 4/4, which is 1 whole cup.",
+          "1/2 and 2/4 are the same amount, so pour 1/2 a cup up to the second line.",
+          "When you add the second ingredient, add the amounts together: 3/4 cup of tea plus 1/4 cup of milk reaches the rim."
+        ]
+      },
+      "check": {
+        "question": {
+          "zh": "1/2 杯等於多少個 1/4 杯？",
+          "en": "How many quarter cups make 1/2 a cup?"
+        },
+        "options": [
+          "2",
+          "1",
+          "3",
+          "4"
+        ],
+        "answer": 0,
+        "explain": {
+          "zh": "1/2 = 2/4，所以 1/2 杯等於兩個 1/4 杯。",
+          "en": "1/2 = 2/4, so half a cup is two quarter cups."
+        }
+      }
+    },
+    {
+      "id": "L2",
+      "type": "cup",
+      "title": {
+        "zh": "三分一與八分一",
+        "en": "Thirds and Eighths"
+      },
+      "brief": {
+        "zh": "今日換了新杯：有些杯分成 3 份，有些分成 8 份。分得越多份，每一份就越少。",
+        "en": "New glasses today: some are split into 3 parts, some into 8. The more parts a cup is split into, the smaller each part is."
+      },
+      "rival": {
+        "zh": "3 比 4 細，所以 1/3 杯一定比 1/4 杯少啦！",
+        "en": "3 is smaller than 4, so 1/3 of a cup must be less than 1/4!"
+      },
+      "orders": [
+        {
+          "name": {
+            "zh": "三重奏鴛鴦",
+            "en": "Three-way yuenyeung"
+          },
+          "den": 3,
+          "want": {
+            "coffee": "1/3",
+            "tea": "1/3",
+            "milk": "1/3"
+          },
+          "say": {
+            "zh": "這隻杯分成 3 份。咖啡、茶、淡奶各 1/3 杯。留意每一份比 1/4 杯多。",
+            "en": "This glass is split into 3 parts. Coffee, tea and milk, 1/3 cup each. Notice each part is more than 1/4 cup."
+          }
+        },
+        {
+          "name": {
+            "zh": "港式奶茶（八分杯）",
+            "en": "Milk tea (eighths glass)"
+          },
+          "den": 8,
+          "want": {
+            "tea": "5/8",
+            "milk": "3/8"
+          }
+        },
+        {
+          "name": {
+            "zh": "鴛鴦（舊杯）",
+            "en": "Yuenyeung (old glass)"
+          },
+          "den": 8,
+          "marks": 4,
+          "want": {
+            "tea": "3/8",
+            "coffee": "3/8",
+            "milk": "1/4"
+          },
+          "say": {
+            "zh": "八分杯用完了，只剩分 4 份的舊杯！單上寫 3/8 杯茶：3/8 在哪兩條線之間？",
+            "en": "We're out of eighths glasses. Only the old quarter glass is left! The order says 3/8 cup of tea. Which two lines is 3/8 between?"
+          }
+        }
+      ],
+      "hint": {
+        "zh": [
+          "分母是一杯分成幾份，分子是倒了幾份。3/8 即是一杯分 8 份，倒 3 份。",
+          "1/4 = 2/8，1/2 = 4/8。所以 3/8 剛好在 1/4 和 1/2 兩條線的中間。",
+          "茶 3/8，再加咖啡 3/8，合共 6/8 = 3/4，即是第 3 條線；最後加淡奶到杯口。"
+        ],
+        "en": [
+          "The bottom number is how many parts the cup is split into; the top number is how many parts you pour. 3/8 means split into 8, pour 3.",
+          "1/4 = 2/8 and 1/2 = 4/8, so 3/8 is exactly halfway between the 1/4 and 1/2 lines.",
+          "Tea 3/8 plus coffee 3/8 makes 6/8 = 3/4, which is the third line. Then top up with milk to the rim."
+        ]
+      },
+      "check": {
+        "question": {
+          "zh": "5/8 杯茶加 3/8 杯奶，合共多少杯？",
+          "en": "5/8 cup of tea plus 3/8 cup of milk. How much is that altogether?"
+        },
+        "options": [
+          {
+            "zh": "1 杯",
+            "en": "1 cup"
+          },
+          {
+            "zh": "8/16 杯",
+            "en": "8/16 cup"
+          },
+          {
+            "zh": "2 杯",
+            "en": "2 cups"
+          },
+          {
+            "zh": "15/64 杯",
+            "en": "15/64 cup"
+          }
+        ],
+        "answer": 0,
+        "explain": {
+          "zh": "分母相同，分子相加：5/8 + 3/8 = 8/8 = 1 杯。分母不用相加。",
+          "en": "Same denominator, so add the tops: 5/8 + 3/8 = 8/8 = 1 cup. You don't add the bottoms."
+        }
+      }
+    },
+    {
+      "id": "L3",
+      "type": "jug",
+      "title": {
+        "zh": "公司大訂單",
+        "en": "The Office Order"
+      },
+      "brief": {
+        "zh": "樓上寫字樓打電話來叫外賣奶茶！一杯奶茶的配方是茶 150 mL、淡奶 50 mL。用量杯一次過沖一大壺。",
+        "en": "The office upstairs is ordering takeaway milk tea! One cup takes 150 mL of tea and 50 mL of evaporated milk. Make one big jug for the whole order."
+      },
+      "rival": {
+        "zh": "4 杯？即係 150 + 4 = 154 mL 茶囉！",
+        "en": "4 cups? That's 150 + 4 = 154 mL of tea!"
+      },
+      "recipe": {
+        "tea": 150,
+        "milk": 50
+      },
+      "orders": [
+        {
+          "cups": 4,
+          "jug": 1000
+        },
+        {
+          "cups": 6,
+          "jug": 1500
+        }
+      ],
+      "share": {
+        "milk": 250,
+        "per": 50,
+        "say": {
+          "zh": "淡奶只剩 250 mL，每杯要 50 mL。最多可以沖幾杯？選好杯數就倒倒看。",
+          "en": "Only 250 mL of evaporated milk is left, and each cup needs 50 mL. What's the most cups you can make? Pick a number and pour to see."
+        }
+      },
+      "hint": {
+        "zh": [
+          "一杯要 150 mL 茶，4 杯就是 4 個 150 mL。",
+          "150 × 4 = 600 mL 茶；50 × 4 = 200 mL 淡奶。倒完茶，再倒淡奶到 600 + 200 = 800 mL。",
+          "分淡奶：250 ÷ 50 = 5，所以最多 5 杯。"
+        ],
+        "en": [
+          "One cup needs 150 mL of tea, so 4 cups need four lots of 150 mL.",
+          "150 × 4 = 600 mL of tea and 50 × 4 = 200 mL of milk. After the tea, pour milk up to 600 + 200 = 800 mL.",
+          "Sharing the milk: 250 ÷ 50 = 5, so 5 cups at most."
+        ]
+      },
+      "check": {
+        "question": {
+          "zh": "一杯要 2 茶匙糖，8 杯要多少茶匙？",
+          "en": "One cup needs 2 teaspoons of sugar. How many teaspoons for 8 cups?"
+        },
+        "options": [
+          "16",
+          "10",
+          "6",
+          "28"
+        ],
+        "answer": 0,
+        "explain": {
+          "zh": "8 杯每杯 2 茶匙：2 × 8 = 16 茶匙。",
+          "en": "8 cups with 2 teaspoons each: 2 × 8 = 16 teaspoons."
+        }
+      }
+    },
+    {
+      "id": "L4",
+      "type": "syrup",
+      "title": {
+        "zh": "凍檸茶甜度",
+        "en": "Iced Lemon Tea Sweetness"
+      },
+      "brief": {
+        "zh": "凍檸茶正常甜要 40 mL 糖水。客人會說「半甜」、「少甜」，即是正常份量的某個百分比。用量筒量出準確的糖水。",
+        "en": "A normal iced lemon tea takes 40 mL of syrup. When customers say “half sweet” or “less sweet”, they mean a percentage of the normal amount. Measure the syrup exactly in the measuring cylinder."
+      },
+      "rival": {
+        "zh": "少甜 75%？即係落 75 mL 糖水啦！",
+        "en": "Less sweet is 75%? So that's 75 mL of syrup!"
+      },
+      "orders": [
+        {
+          "label": {
+            "zh": "半甜",
+            "en": "Half sweet"
+          },
+          "pct": 50,
+          "base": 40
+        },
+        {
+          "label": {
+            "zh": "少甜",
+            "en": "Less sweet"
+          },
+          "pct": 75,
+          "base": 40
+        },
+        {
+          "label": {
+            "zh": "微甜",
+            "en": "Slightly sweet"
+          },
+          "pct": 25,
+          "base": 40
+        },
+        {
+          "label": {
+            "zh": "大杯少甜",
+            "en": "Large, less sweet"
+          },
+          "pct": 75,
+          "base": 60,
+          "say": {
+            "zh": "大杯凍檸茶正常甜要 60 mL 糖水。客人要少甜，即是 75%。",
+            "en": "A large iced lemon tea normally takes 60 mL of syrup. The customer wants it less sweet, which is 75%."
+          }
+        }
+      ],
+      "hint": {
+        "zh": [
+          "百分數是以 100 為整體：50% 是一半，25% 是四分一，75% 是四分三。",
+          "40 mL 的 50% = 40 ÷ 2 = 20 mL；40 mL 的 25% = 40 ÷ 4 = 10 mL。",
+          "75% = 3/4：40 ÷ 4 × 3 = 30 mL；60 ÷ 4 × 3 = 45 mL。"
+        ],
+        "en": [
+          "A percentage treats 100 as the whole: 50% is half, 25% is a quarter, 75% is three quarters.",
+          "50% of 40 mL = 40 ÷ 2 = 20 mL. 25% of 40 mL = 40 ÷ 4 = 10 mL.",
+          "75% = 3/4: 40 ÷ 4 × 3 = 30 mL, and 60 ÷ 4 × 3 = 45 mL."
+        ]
+      },
+      "check": {
+        "question": {
+          "zh": "正常甜要 40 mL 糖水，三分甜（30%）要多少 mL？",
+          "en": "Normal sweetness takes 40 mL of syrup. How much for 30% sweet?"
+        },
+        "options": [
+          "12 mL",
+          "30 mL",
+          "10 mL",
+          "70 mL"
+        ],
+        "answer": 0,
+        "explain": {
+          "zh": "10% 是 40 ÷ 10 = 4 mL，30% 就是 4 × 3 = 12 mL。",
+          "en": "10% is 40 ÷ 10 = 4 mL, so 30% is 4 × 3 = 12 mL."
+        }
+      }
+    },
+    {
+      "id": "L5",
+      "type": "rush",
+      "title": {
+        "zh": "午市繁忙時間",
+        "en": "Lunchtime Rush"
+      },
+      "brief": {
+        "zh": "十二點了，客人排長龍！在時間內沖好所有飲品，倒得越準、越快，分數越高。",
+        "en": "It's noon and the queue is out the door! Make every drink before time runs out. The more accurate and the faster, the higher your score."
+      },
+      "rival": {
+        "zh": "快啲快啲，求其倒滿一杯就算啦！",
+        "en": "Hurry, hurry! Just fill it to the top, close enough!"
+      },
+      "seconds": 150,
+      "orders": [
+        {
+          "name": {
+            "zh": "港式奶茶",
+            "en": "Hong Kong milk tea"
+          },
+          "den": 4,
+          "want": {
+            "tea": "3/4",
+            "milk": "1/4"
+          }
+        },
+        {
+          "name": {
+            "zh": "鴛鴦",
+            "en": "Yuenyeung"
+          },
+          "den": 8,
+          "want": {
+            "coffee": "3/8",
+            "tea": "3/8",
+            "milk": "1/4"
+          }
+        },
+        {
+          "name": {
+            "zh": "奶啡",
+            "en": "Coffee with milk"
+          },
+          "den": 3,
+          "want": {
+            "coffee": "2/3",
+            "milk": "1/3"
+          }
+        },
+        {
+          "name": {
+            "zh": "茶走（多奶）",
+            "en": "Milk tea, extra milk"
+          },
+          "den": 8,
+          "want": {
+            "tea": "5/8",
+            "milk": "3/8"
+          }
+        },
+        {
+          "name": {
+            "zh": "鴛鴦（多茶）",
+            "en": "Yuenyeung, extra tea"
+          },
+          "den": 4,
+          "want": {
+            "coffee": "1/4",
+            "tea": "1/2",
+            "milk": "1/4"
+          }
+        }
+      ],
+      "hint": {
+        "zh": [
+          "先看杯分成幾份，再看單上的分母是否一樣。",
+          "分母不同時，換成等值分數：1/4 = 2/8，1/2 = 4/8。",
+          "每倒一樣材料，就把份數加起來，看看要倒到哪條線。"
+        ],
+        "en": [
+          "First see how many parts the glass has, then check whether the order uses the same denominator.",
+          "If the denominators differ, change to equivalent fractions: 1/4 = 2/8 and 1/2 = 4/8.",
+          "After each ingredient, add up the parts so far to see which line to pour to next."
+        ]
+      },
+      "check": {
+        "question": {
+          "zh": "哪一杯的茶最多？",
+          "en": "Which drink has the most tea?"
+        },
+        "options": [
+          {
+            "zh": "3/4 杯茶",
+            "en": "3/4 cup of tea"
+          },
+          {
+            "zh": "5/8 杯茶",
+            "en": "5/8 cup of tea"
+          },
+          {
+            "zh": "2/3 杯茶",
+            "en": "2/3 cup of tea"
+          },
+          {
+            "zh": "1/2 杯茶",
+            "en": "1/2 cup of tea"
+          }
+        ],
+        "answer": 0,
+        "explain": {
+          "zh": "化成同分母（24）比較：3/4 = 18/24，2/3 = 16/24，5/8 = 15/24，1/2 = 12/24。3/4 杯最多。",
+          "en": "Use a common denominator of 24: 3/4 = 18/24, 2/3 = 16/24, 5/8 = 15/24, 1/2 = 12/24. So 3/4 cup is the most."
+        }
+      }
+    }
+  ],
+  "endings": {
+    "best": {
+      "title": {
+        "zh": "金牌奶茶師傅",
+        "en": "Gold Medal Milk Tea Master"
+      },
+      "text": {
+        "zh": "倒得準、計得快，陳太話你沖的奶茶同黃師傅一樣好飲。",
+        "en": "Accurate pours and quick sums. Mrs Chan says your milk tea is as good as Master Wong's."
+      }
+    },
+    "normal": {
+      "title": {
+        "zh": "合格水吧師傅",
+        "en": "Qualified Drinks Maker"
+      },
+      "text": {
+        "zh": "大部分飲品都沖得好，有些分數還要再練習。",
+        "en": "Most drinks came out well. Some of the fractions need a bit more practice."
+      }
+    },
+    "fail": {
+      "title": {
+        "zh": "見習學徒",
+        "en": "Trainee Apprentice"
+      },
+      "text": {
+        "zh": "多看杯上的線，記住分母是分成幾份，下次一定更好。",
+        "en": "Look carefully at the lines on the glass and remember the bottom number tells you how many parts. You'll do better next time."
+      }
+    }
+  },
+  "debrief": {
+    "zh": "分母是一個整體平均分成幾份，分子是取了幾份；1/2、2/4、4/8 是同一個份量；大訂單就是配方乘以杯數；百分數是以 100 為整體，50% 是一半、25% 是四分一。",
+    "en": "The denominator is how many equal parts the whole is split into; the numerator is how many parts you take. 1/2, 2/4 and 4/8 are the same amount. A big order is the recipe times the number of cups. A percentage treats 100 as the whole: 50% is half and 25% is a quarter."
+  }
+}
