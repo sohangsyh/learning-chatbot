@@ -1,0 +1,33 @@
+{
+  "scene_kit": "container_port",
+  "grid": {
+    "cols": 6,
+    "rows": 6
+  },
+  "quay_z": -13.5,
+  "gantry_top": 9.2,
+  "quay_crane_top": 11,
+  "boom_reach": 16,
+  "npc_layout": {
+    "mentor": [
+      -11.2,
+      0,
+      3.2
+    ],
+    "companion": [
+      -12.4,
+      0,
+      5.4
+    ],
+    "rival": [
+      11.4,
+      0,
+      2.0
+    ],
+    "gatekeeper": [
+      -14,
+      0,
+      -11
+    ]
+  }
+}

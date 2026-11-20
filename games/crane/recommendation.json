@@ -1,0 +1,41 @@
+{
+  "inputs": {
+    "subject": "數學",
+    "has_construction": true,
+    "has_spatial": true,
+    "has_variables": false
+  },
+  "subject_candidates": [
+    "building",
+    "escape",
+    "carry"
+  ],
+  "feasibility": {
+    "building": {
+      "pass": true,
+      "why": "學生要親手開動吊機和拖頭，用方格位置、方向和轉角完成工作，再自己疊出指定體積的長方體"
+    },
+    "carry": {
+      "pass": true,
+      "why": "方向和位置的配對可做溫習"
+    },
+    "rpg": {
+      "pass": false,
+      "why": "沒有情境抉擇"
+    }
+  },
+  "scores": {
+    "building": 0.92,
+    "escape": 0.45,
+    "carry": 0.5
+  },
+  "recommendation": {
+    "primary": "building",
+    "reason": "方向、位置和體積都是空間能力，最有效的方法是親手操控、即時看到結果，錯了就重新規劃。",
+    "learning_path": [
+      "building",
+      "carry"
+    ]
+  },
+  "teacher_confirmed": "building"
+}

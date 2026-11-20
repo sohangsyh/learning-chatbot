@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "topic": "方向與位置、轉角、長方體體積",
+    "short_title": "貨櫃碼頭吊機",
+    "short_title_en": "Container Crane",
+    "author": "小學數學（P4–P6）",
+    "author_en": "Primary Maths (P4–P6)",
+    "language": "zh-Hant",
+    "audience": "小四至小六學生",
+    "central_thesis": "用字母和數字標示方格位置；用東南西北和步數描述移動；轉 90° 和 180° 會改變面向的方向；長方體的體積等於長 × 闊 × 高。",
+    "title_lines": { "zh": ["葵青貨櫃碼頭，今日由你開吊機。", "看格、轉向、裝滿貨船。"], "en": ["You're at the controls at Kwai Tsing Container Terminal.", "Read the grid, turn the truck, fill the ship."] },
+    "unit": { "zh": "每個貨櫃佔一格；堆場用字母（A–F）標示直行，數字（1–6）標示橫行，北面在上方。", "en": "Each container fills one square. Letters (A–F) name the columns, numbers (1–6) name the rows, and north is at the top." }
+  },
+  "npc_slots": {
+    "mentor": { "character_id": "G", "display_name": { "zh": "何主管", "en": "Supervisor Ho" }, "persona": { "zh": "碼頭控制室主管，指揮所有吊機", "en": "Runs the control room and every crane in the yard" }, "costume": ["hardhat"] },
+    "companion": { "character_id": "O", "display_name": { "zh": "阿樂", "en": "Lok" }, "persona": { "zh": "新入職的拖頭司機，和你一起上班", "en": "A new truck driver starting work with you" }, "costume": ["hardhat"] },
+    "rival": { "character_id": "A", "display_name": { "zh": "大頭蝦", "en": "Scatterbrain" }, "persona": { "zh": "做事馬虎的老手，經常搞錯方向", "en": "An old hand who keeps mixing up directions" }, "costume": ["hardhat_o"] },
+    "gatekeeper": { "character_id": "I", "display_name": { "zh": "船長", "en": "The Captain" }, "persona": { "zh": "貨船船長，負責驗收每一批貨", "en": "Captain of the cargo ship, checks every load" }, "costume": ["beacon"] }
+  },
+  "colors": {
+    "red": { "hex": "#C8452F", "zh": "紅色", "en": "red" },
+    "blue": { "hex": "#2C6DB5", "zh": "藍色", "en": "blue" },
+    "green": { "hex": "#2E8A5A", "zh": "綠色", "en": "green" },
+    "yellow": { "hex": "#E0A21A", "zh": "黃色", "en": "yellow" },
+    "grey": { "hex": "#8A8E92", "zh": "灰色", "en": "grey" },
+    "purple": { "hex": "#7A3A8A", "zh": "紫色", "en": "purple" }
+  },
+  "levels": [
+    {
+      "id": "L1", "type": "drive",
+      "title": { "zh": "第一日上班", "en": "First Day at Work" },
+      "brief": { "zh": "歡迎上班！堆場的方格用字母和數字標示：字母是直行（由西至東 A 至 F），數字是橫行（由南至北 1 至 6）。用方向鍵開動龍門吊機，到正確的格子吊起貨櫃。", "en": "Welcome aboard! Each square in the yard has a letter and a number. Letters name the columns, A to F from west to east. Numbers name the rows, 1 to 6 from south to north. Drive the gantry crane with the arrow buttons and pick up containers from the right squares." },
+      "rival": { "zh": "B2？即係由北面數落嚟第 2 行啦，最上面嗰行就係第 1 行！", "en": "B2? That's the second row counting down from the north. The top row is row 1!" },
+      "start": "A1",
+      "yard": [["B2", "red"], ["D6", "green"], ["F3", "blue"], ["C5", "grey"], ["C5", "grey"], ["E1", "grey"]],
+      "tasks": [
+        { "pick": "B2", "drop": "E4", "color": "red" },
+        { "pick": "D6", "drop": "A3", "color": "green" }
+      ],
+      "hint": { "zh": ["先找字母：沿著堆場底部的 A 至 F 找到那一直行。", "再找數字：沿著左邊的 1 至 6 找到那一橫行，數字由南面（下方）數起。", "兩條線交匯的格子就是目標。例如 B2：B 直行、第 2 橫行。"], "en": ["Find the letter first: follow A to F along the bottom of the yard.", "Then find the number: follow 1 to 6 up the left side. Count from the south, which is the bottom.", "The square where the two lines meet is your target. For B2, that's column B, row 2."] },
+      "check": { "question": { "zh": "吊機在 C3，向東移 2 格，再向北移 1 格，現在在哪一格？", "en": "The crane is at C3. It moves 2 squares east, then 1 square north. Where is it now?" }, "options": ["E4", "A4", "E2", "D5"], "answer": 0, "explain": { "zh": "向東 2 格：C → D → E；向北 1 格：3 → 4。所以是 E4。", "en": "Two squares east: C → D → E. One square north: 3 → 4. So it's E4." } }
+    },
+    {
+      "id": "L2", "type": "program",
+      "title": { "zh": "對講機指令", "en": "Radio Commands" },
+      "brief": { "zh": "吊機的手動控制壞了，只能預先輸入一整串指令，再一次過執行。按方向鍵加入指令，連續按同一方向會增加步數。", "en": "The crane's manual controls are broken. You have to enter the whole list of commands first, then run them in one go. Press an arrow to add a command; pressing the same arrow again adds another step." },
+      "rival": { "zh": "唔使諗咁多，總之向東行幾步，一定會撞到個藍色櫃！", "en": "Don't overthink it. Just head east a few steps and you'll bump into a blue one!" },
+      "start": "A1",
+      "yard": [["B2", "red"], ["C3", "yellow"], ["E4", "blue"], ["C5", "blue"], ["A5", "grey"], ["F2", "grey"]],
+      "tasks": [
+        { "pick": "C3", "drop": "F5", "color": "yellow", "say": { "zh": "第一張單：黃色貨櫃在 C3，把它吊到 F5。先計好路線，再輸入指令。", "en": "First order: the yellow container is at C3. Move it to F5. Plan the route, then enter the commands." } },
+        { "pick": "E4", "drop": "B6", "color": "blue", "hide_ref": true, "say": { "zh": "第二張單：控制室的定位屏幕壞了！你要的藍色貨櫃，在紅色貨櫃（B2）東面 3 格、北面 2 格。把它吊到紅色貨櫃正北面 4 格的位置。", "en": "Second order: the position screen in the control room is down! The blue container you need is 3 squares east and 2 squares north of the red one at B2. Move it to the square 4 squares due north of the red container." } }
+      ],
+      "hint": { "zh": ["由紅色貨櫃 B2 開始數：向東 3 格是 B → C → D → E。", "再向北 2 格：2 → 3 → 4。所以藍色貨櫃在 E4，不是 C5 那個。", "紅色貨櫃正北面 4 格：B 直行不變，2 + 4 = 6，即 B6。"], "en": ["Start counting from the red container at B2. Three squares east is B → C → D → E.", "Then two squares north: 2 → 3 → 4. So the blue container is at E4, not the one at C5.", "Four squares due north of the red container: stay in column B, and 2 + 4 = 6, so it's B6."] },
+      "check": { "question": { "zh": "貨櫃甲在 D2，貨櫃乙在 B5。由甲去乙，要怎樣移動？", "en": "Container P is at D2 and container Q is at B5. How do you get from P to Q?" }, "options": [{ "zh": "向西 2 格，向北 3 格", "en": "2 west, 3 north" }, { "zh": "向東 2 格，向北 3 格", "en": "2 east, 3 north" }, { "zh": "向西 3 格，向北 2 格", "en": "3 west, 2 north" }, { "zh": "向西 2 格，向南 3 格", "en": "2 west, 3 south" }], "answer": 0, "explain": { "zh": "D 到 B 是向西 2 格（D → C → B）；2 到 5 是向北 3 格。", "en": "D to B is 2 squares west (D → C → B). Row 2 to row 5 is 3 squares north." } }
+    },
+    {
+      "id": "L3", "type": "truck",
+      "title": { "zh": "拖頭轉彎", "en": "Turning the Truck" },
+      "brief": { "zh": "現在由你指揮阿樂的拖頭。拖頭只會「前進」、「左轉 90°」、「右轉 90°」和「掉頭 180°」。左轉右轉要以拖頭自己面向的方向來計，不是以你的方向來計！", "en": "Now you're directing Lok's truck. It can only go Forward, Turn left 90°, Turn right 90° and Turn 180°. Left and right depend on the way the truck is facing, not the way you are facing!" },
+      "rival": { "zh": "拖頭向南行嘅時候，左轉梗係向西啦，同我哋睇落去一樣嘛！", "en": "When the truck faces south, turning left means going west, same as it looks to us!" },
+      "obstacles": ["B1", "B2", "B3", "C3", "E3", "E4", "A5", "B5", "D5", "E5"],
+      "tasks": [
+        { "start": "A1", "face": 0, "goal": "F6", "say": { "zh": "拖頭在閘口 A1，面向北。把它開到 F6 的裝船位，不可以撞到貨櫃。", "en": "The truck is at the gate, A1, facing north. Drive it to the loading bay at F6 without hitting any containers." }, "goal_label": { "zh": "裝船", "en": "Load" } },
+        { "start": "F6", "face": 1, "goal": "A1", "say": { "zh": "貨已經上船，拖頭在 F6，面向東。把它開回閘口 A1。這次很多時候拖頭是向南或向西行，左右會倒轉，要小心！", "en": "The cargo is on board. The truck is at F6, facing east. Drive it back to the gate at A1. This time it will often face south or west, so left and right flip. Be careful!" }, "goal_label": { "zh": "閘口", "en": "Gate" } }
+      ],
+      "hint": { "zh": ["想像自己坐在拖頭的司機位：右手邊就是右轉的方向。", "面向北時右轉是東；面向東時右轉是南；面向南時右轉是西；面向西時右轉是北。", "每轉一次 90° 是四分一個圈；轉 180° 就是掉頭，面向相反方向。"], "en": ["Imagine you're in the driver's seat: turning right means turning towards your right hand.", "Facing north, right is east. Facing east, right is south. Facing south, right is west. Facing west, right is north.", "Each 90° turn is a quarter turn. A 180° turn is a U-turn that points you the opposite way."] },
+      "check": { "question": { "zh": "拖頭面向東，右轉 90°，再右轉 90°，現在面向哪個方向？", "en": "The truck faces east. It turns right 90°, then right 90° again. Which way is it facing now?" }, "options": [{ "zh": "西", "en": "West" }, { "zh": "南", "en": "South" }, { "zh": "北", "en": "North" }, { "zh": "東", "en": "East" }], "answer": 0, "explain": { "zh": "東 → 右轉 90° 是南 → 再右轉 90° 是西。兩次 90° 合共 180°，即是掉頭。", "en": "East → turn right 90° to face south → turn right 90° again to face west. Two 90° turns make 180°, which is a U-turn." } }
+    },
+    {
+      "id": "L4", "type": "hold",
+      "title": { "zh": "裝滿船艙", "en": "Fill the Hold" },
+      "brief": { "zh": "貨船泊岸了！船艙是一個長方體空間，要剛好裝滿，不可以留空位，也不可以多訂貨櫃。", "en": "The ship has docked! Its hold is a cuboid space. Fill it exactly: no empty spaces, and no extra containers left over." },
+      "rival": { "zh": "船艙長 5、闊 4、高 3，5 + 4 + 3 = 12 個就夠啦！", "en": "The hold is 5 long, 4 wide and 3 high, so 5 + 4 + 3 = 12 containers. Easy!" },
+      "partA": { "L": 4, "W": 3, "H": 2 },
+      "partB": { "L": 5, "W": 4, "H": 3 },
+      "hint": { "zh": ["一層有多少個？數一數一行有幾個，再乘以有幾行。", "全部層數一樣，所以總數 = 一層的數目 × 層數。", "長方體可放的貨櫃數目 = 長 × 闊 × 高。5 × 4 × 3 = 60。"], "en": ["How many in one layer? Count how many in a row, then multiply by the number of rows.", "Every layer is the same, so total = containers in one layer × number of layers.", "Containers in a cuboid = length × width × height. 5 × 4 × 3 = 60."] },
+      "check": { "question": { "zh": "一個船艙長 6 格、闊 2 格、高 3 層，最多可以放多少個貨櫃？", "en": "A hold is 6 squares long, 2 squares wide and 3 layers high. What's the most containers it can hold?" }, "options": ["36", "11", "12", "18"], "answer": 0, "explain": { "zh": "一層有 6 × 2 = 12 個，三層就是 12 × 3 = 36 個。", "en": "One layer holds 6 × 2 = 12, so three layers hold 12 × 3 = 36." } }
+    },
+    {
+      "id": "L5", "type": "stack",
+      "title": { "zh": "堆場規劃師", "en": "Yard Planner" },
+      "brief": { "zh": "24 個貨櫃剛剛卸下。把它們在堆場疊成一個長方體：在地上拖出底面的長方形，再選疊多少層。最多只可以疊 3 層，也不可以壓到維修區。", "en": "24 containers have just been unloaded. Stack them in the yard as one cuboid: drag out a rectangle on the ground for the base, then choose how many layers to stack. You can stack at most 3 layers, and you can't build on the repair zone." },
+      "rival": { "zh": "24 個？排一條長龍，24 × 1 × 1 咪得囉！", "en": "24 containers? Just line them up in one long row: 24 × 1 × 1. Done!" },
+      "total": 24, "max_h": 3, "blocked": ["A6", "B6", "F1"],
+      "hint": { "zh": ["長 × 闊 × 高 要等於 24。先選高度，例如 2 層。", "如果疊 2 層，底面要有 24 ÷ 2 = 12 格，例如 4 × 3。", "其他可能：4 × 2 × 3、6 × 2 × 2、6 × 4 × 1。記得避開維修區。"], "en": ["Length × width × height must equal 24. Pick a height first, say 2 layers.", "With 2 layers, the base needs 24 ÷ 2 = 12 squares, such as 4 × 3.", "Other options: 4 × 2 × 3, 6 × 2 × 2, 6 × 4 × 1. Remember to avoid the repair zone."] },
+      "check": { "question": { "zh": "24 個貨櫃疊成長方體，高 2 層，底面可以是哪一個？", "en": "24 containers are stacked as a cuboid, 2 layers high. Which base works?" }, "options": ["4 × 3", "6 × 3", "5 × 4", "3 × 3"], "answer": 0, "explain": { "zh": "高 2 層，底面要有 24 ÷ 2 = 12 格。4 × 3 = 12。", "en": "With 2 layers, the base must have 24 ÷ 2 = 12 squares. 4 × 3 = 12." } }
+    }
+  ],
+  "endings": {
+    "best": { "title": { "zh": "金牌吊機手", "en": "Gold Medal Crane Operator" }, "text": { "zh": "看格準、轉向穩、計數快，整個碼頭都想請你開吊機。", "en": "Sharp on the grid, steady on the turns, quick with the numbers. Every terminal wants you at the controls." } },
+    "normal": { "title": { "zh": "合格操作員", "en": "Certified Operator" }, "text": { "zh": "大部分貨櫃都送到正確位置，有時要再小心方向。", "en": "Most containers reached the right place. Watch your directions a little more closely." } },
+    "fail": { "title": { "zh": "見習操作員", "en": "Trainee Operator" }, "text": { "zh": "再多練習看方格和轉向，下次一定更好。", "en": "Keep practising the grid and the turns. You'll do better next time." } }
+  },
+  "debrief": { "zh": "方格位置先看字母、後看數字；描述移動要說方向和步數；左轉右轉要從面向的方向去想；長方體的體積是長 × 闊 × 高。", "en": "Read a square's letter first, then its number. Describe a move with a direction and a number of steps. Work out left and right from the way you're facing. The volume of a cuboid is length × width × height." }
+}

@@ -195,7 +195,7 @@ const E={};window.ENG=E;
 const RM=E.RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $=E.$=id=>document.getElementById(id);
 E.sleep=ms=>new Promise(r=>setTimeout(r,ms));
-E.NUM=['一','二','三','四','五','六','七','八'];
+E.NUM=['一','二','三','四','五','六','七','八'];E.lang='zh';
 
 /* renderer */
 let canvas,renderer,scene,camera;
@@ -438,10 +438,10 @@ E.showLine=function(key,text,quote){
 E.actions=function(nodes){const a=$('actions');a.innerHTML='';nodes.forEach(n=>a.appendChild(n));};
 E.btn=function(cls,html,on){const b=document.createElement('button');b.className=cls;b.innerHTML=html;b.addEventListener('click',on);return b;};
 E.say=async function(key,text,opt){opt=opt||{};E.actions([]);await E.showLine(key,text,opt.quote);E.setTalker('');
-  return new Promise(res=>{const b=E.btn('next',opt.btn||'繼續',()=>res());E.actions([b]);b.focus({preventScroll:true});});};
+  return new Promise(res=>{const b=E.btn('next',opt.btn||(E.lang==='en'?'Next':'繼續'),()=>res());E.actions([b]);b.focus({preventScroll:true});});};
 E.ask=async function(key,text,options,disabled,opts){E.actions([]);await E.showLine(key,text);
-  return new Promise(res=>{const n=options.map((o,i)=>{const b=E.btn('opt','<span class="k">'+'甲乙丙丁戊'[i]+'</span><span>'+o+'</span>',()=>res(i));if(disabled&&disabled.has(i))b.disabled=true;return b;});if(opts&&opts.skip)n.push(E.skipBtn(()=>res(-1)));E.actions(n);});};
-E.skipBtn=(fn,label)=>E.btn('skipbtn',label||'跳過，看答案',fn);
+  return new Promise(res=>{const n=options.map((o,i)=>{const b=E.btn('opt','<span class="k">'+(E.lang==='en'?'ABCDE':'甲乙丙丁戊')[i]+'</span><span>'+o+'</span>',()=>res(i));if(disabled&&disabled.has(i))b.disabled=true;return b;});if(opts&&opts.skip)n.push(E.skipBtn(()=>res(-1)));E.actions(n);});};
+E.skipBtn=(fn,label)=>E.btn('skipbtn',label||(E.lang==='en'?'Skip, show answer':'跳過，看答案'),fn);
 E.hideDialog=()=>{$('dialog').hidden=true;E.setTalker('');};
 E.bindDialog=()=>$('dialog').addEventListener('click',e=>{if(typing&&!e.target.closest('button'))typing.finish();});
 
@@ -473,6 +473,9 @@ E.TOY={G:{name:"阿深",col:"#2C4C7A",role:"導師",img:"data:image/png;base64,i
 E.RIG={"yam":{"sh":0.615,"hip":0.3,"hem":0.42,"tw":0.125,"tb":0.118,"td":0.085,"lx":0.058,"lr":0.046,"ar":0.036,"hand":0.36,"shoe":0.05,"open":0.04,"suit":1,"c":{"jk":"1f2a40","sh":"ece8df","tie":"2f5a52","pt":"1b2233","sk":"e3bca4","so":"17110d","sl":"17110d"}},"meng":{"sh":0.615,"hip":0.3,"hem":0.42,"tw":0.122,"tb":0.115,"td":0.082,"lx":0.056,"lr":0.045,"ar":0.035,"hand":0.36,"shoe":0.05,"open":0.04,"suit":1,"c":{"jk":"20252e","sh":"e4e0d4","pt":"14181f","sk":"dcb197","so":"0f0b08","sl":"0f0b08"}},"G":{"sh":0.62,"hip":0.31,"hem":0.43,"tw":0.105,"tb":0.098,"td":0.068,"lx":0.062,"lr":0.037,"ar":0.03,"hand":0.35,"shoe":0.07,"open":0.045,"c":{"jk":"2b4b70","sh":"5d5e64","pt":"2e2e32","sk":"e39a78","so":"3a3a3e","sl":"e2e2e2","belt":"141414"}},"O":{"sh":0.625,"hip":0.31,"hem":0.41,"tw":0.104,"tb":0.098,"td":0.066,"lx":0.062,"lr":0.03,"ar":0.03,"hand":0.35,"shoe":0.1,"open":0.05,"hood":1,"shorts":0.25,"c":{"jk":"0a80d8","sh":"f6a523","pt":"5a4234","sk":"e8a682","so":"f59a14","sl":"f1e8de"}},"A":{"sh":0.625,"hip":0.31,"hem":0.41,"tw":0.104,"tb":0.098,"td":0.066,"lx":0.062,"lr":0.03,"ar":0.03,"hand":0.35,"shoe":0.1,"open":0.05,"hood":1,"shorts":0.25,"c":{"jk":"0a82da","sh":"f3a520","pt":"4f3a2b","sk":"e6a07e","so":"e8901f","sl":"f0d6b8"}},"I":{"sh":0.625,"hip":0.31,"hem":0.45,"tw":0.108,"tb":0.098,"td":0.068,"lx":0.06,"lr":0.037,"ar":0.03,"hand":0.35,"shoe":0.07,"open":0.05,"c":{"jk":"55697f","sh":"b9bdc5","pt":"4b505a","sk":"efb09b","so":"36383e","sl":"d6d5d2"}}};
 E.cast=(function(){const ok=s=>s==='prof'||s==='toy'||s==='goai';try{if(/(^|[#&])toy/.test(location.hash))return 'toy';if(/(^|[#&])prof/.test(location.hash))return 'prof';if(/(^|[#&])goai/.test(location.hash))return 'goai';}catch(e){}if(ok(window.__cast))return window.__cast;try{const s=localStorage.getItem('gp_cast');if(ok(s))return s;}catch(e){}return 'goai';})();
 const PROFROLE={},PGEO={},TGEO={};E.PROF_GLOW=.55;
+const CAST_EN={yam:['Prof. Yam','Mentor'],meng:['Prof. Meng','Explainer & examiner'],G:['Shen','Mentor'],O:['Rou','Companion'],A:['Lan','Rival'],I:['Dan','Examiner']};
+E.castName=k=>E.lang==='en'&&CAST_EN[k]?CAST_EN[k][0]:(E.PROF[k]||E.TOY[k]||{}).name;
+E.castRole=k=>E.lang==='en'&&CAST_EN[k]?CAST_EN[k][1]:(E.PROF[k]||E.TOY[k]||{}).role;
 function profSlot(r){return Object.keys(PROFROLE).find(k=>PROFROLE[k]===r);}
 function profMesh(key,src,cache){src=src||E.PROF_DATA;cache=cache||PGEO;if(!cache[key]){const D=src[key];const dec=b=>{const s2=atob(b),u=new Uint8Array(s2.length);for(let i=0;i<s2.length;i++)u[i]=s2.charCodeAt(i);return u;};
     const q=new Uint16Array(dec(D.v).buffer),qu=new Uint16Array(dec(D.uv).buffer),idx=D.i32?new Uint32Array(dec(D.i).buffer):new Uint16Array(dec(D.i).buffer),lo=D.b.slice(0,3),hi=D.b.slice(3);
@@ -558,11 +561,11 @@ E.profSync=function(c,t,mv){const r=c.toyG&&c.toyG.visible?c.toyR:c.profG&&c.pro
 const _showLine=E.showLine;
 E.showLine=function(key,text,quote){if(E.cast==='prof'){const r=PROFROLE[key];
     if(r==='meng2')key=profSlot('meng')||key;
-    else if(r==='myth'){key=profSlot('yam')||profSlot('meng')||key;text='有人會這樣想：「'+String(text).replace(/^「|」$/g,'')+'」這個說法對嗎？請想一想。';quote=true;}
-    const r2=PROFROLE[key];if(r2==='yam'||r2==='meng'){E._spk=E._spk||{};if(!E._spk[key])E._spk[key]=Object.assign({},E.SPK[key]||{name:key,col:'#F4EBD6'});const p=E.PROF[r2];E.SPK[key]=Object.assign({},E._spk[key],{name:p.name,col:p.col});}}
+    else if(r==='myth'){key=profSlot('yam')||profSlot('meng')||key;text=E.lang==='en'?'Some people think: “'+String(text).replace(/^“|”$/g,'')+'” Is that right? Think about it.':'有人會這樣想：「'+String(text).replace(/^「|」$/g,'')+'」這個說法對嗎？請想一想。';quote=true;}
+    const r2=PROFROLE[key];if(r2==='yam'||r2==='meng'){E._spk=E._spk||{};if(!E._spk[key])E._spk[key]=Object.assign({},E.SPK[key]||{name:key,col:'#F4EBD6'});const p=E.PROF[r2];E.SPK[key]=Object.assign({},E._spk[key],{name:E.castName(r2),col:p.col});}}
   else if(E.cast==='toy'){const id=E.chars[key]&&E.chars[key].castId;const t=id&&E.TOY[id];
-    if(t){E._spk=E._spk||{};if(!E._spk[key])E._spk[key]=Object.assign({},E.SPK[key]||{name:key,col:'#F4EBD6'});E.SPK[key]=Object.assign({},E._spk[key],{name:t.name,col:t.col});}}
-  else if(E._spk&&E._spk[key])E.SPK[key]=E._spk[key];
+    if(t){E._spk=E._spk||{};if(!E._spk[key])E._spk[key]=Object.assign({},E.SPK[key]||{name:key,col:'#F4EBD6'});E.SPK[key]=Object.assign({},E._spk[key],{name:E.castName(id),col:t.col});}}
+  else if(E._spk&&E._spk[key]){E.SPK[key]=E._spk[key];delete E._spk[key];}
   E.talkerKey=key;
   return _showLine.call(this,key,text,quote);};
 const _glyph=E.glyph;
@@ -570,8 +573,8 @@ E.glyph=function(id){if(E.cast==='prof'&&['G','O','A','I'].includes(id)){const p
   if(E.cast==='toy'&&E.TOY[id])return '<img class="profimg" src="'+E.TOY[id].img+'" alt="" style="width:48px;height:48px;object-fit:contain">';
   return _glyph(id);};
 function fixCast(){if(E.cast==='goai')return;const ov=document.getElementById('overlay');if(!ov)return;ov.querySelectorAll('.cast').forEach(el=>{if(el.dataset.castmode===E.cast)return;el.dataset.castmode=E.cast;
-    if(E.cast==='prof')el.innerHTML=['yam','meng'].map(k=>{const p=E.PROF[k];return '<div><img src="'+p.img+'" alt="" style="width:60px;height:60px;object-fit:contain"><p style="margin:0"><b>'+p.name+'</b><br><span>'+p.role+'</span></p></div>';}).join('');
-    else el.innerHTML=['G','O','A','I'].map(k=>{const p=E.TOY[k];return '<div><img src="'+p.img+'" alt="" style="width:60px;height:60px;object-fit:contain"><p style="margin:0"><b>'+p.name+'</b><br><span>'+p.role+'</span></p></div>';}).join('');});}
+    if(E.cast==='prof')el.innerHTML=['yam','meng'].map(k=>{const p=E.PROF[k];return '<div><img src="'+p.img+'" alt="" style="width:60px;height:60px;object-fit:contain"><p style="margin:0"><b>'+E.castName(k)+'</b><br><span>'+E.castRole(k)+'</span></p></div>';}).join('');
+    else el.innerHTML=['G','O','A','I'].map(k=>{const p=E.TOY[k];return '<div><img src="'+p.img+'" alt="" style="width:60px;height:60px;object-fit:contain"><p style="margin:0"><b>'+E.castName(k)+'</b><br><span>'+E.castRole(k)+'</span></p></div>';}).join('');});}
 (function(){const start=()=>{const ov=document.getElementById('overlay');if(ov)new MutationObserver(fixCast).observe(ov,{childList:true,subtree:true});
     const w=document.createElement('div');w.id='castSw';w.setAttribute('role','group');w.setAttribute('aria-label','角色 Characters');
     w.style.cssText='position:fixed;left:12px;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:30;display:flex;gap:2px;background:rgba(14,20,40,.82);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:3px;font:700 12px system-ui,sans-serif';

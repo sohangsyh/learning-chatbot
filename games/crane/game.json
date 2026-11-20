@@ -1,0 +1,25 @@
+{
+  "mode": "crane",
+  "scoring": {
+    "drive_task": 10,
+    "drive_wrong_penalty": 2,
+    "program_first_try": 12,
+    "program_retry": 6,
+    "truck_first_try": 15,
+    "truck_retry": 8,
+    "hold_layer": 10,
+    "hold_total": 10,
+    "hold_order_first_try": 15,
+    "hold_order_retry": 8,
+    "stack_first": 15,
+    "stack_second": 10,
+    "check_first_try": 10,
+    "check_wrong_penalty": 3,
+    "hint_penalty": 2
+  },
+  "endings": [
+    { "id": "best", "min_score": 130 },
+    { "id": "normal", "min_score": 75 },
+    { "id": "fail", "min_score": 0 }
+  ]
+}
