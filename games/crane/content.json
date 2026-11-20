@@ -9,6 +9,10 @@
     "audience": "小四至小六學生",
     "central_thesis": "用字母和數字標示方格位置；用東南西北和步數描述移動；轉 90° 和 180° 會改變面向的方向；長方體的體積等於長 × 闊 × 高。",
     "title_lines": { "zh": ["葵青貨櫃碼頭，今日由你開吊機。", "看格、轉向、裝滿貨船。"], "en": ["You're at the controls at Kwai Tsing Container Terminal.", "Read the grid, turn the truck, fill the ship."] },
+    "objectives": {
+      "zh": ["用字母和數字（例如 B2）找出方格的位置。", "用東南西北和步數描述移動，並預先排好一串指令。", "分辨轉 90° 和 180°，從面向的方向判斷左轉和右轉。", "計算長方體可放多少個貨櫃：一層的數目 × 層數 = 長 × 闊 × 高。", "把 24 拆成 長 × 闊 × 高，找出不同的長方體疊法。"],
+      "en": ["Find a square on a grid from its letter and number, such as B2.", "Describe a move with compass directions and steps, and plan a list of commands in order.", "Tell 90° turns from 180° turns, and work out left and right from the way you're facing.", "Work out how many containers fill a cuboid: one layer × number of layers = length × width × height.", "Split 24 into length × width × height to find different ways to stack a cuboid."]
+    },
     "unit": { "zh": "每個貨櫃佔一格；堆場用字母（A–F）標示直行，數字（1–6）標示橫行，北面在上方。", "en": "Each container fills one square. Letters (A–F) name the columns, numbers (1–6) name the rows, and north is at the top." }
   },
   "npc_slots": {
